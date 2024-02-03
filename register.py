@@ -49,8 +49,8 @@ def register_user(username, email, password, confirm_password):
     
     # Inserting user data into the collection
     user_data = {
-        "username": uname,
-        "full_name": full_name,
+        "username": username,
+        # "full_name": full_name,
         "email": email,
         "password": hashed_password,
         # "age": age,
@@ -64,4 +64,4 @@ def register_user(username, email, password, confirm_password):
     }
     collection.insert_one(user_data)
 
-    return redirect(url_for("index"))
+    return render_template("index.html")

@@ -12,23 +12,19 @@ def index():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        uname = request.form.get("username")
-        full_name = request.form.get("full_name")
+        username = request.form.get("username")
         email = request.form.get("email")
         password = request.form.get("password")
         confirm_password = request.form.get("confirm_password")
-        age = request.form.get("age")
-        street = request.form.get("address.street")
-        city = request.form.get("address.city")
-        state = request.form.get("address.state")
-        zip_code = request.form.get("address.zip_code")
-        country = request.form.get("address.country")
 
-        registration_error = register_user(uname, email, password, confirm_password)
+        registration_error = register_user(username, email, password, confirm_password)
 
         if registration_error:
+            print("Registration error:", registration_error)
+            print("Form values:", username, email, password, confirm_password)
             return render_template("register.html", error=registration_error)
 
+        print("Registration successful. Redirecting to index.")
         return redirect(url_for("index"))
 
     return render_template("register.html")

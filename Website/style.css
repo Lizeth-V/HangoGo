@@ -1,10 +1,43 @@
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid rgb(255, 255, 255);
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input[type=text]::placeholder,
+input[type=password]::placeholder {
+    color: rgb(232, 232, 232);
+}
+
+label{
+    font-family: 'Inter', sans-serif;
+    font-size: medium;
+    font-weight: lighter;
+}
+
+form {
+    width: 50%;
+}
+
+.centerlogo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 70px;
+}
+
 .button1{ 
     /* Sign in Button */
     background-color: #5EBA47;
     border: none;
+    border-radius: 5px;
     color: white;
     text-align: center;
-    width: 185px;
+    width: 100%;
     padding: 10px;
 
 }
@@ -13,13 +46,19 @@
     justify-content: center;
     align-items: center;
     padding-top: 50px;
+    font-family: 'Inter', sans-serif;
 }
-.centerlogo{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: 70px;
+.psw a {
+    font-family: 'Inter', sans-serif;
+    margin-right: auto;
+    color: grey;
 }
+.signup a{
+    font-family: 'Inter', sans-serif;
+    margin-left: auto;
+    color: #5EBA47;
+}
+
 
 html{
     height: 100%;
@@ -62,6 +101,7 @@ h1 {
 h2 {
     color: black;
     font-family: 'Inter', sans-serif;
+    font-weight: bold;
 }
 
 p {

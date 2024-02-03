@@ -9,21 +9,30 @@
     <body>
         <div class="centerlogo">
             <h1> hangogo </h1>
+            <img src = "/Website/Logos/hangogo.png" alt = "Hangogo">
         </div>
-        
-        <div class = "container"> 
-            
-            <form action="/action_page.php">
-                <h2> sign in </h2>
-                <p> email </p>
-                <input type="text" id="email" name="email"><br>
-                <p> password </p>
-                <input type="password" id="pwd" name="pwd">
-                <br>
-                <br>
-                <input type="submit" class="button1" value="sign in">
-            </form>
-        </div>
+        <section id = signin> 
+            <div class = "container"> 
+                <form action="/action_page.php">
+                    <h2> sign in </h2>
+                    <label for="email"><b>email</b></label><br>
+                    <input type="text" placeholder="enter email" id="email" name="email" required>
+                    <br><br>
+                    <label for="psw"><b>password</b></label><br>
+                    <input type="password" placeholder="enter password" id="pwd" name="pwd" required>
+                    <br><br>
+                    <input type="submit" class="button1" value="sign in">
+                </form>
+            </div>
+            <div class="container">
+                <span class="psw"> <a href="#"> forgot password?</a></span>
+                <span class="signup"> <a href="#"> signup</a></span>
+              </div>
+        </section>
+
+        <script>
+            // here will be the validation script
+        </script>
     </body>
 
 </html>

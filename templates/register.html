@@ -5,10 +5,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Your Account</title>
+    <title>register account</title>
 </head>
 <body>
-    <h1>Create Your Account</h1>
+    <h1>register account</h1>
+    <p>let's be friends</p>
     {% if error %}
         <p style="color: red;">{{ error }}</p>
     {% endif %}
@@ -16,13 +17,13 @@
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
         <br>
-        <label for="email">Email:</label>
+        <label for="email">email</label>
         <input type="email" id="email" name="email" required>
         <br>
-        <label for="password">Password:</label>
+        <label for="password">password</label>
         <input type="password" id="password" name="password" required>
         <br>
-        <label for="confirm_password">Confirm Password:</label>
+        <label for="confirm_password">re-enter password:</label>
         <input type="password" id="confirm_password" name="confirm_password" required>
         <br>
         <input type="submit" value="Continue">

@@ -62,10 +62,8 @@ body p {
     width: 33vw;
 }
 
-.btn-primary.sign-up {
+.btn.sign-up {
     background-color: #5EBA47;
-    border: none;
-    border-radius: 5px;
     color: white;
     text-align: center;
     width: 100%;

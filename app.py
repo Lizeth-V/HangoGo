@@ -5,10 +5,6 @@ from register import register_user
 
 app = Flask(__name__)
 
-@app.route("/")
-def index():
-    return render_template("index.html")
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -19,7 +15,7 @@ def register():
 
         registration_error = register_user(username, email, password, confirm_password)
 
-        if registration_error:
+        if registration_error is not None:
             print("Registration error:", registration_error)
             print("Form values:", username, email, password, confirm_password)
             return render_template("register.html", error=registration_error)
@@ -28,6 +24,10 @@ def register():
         return redirect(url_for("index"))
 
     return render_template("register.html")
+
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

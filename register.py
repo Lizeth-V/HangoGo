@@ -64,4 +64,4 @@ def register_user(username, email, password, confirm_password):
     }
     collection.insert_one(user_data)
 
-    return render_template("index.html")
+    return None

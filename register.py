@@ -4,20 +4,10 @@ import re
 import bcrypt
 from flask import Flask, render_template, request, redirect, url_for
 from pymongo import MongoClient
+from db import users_collection
 
 app = Flask(__name__)
-connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
-dbname = "Hango"
-collection_name = "User Data"
 
-# Establish a connection to MongoDB Atlas
-client = MongoClient(connection_string)
-
-# Accessing the database
-db = client[dbname]
-
-# Accessing the collection
-collection = db[collection_name]
 
 def hash_password(password):
     # Hash the password
@@ -40,7 +30,7 @@ def register_user(username, email, password, confirm_password):
     hashed_password = hash_password(password)
 
     # Check if email is already taken
-    if collection.find_one({"email": email}):
+    if users_collection.find_one({"email": email}):
         return "Email is already taken"
 
     # Check if passwords match
@@ -62,6 +52,6 @@ def register_user(username, email, password, confirm_password):
         #     "country": country
         #}
     }
-    collection.insert_one(user_data)
+    users_collection.insert_one(user_data)
 
     return None

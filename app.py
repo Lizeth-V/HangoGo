@@ -25,6 +25,17 @@ app = Flask(__name__)
 def home():
     return render_template('home.html')
 
+@app.route('/main')
+def main():
+    user = session.get('user')
+
+    if user:
+        return f'Welcome to Hangogo!'
+    else:
+        flash('You need to login first.', 'error')
+        return redirect(url_for('login'))
+    # return render_template('main.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -36,7 +47,7 @@ def login():
         if user: 
             session['user'] = user
             flash('Login Successful! :)', 'success')
-            # return redirect(url_for) -- redirect to main page aka where chatbox is 
+            return redirect(url_for('main')) 
         else:
             flash('Invalid username or password. Try again..')
     return render_template('login.html')

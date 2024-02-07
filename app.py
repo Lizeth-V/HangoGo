@@ -1,9 +1,10 @@
 
 import re
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from pymongo import MongoClient
 
 app = Flask(__name__)
+app.secret_key = "testing"
 connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
 dbname = "Hango"
 collection_name = "User Data"

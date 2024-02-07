@@ -13,7 +13,7 @@
         </div>
         <section id = signin> 
             <div class = "container"> 
-                <form action="/action_page.php">
+                <form method="POST" action = "{{ url_for('login') }}">
                     <h2> sign in </h2>
                     <label for="email"><b>email</b></label><br>
                     <input type="text" placeholder="enter email" id="email" name="email" required>

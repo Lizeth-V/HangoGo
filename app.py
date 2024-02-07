@@ -28,7 +28,7 @@ def home():
 def login():
     if request.method == 'POST':
         username = request.form.get('email')
-        password = request.form.get('password')
+        password = request.form.get('pwd')
 
         user = collection.find_one({'username': username, 'password': password})
 

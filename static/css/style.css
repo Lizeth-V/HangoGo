@@ -70,6 +70,26 @@ body p {
     padding: 10px;
 }
 
+/* create-account styles */        
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    margin-left: 10px;
+
+}
+
+.row label {
+    margin-right: 10px;
+}
+
+.row input {
+    margin-right: 10px;
+    text-align: center;
+}
+
+
 @font-face {
     font-family: 'Roboto';
     font-style: normal;

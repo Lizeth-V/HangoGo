@@ -3,7 +3,7 @@
 import re
 import bcrypt
 from flask import Flask, render_template, request, redirect, url_for
-from pymongo import MongoClient
+# from pymongo import MongoClient
 from db import users_collection
 
 app = Flask(__name__)

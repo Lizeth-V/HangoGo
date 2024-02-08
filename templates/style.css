@@ -25,7 +25,9 @@ label{
 form {
     width: 50%;
 }
-
+#logo{
+    float: left;
+}
 .centerlogo{
     display: flex;
     justify-content: center;
@@ -60,7 +62,7 @@ form {
     padding-top: 50px;
     font-family: 'Inter', sans-serif;
 }
-.accountInfo{
+.gatherInterests{
     display: flex;
     justify-content: center;
     align-items: center;

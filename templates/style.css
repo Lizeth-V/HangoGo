@@ -1,4 +1,4 @@
-input[type=text], input[type=password] {
+input[type=text], input[type = date],input[type=password] {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -6,9 +6,12 @@ input[type=text], input[type=password] {
     border: 1px solid rgb(255, 255, 255);
     border-radius: 5px;
     box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    
 }
 
 input[type=text]::placeholder,
+input[type=date]::placeholder,
 input[type=password]::placeholder {
     color: rgb(232, 232, 232);
 }
@@ -39,13 +42,28 @@ form {
     text-align: center;
     width: 100%;
     padding: 10px;
-
+}
+.button2{ 
+    /* Sign in Button */
+    background-color: #5EBA47;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
 }
 .container{
     display: flex;
     justify-content: center;
     align-items: center;
     padding-top: 50px;
+    font-family: 'Inter', sans-serif;
+}
+.accountInfo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-family: 'Inter', sans-serif;
 }
 .psw a {
@@ -107,4 +125,10 @@ h2 {
 p {
     color: black;
     font-family: 'Inter', sans-serif;
+  }
+
+p1 {
+    color: black;
+    font-family: 'Inter', sans-serif;
+    font-weight: lighter;
   }

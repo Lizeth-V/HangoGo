@@ -51,3 +51,7 @@ def login():
         else:
             flash('Invalid username or password. Try again..')
     return render_template('login.html')
+
+@app.route('/finishaccount')
+def account():
+    return render_template('account.html')

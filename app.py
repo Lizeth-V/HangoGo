@@ -54,4 +54,4 @@ def login():
 
 @app.route('/finishaccount')
 def account():
-    return render_template('account.html')
+    return render_template('')

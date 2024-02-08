@@ -19,7 +19,7 @@ input[type=password]::placeholder {
 label{
     font-family: 'Inter', sans-serif;
     font-size: medium;
-    font-weight: lighter;
+    font-weight: light;
 }
 
 form {

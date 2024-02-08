@@ -1,10 +1,14 @@
 # app.py
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from register import register_user
 from create_account import user_create_account, calculate_age
+from db import users_collection
 
 app = Flask(__name__)
+
+# secret key
+app.secret_key = "supersecrethangogo!!!!"
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -25,6 +29,22 @@ def register():
         return redirect(url_for("index"))
 
     return render_template("register.html")
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user = users_collection.find_one({'username': username, 'password': password})
+
+        if user: 
+            session['user'] = user
+            print('Login Successful! :)', 'success')
+            return redirect(url_for('index')) 
+        else:
+            print('Invalid username or password. Try again..')
+    return render_template('login.html')
 
 @app.route("/create-account", methods=["GET", "POST"])
 def create_account():

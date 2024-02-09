@@ -125,6 +125,47 @@ body p {
     text-align: center;
 }
 
+/* Login/Signin Buttons */
+.button1{ 
+    /* Sign in Button */
+    background-color: #5EBA47;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+}
+.button2{ 
+    /* Sign in Button */
+    background-color: #5EBA47;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+}
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px;
+    font-family: 'Inter', sans-serif;
+}
+.psw a {
+    font-family: 'Inter', sans-serif;
+    margin-right: auto;
+    color: grey;
+}
+.signup a{
+    font-family: 'Inter', sans-serif;
+    margin-left: auto;
+    color: #5EBA47;
+}
+
+/* Intrest Form */
+
 
 @font-face {
     font-family: 'Roboto';

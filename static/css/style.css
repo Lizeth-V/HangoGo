@@ -6,6 +6,42 @@ body {
     background-image: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(93,185,70,1) 0%, rgba(242,197,130,1) 37%);
   }
 
+html{
+    height: 100%;
+}
+input[type=text], input[type = date],input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid rgb(255, 255, 255);
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    
+}
+
+input[type=text]::placeholder,
+input[type=date]::placeholder,
+input[type=password]::placeholder {
+    color: rgb(232, 232, 232);
+}
+
+
+header {
+    padding: 50px; 
+}
+
+label{
+    font-family: 'Inter', sans-serif;
+    font-size: medium;
+    font-weight: light;
+}
+
+form {
+    width: 50%;
+}
+
 .center-form {
     display: flex;
     align-items: center;
@@ -89,6 +125,52 @@ body p {
     text-align: center;
 }
 
+/* Login/Signin Buttons */
+.button1{ 
+    /* Sign in Button */
+    background-color: #5EBA47;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+}
+.button2{ 
+    /* Sign in Button */
+    background-color: #5EBA47;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+}
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px;
+    font-family: 'Inter', sans-serif;
+}
+.psw a {
+    font-family: 'Inter', sans-serif;
+    margin-right: auto;
+    color: grey;
+}
+.signup a{
+    font-family: 'Inter', sans-serif;
+    margin-left: auto;
+    color: #5EBA47;
+}
+
+/* Intrest Form */
+.gatherInterests{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+}
 
 @font-face {
     font-family: 'Roboto';
@@ -101,3 +183,46 @@ body p {
     font-style: normal;
     src: url('https://fonts.googleapis.com/css?family=Inter');
 }
+
+/* logo? */
+#logo{
+    float: left;
+}
+#logo img {
+    width: 150px;
+    height: auto; 
+  }
+.centerlogo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 70px;
+}
+
+/* Text Formatting */
+h1 {
+    /* position: : */
+    color:  white !important;
+    text-shadow: 2px 2px 5px grey;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 150%;
+    /* font-style: */
+  }
+
+h2 {
+    color: black;
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+}
+
+p {
+    color: black;
+    font-family: 'Inter', sans-serif;
+  }
+
+p1 {
+    color: black;
+    font-family: 'Inter', sans-serif;
+    font-weight: lighter;
+  }

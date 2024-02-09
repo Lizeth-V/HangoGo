@@ -1,7 +1,9 @@
 # app.py
-
+from bson import ObjectId
+import json
+import bcrypt
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from register import register_user
+from register import register_user, hash_password
 from create_account import user_create_account, calculate_age
 from db import users_collection
 
@@ -22,6 +24,7 @@ def register():
 
         if registration_error is not None:
             print("Registration error:", registration_error)
+            # comment out below the one line of code below before presentation and launch
             print("Form values:", username, email, password, confirm_password)
             return render_template("register.html", error=registration_error)
 
@@ -30,21 +33,36 @@ def register():
 
     return render_template("register.html")
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods= ['GET','POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
 
-        user = users_collection.find_one({'username': username, 'password': password})
+        user = users_collection.find_one({'username': username})
 
-        if user: 
-            session['user'] = user
-            print('Login Successful! :)', 'success')
-            return redirect(url_for('index')) 
+        if user:
+            # Get the hashed password from the user object
+            hashed_password = user['password']
+
+            # check if the password the user entered matches the hashed password
+            if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
+                # password is matched
+                # convert ObjectId to string for JSON serialization
+                user['_id'] = str(user['_id'])
+                session['user'] = user
+                print("Login Success")
+                return redirect(url_for("index"))
+            else:
+                # password did not match
+                print("Invalid username or password")
+
         else:
-            print('Invalid username or password. Try again..')
-    return render_template('login.html')
+            # User not found
+            print("User not found.")
+    return render_template("login.html")
+
+
 
 @app.route("/create-account", methods=["GET", "POST"])
 def create_account():

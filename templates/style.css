@@ -16,6 +16,15 @@ input[type=password]::placeholder {
     color: rgb(232, 232, 232);
 }
 
+body {
+    margin: 0;
+    padding: 0; 
+}
+
+header {
+    padding: 50px; 
+}
+
 label{
     font-family: 'Inter', sans-serif;
     font-size: medium;
@@ -28,6 +37,10 @@ form {
 #logo{
     float: left;
 }
+#logo img {
+    width: 150px;
+    height: auto; 
+  }
 .centerlogo{
     display: flex;
     justify-content: center;

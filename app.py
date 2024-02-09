@@ -76,14 +76,20 @@ def create_account(username):
 
             # Check if the user is at least 13 years old
             age = calculate_age(birth_year, birth_month, birth_day)
-            # if age < 13:
-            #     return render_template("create-account.html", error = "You must be at least 13 years old")
+            if age < 13:
+                return render_template("create-account.html", error = "You must be at least 13 years old")
             
             create_account_error = user_create_account(first_name, last_name, birth_month, birth_day, birth_year, age)
             if create_account_error is not None:
                 print("Create account error:", create_account_error)
                 print("Form values:", first_name, last_name, birth_month, birth_day, birth_year, age)
                 return render_template("create-account.html", error=create_account_error)
+
+            # if "first_name" not in request.form or "last_name" not in request.form or \
+            #     "birth_month" not in request.form or "birth_day" not in request.form or \
+            #     "birth_year" not in request.form:
+            #         return render_template("create-account.html", error="Incomplete form data")
+
 
             return redirect(url_for("index"))
         return render_template("create-account.html", username=username)

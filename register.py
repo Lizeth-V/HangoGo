@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 def hash_password(password):
     # Hash the password
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
 
 def is_email_valid(email):
     # Regular expression for a simple email validation
@@ -19,6 +19,11 @@ def is_email_valid(email):
     return re.match(email_regex, email)
 
 def register_user(username, email, password, confirm_password):
+
+    # Check if password is provided
+    if password is None:
+        return "Password is required"
+    
     # Hash the password before storing it in the database
     hashed_password = hash_password(password)
 

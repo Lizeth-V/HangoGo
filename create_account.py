@@ -18,6 +18,7 @@ def user_create_account(first_name, last_name, birth_month, birth_day, birth_yea
         age = calculate_age(birth_year, birth_month, birth_day)
         if age < 13:
             return render_template("create-account.html", error = "You must be at least 13 years old")
+    
         
         # Inserting user data into the collection
         user_data = {

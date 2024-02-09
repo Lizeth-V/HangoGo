@@ -184,6 +184,21 @@ body p {
     src: url('https://fonts.googleapis.com/css?family=Inter');
 }
 
+/* logo? */
+#logo{
+    float: left;
+}
+#logo img {
+    width: 150px;
+    height: auto; 
+  }
+.centerlogo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 70px;
+}
+
 /* Text Formatting */
 h1 {
     /* position: : */

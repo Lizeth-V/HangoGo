@@ -27,9 +27,10 @@ def register():
             # comment out below the one line of code below before presentation and launch
             print("Form values:", username, email, password, confirm_password)
             return render_template("register.html", error=registration_error)
+        
 
         print("Registration successful. Redirecting to index.")
-        return redirect(url_for("create_account"))
+        return redirect(url_for("create_account", username = username))
 
     return render_template("register.html")
 
@@ -64,8 +65,8 @@ def login():
 
 
 
-@app.route("/create-account", methods=["GET", "POST"])
-def create_account():
+@app.route("/create-account/<username>", methods=["GET", "POST"])
+def create_account(username):
         if request.method == "POST":
             first_name = request.form.get("first_name")
             last_name = request.form.get("last_name")
@@ -85,7 +86,7 @@ def create_account():
                 return render_template("create-account.html", error=create_account_error)
 
             return redirect(url_for("index"))
-        return render_template("create-account.html")
+        return render_template("create-account.html", username=username)
 
 
 @app.route("/")

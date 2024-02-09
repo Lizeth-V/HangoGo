@@ -6,6 +6,10 @@ body {
     background-image: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(93,185,70,1) 0%, rgba(242,197,130,1) 37%);
   }
 
+html{
+    height: 100%;
+}
+
 .center-form {
     display: flex;
     align-items: center;
@@ -101,3 +105,31 @@ body p {
     font-style: normal;
     src: url('https://fonts.googleapis.com/css?family=Inter');
 }
+
+/* Text Formatting */
+h1 {
+    /* position: : */
+    color:  white !important;
+    text-shadow: 2px 2px 5px grey;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 150%;
+    /* font-style: */
+  }
+
+h2 {
+    color: black;
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+}
+
+p {
+    color: black;
+    font-family: 'Inter', sans-serif;
+  }
+
+p1 {
+    color: black;
+    font-family: 'Inter', sans-serif;
+    font-weight: lighter;
+  }

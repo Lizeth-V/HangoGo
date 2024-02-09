@@ -9,6 +9,38 @@ body {
 html{
     height: 100%;
 }
+input[type=text], input[type = date],input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid rgb(255, 255, 255);
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    
+}
+
+input[type=text]::placeholder,
+input[type=date]::placeholder,
+input[type=password]::placeholder {
+    color: rgb(232, 232, 232);
+}
+
+
+header {
+    padding: 50px; 
+}
+
+label{
+    font-family: 'Inter', sans-serif;
+    font-size: medium;
+    font-weight: light;
+}
+
+form {
+    width: 50%;
+}
 
 .center-form {
     display: flex;

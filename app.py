@@ -29,28 +29,28 @@ def register():
             return render_template("register.html", error=registration_error)
 
         print("Registration successful. Redirecting to index.")
-        return redirect(url_for("index"))
+        return redirect(url_for("create_account"))
 
     return render_template("register.html")
 
-@app.route('/login', methods= ['GET','POST'])
+@app.route("/login", methods= ["GET","POST"])
 def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
 
-        user = users_collection.find_one({'username': username})
+        user = users_collection.find_one({"username": username})
 
         if user:
             # Get the hashed password from the user object
-            hashed_password = user['password']
+            hashed_password = user["password"]
 
             # check if the password the user entered matches the hashed password
-            if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
+            if bcrypt.checkpw(password.encode("utf-8"), hashed_password):
                 # password is matched
                 # convert ObjectId to string for JSON serialization
-                user['_id'] = str(user['_id'])
-                session['user'] = user
+                user["_id"] = str(user["_id"])
+                session["user"] = user
                 print("Login Success")
                 return redirect(url_for("index"))
             else:

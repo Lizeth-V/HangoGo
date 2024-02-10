@@ -6,13 +6,30 @@
   }
 
 .interestBox{
-    float: center;
-    width: 50%;
-    
+    display: flex;
+    flex-wrap: wrap;
 }
-/* not sure if this bottom one is needed */
+
+.interestBox .option_item{
+  display: block;
+  position: relative;
+  width: 175px;
+  height: 175px;
+  margin: 10px;
+}
+
+.interestBox .option_item .checkbox{
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  opacity: 0;
+}
+
+/* not sure if this bottom one is needed
 .clearfix::after {
     content: "";
     clear: both;
     display: table;
-  }
+  } */
+

@@ -8,19 +8,80 @@ api_key = "AIzaSyDHkwv5g7hUxpT8YS2MfnxJguUc87babIc"
 
 map_client = googlemaps.Client(api_key)
 
-places_to_add = [
-    'Things to do',
-    'Restaurants',
-    'Malls',
-    'Boba',
-    'Cafe'
+food_to_add = [
+    #Food Categories
+    'Food',
+    'Dining',
+    'Bakery',]
+entertainment_to_add = [    
+    #Entertainment Categories
+    'Entertainment',
+    'Arcade']
+nature_rec_to_add = [
+    #Nature/Recreation Categories
+    'Nature',
+    'Hike',
+    'Parks',
+]
+nightlife_to_add = [
+    #Nightlife Categories
+    'Bar',
+    'Club',]
+mus_art_to_add = [ 
+    #Museum/Art Categories
     'Museum',
     'Art',
-    'Arcade',
-    'Study'
-]
+    'Library',]
+drinks_to_add = [    
+    #Drinks Categories
+    'Cafe',
+    'Boba']
 
+places_to_add = {
+    'Food':food_to_add,
+    'Drinks':drinks_to_add,
+    'Museum/Art':mus_art_to_add,
+    'Entertainment':entertainment_to_add,
+    'Nature/Recreation':nature_rec_to_add,
+    'Nightlife':nightlife_to_add
+}
 
+subtypes_mapping ={
+    'bakery':'bakery',
+    'cafe':'cafe',
+    'food':'food',
+    'restaurant':'restaurant',
+    'store':'store',
+    'museum':'None',
+    'art_gallery':'art_gallery',
+    'movie_theater':'movie_theater',
+    'tourist_attraction':'tourist_attraction',
+    'museum':'museum',
+    'park':'park',
+    'book_store':'book_store',
+    'library':'library',
+    'zoo':'zoo',
+    'florist':'florist',
+    'bar':'bar',
+    'night_club':'night_club',
+    'bowling_alley':'bowling_alley',
+    'amusement_park':'amusement_park',
+    'pet_store':'pet_store',
+    'beauty_salon':'beauty_salon',
+    'clothing_store':'clothing_store',
+    'spa':'spa',
+    'meal_takeaway':'meal_takeaway',
+    'meal_delivery':'meal_delivery',
+
+}
+
+removal_mapping ={
+    'finance',
+    'health',
+    'lodging',
+    'school',
+    'parking',
+}
 
 #We are just inflating the database with points of interest around the area.
 #This is easily changed but we locate points around Long Beach 
@@ -53,53 +114,78 @@ def mi_2_meters(miles):
 #This is measured in meters
 radius = mi_2_meters(10)  #in meters adjust as needed
 
-def get_results_from_api(location, radius, keyword):
-    # Create a list to store result types
-    results_list = [] 
-    next_page_token = None
+def get_results_from_api(location, radius, place_type):
+    for keyword in places_to_add[place_type]:
+        # Create a list to store result types
+        results_list = [] 
+        next_page_token = None
 
-    # Exclude certain types of places from the results
-    # Hospitals and businesses that are not designed for hanging out
-    exclude_keywords = ['lodging', 'doctor', 'insurance', 'local_government_office', 'car_dealer', 'car_repair', 'hospital']
-
-    # Include keywords for boba shops and cafes
-    include_keywords = ['boba', 'cafe']
-
-    # Call API to store results by passing in parameters
-    response = map_client.places_nearby(
-        location=location, 
-        radius=radius,
-        keyword=keyword,
-    ) 
-
-    
-    # Append results to the results list
-    results_list.extend(response.get('results'))
-    next_page_token = response.get('next_page_token')
-
-    # The following allows us to continuously get results.
-    # It works like a Google search with results per pages.
-    # Thus, we have to sequentially go through pages and continue
-    # To store results
-    while next_page_token:
-        #Have to sleep for api requests
-        time.sleep(2)   
-
-        #Just for visuals sake...
-        print('Gathering results...')
-
+        # Call API to store results by passing in parameters
         response = map_client.places_nearby(
             location=location, 
             radius=radius,
-            keyword=keyword,  # Include multiple keywords
-            page_token=next_page_token,
+            keyword=keyword,
         ) 
 
-        # Append results to the results list
-        results_list.extend(response.get('results'))
-        next_page_token = response.get('next_page_token') if 'next_page_token' in response else None  # Update next_page_token for the next iteration
         
-    return results_list    #Create a list to store result types
+        # Append results to the results list adding the main type as a category
+        for item in response.get('results'):
+            if place_type == 'Nightlife': item['Age'] = 'Y'
+            else: item['Age'] = 'N'
+
+
+            tempSubtypes = []
+            for sub_type in item['types']:
+                if sub_type in subtypes_mapping:
+                    tempSubtypes.append(subtypes_mapping[sub_type])
+                elif sub_type in removal_mapping:
+                    continue
+
+            item['sub_types']=tempSubtypes
+            item['main_type']=place_type
+            results_list.append(item)
+
+
+        next_page_token = response.get('next_page_token')
+
+        # The following allows us to continuously get results.
+        # It works like a Google search with results per pages.
+        # Thus, we have to sequentially go through pages and continue
+        # To store results
+        while next_page_token:
+            #Have to sleep for api requests
+            time.sleep(2)   
+
+            #Just for visuals sake...
+            print('Gathering results...')
+
+            response = map_client.places_nearby(
+                location=location, 
+                radius=radius,
+                keyword=keyword,  # Include multiple keywords
+                page_token=next_page_token,
+            ) 
+
+            # Append results to the results list adding the main type as a category
+        for item in response.get('results'):
+            if place_type == 'Nightlife': item['Age'] = 'Y'
+            else: item['Age'] = 'N'
+
+
+            tempSubtypes = []
+            for sub_type in item['types']:
+                if sub_type in subtypes_mapping:
+                    tempSubtypes.append(subtypes_mapping[sub_type])
+                elif sub_type in removal_mapping:
+                    continue
+
+            item['sub_types']=tempSubtypes
+            item['main_type']=place_type
+            results_list.append(item)
+
+            next_page_token = response.get('next_page_token') if 'next_page_token' in response else None  # Update next_page_token for the next iteration
+            
+        return results_list    #Create a list to store result types
    
 ################################################################
 
@@ -107,7 +193,7 @@ def get_results_from_api(location, radius, keyword):
 places_list = []
 for types in places_to_add:
     for location in locations:
-        places_list = places_list + get_results_from_api(location=location, radius=radius, keyword = types)
+        places_list = places_list + get_results_from_api(location=location, radius=radius, place_type=types)
 
 ################################################################
 
@@ -122,7 +208,7 @@ places_df.rename(columns= {'vicinity':'address'})
 
 #Drop irrelevant or non-uniform data
 columns_to_drop = ['icon','icon_mask_base_uri','business_status','icon_background_color',
-                   'opening_hours', 'scope', 'plus_code','place_id','geometry'] 
+                   'opening_hours', 'scope', 'plus_code','place_id','geometry','permanently_closed'] 
 
 for column in columns_to_drop:
     places_df = places_df.drop(column, axis=1)
@@ -136,14 +222,17 @@ places_df.to_excel(excel_filename, index=False)
 print(f"Data has been saved to {excel_filename}")
 
 
-#For inserting into database
+#For inserting into database, use names specified by the database schema
 data_to_insert = {
     "name": '',
-    "latitude":'',
-    "longitude": '',
+    "lat":'',
+    "lon": '',
     "address": '',
-    "categories": '',
+    "main_type": '',
+    "sub_types": '',
     "rating": '',
     "rating_amount": '',
-    "photolink": '',
+    "age": '',
+    #"from": 'google', #might be useful to know where its from, no useability other than knowing.
+    "weblink": '',
 }

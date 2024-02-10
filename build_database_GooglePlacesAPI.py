@@ -4,7 +4,7 @@ import pandas as pd
 import time
 
 
-api_key = "AIzaSyDHkwv5g7hUxpT8YS2MfnxJguUc87babIc"
+api_key = ""
 #base_url = "https://places.googleapis.com/v1/places:searchNearby"
 
 map_client = googlemaps.Client(api_key)

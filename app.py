@@ -3,6 +3,13 @@ from bson import ObjectId
 import json
 import bcrypt
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask_mail import Mail, Message
+import os
+from dotenv import load_dotenv
+import random
+import string
+from datetime import datetime, timedelta
+
 from register import register_user, hash_password
 from create_account import user_create_account, calculate_age
 from db import users_collection
@@ -98,6 +105,28 @@ def create_account(username):
 @app.route("/")
 def index():
     return render_template("index.html")
+
+# Sending Email Verifications
+load_dotenv()
+#this is a SMTP Server used for gmail
+app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+ 
+mail = Mail(app)
+
+def verify():
+    pass
+
+def send_verification(email,token):
+    # sender =['letshangogo@gmail.com']
+    msg = Message('Verify Your Email - Hangogo',  recipients=[email])
+    verification_link = url_for('verify', token=token, _external=True)
+    msg.body = f'Hi! I cant wait to be friends! Click the following link to verify your email: {verification_link}'
+    mail.send(msg)
+
+    return "Verification email sent"
 
 if __name__ == "__main__":
     app.run(debug=True)

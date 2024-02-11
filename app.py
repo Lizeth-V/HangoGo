@@ -18,42 +18,80 @@ def calculate_age(birth_year, birth_month, birth_day):
     age = today.year - birth_year - ((today.month, today.day) < (birth_month, birth_day))
     return age
 
+
 @app.route("/create_account", methods=["GET", "POST"])
 def create_account():
-        
-        # Retrieve the user's _id from the session
-        user_id = session.get("_id")
-        if user_id:
-            if request.method == "POST":
-                first_name = request.form.get("first_name")
-                last_name = request.form.get("last_name")
-                birth_month = int(request.form.get("birth_month"))
-                birth_day = int(request.form.get("birth_day"))
-                birth_year = int(request.form.get("birth_year"))
+    user_id = session.get("_id")
+    if request.method == "POST":
+        first_name = request.form.get("first_name")
+        last_name = request.form.get("last_name")
+        birth_month = int(request.form.get("birth_month"))
+        birth_day = int(request.form.get("birth_day"))
+        birth_year = int(request.form.get("birth_year"))
 
-                # Check if the user is at least 13 years old
-                age = calculate_age(birth_year, birth_month, birth_day)
-                if age < 13:
-                    return render_template("create_account.html", error = "You must be at least 13 years old")
-
-                users_collection.update_one({"_id": ObjectId(user_id)}, 
-                                            {"$set": 
-                                                {  
-                                                    "first_name": first_name,
-                                                    "last_name": last_name,
-                                                    "birth_month": birth_month,
-                                                    "birth_day": birth_day,
-                                                    "birth_year": birth_year,
-                                                    "age": age
-                                                }
-                                            })
-                print("updated create account page")
-                return redirect(url_for("index"))
-            else:
-                return render_template("create_account.html")
-        
+        # Check if the user is at least 13 years old
+        age = calculate_age(birth_year, birth_month, birth_day)
+        if age < 13:
+            return render_template("create_account.html", error="You must be at least 13 years old")
         else:
-            return "User not found"
+            # Update user information in the database
+            users_collection.update_one({"_id": ObjectId(user_id)}, 
+                                        {"$set": 
+                                            {  
+                                                "first_name": first_name,
+                                                "last_name": last_name,
+                                                "birth_month": birth_month,
+                                                "birth_day": birth_day,
+                                                "birth_year": birth_year,
+                                                "age": age
+                                            }
+                                        })
+            print("Form Data:", request.form) 
+            print("Updated create account page", first_name, last_name, birth_month, birth_day, birth_year)
+            return redirect(url_for("index"))
+    else:
+        return render_template("create_account.html")
+
+
+# @app.route("/create_account", methods=["GET", "POST"])
+# def create_account():
+        
+#         # Retrieve the user's _id from the session
+#         user_id = session.get("_id")
+#         print(user_id)
+#         # if user_id:
+#         if request.method == "POST":
+#             first_name = request.form.get("first_name")
+#             last_name = request.form.get("last_name")
+#             birth_month = int(request.form.get("birth_month"))
+#             birth_day = int(request.form.get("birth_day"))
+#             birth_year = int(request.form.get("birth_year"))
+
+#             print("updated create account page", {first_name}, {last_name}, {birth_month}, {birth_day}, {birth_year})
+#             # Check if the user is at least 13 years old
+#             age = calculate_age(birth_year, birth_month, birth_day)
+#             if age < 13:
+#                 return render_template("create_account.html", error = "You must be at least 13 years old")
+#             else:
+#                 users_collection.update_one({"_id": ObjectId(user_id)}, 
+#                                             {"$set": 
+#                                                 {  
+#                                                     "first_name": first_name,
+#                                                     "last_name": last_name,
+#                                                     "birth_month": birth_month,
+#                                                     "birth_day": birth_day,
+#                                                     "birth_year": birth_year,
+#                                                     "age": age
+#                                                 }
+#                                             })
+#                 print("Form Data:", request.form) 
+#                 print("updated create account page", {first_name}, {last_name}, {birth_month}, {birth_day}, {birth_year})
+#                 return redirect(url_for("index"))
+#         else:
+#             # Render the create account page for GET requests
+#             return render_template("create_account.html")   
+#         # else:
+#         #     return "User not found"
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -63,7 +101,7 @@ def register():
         password = request.form.get("password")
         confirm_password = request.form.get("confirm_password")
 
-        registration_error = register_user(username, email, password, confirm_password)
+        registration_error = register_user(username, email, password, confirm_password, users_collection)
 
         if registration_error:
             # user = users_collection.find_one({"username": username})
@@ -93,8 +131,12 @@ def login():
             # Get the hashed password from the user object
             hashed_password = user["password"]
 
+            # Assuming `hashed_password` is currently a string
+            # Convert it to bytes using `encode()`
+            hashed_password_bytes = hashed_password.encode("utf-8")
+
             # check if the password the user entered matches the hashed password
-            if bcrypt.checkpw(password.encode("utf-8"), hashed_password):
+            if bcrypt.checkpw(password.encode("utf-8"), hashed_password_bytes):
                 # password is matched
                 # convert ObjectId to string for JSON serialization
                 user["_id"] = str(user["_id"])

@@ -71,7 +71,6 @@ def login():
     return render_template("login.html")
 
 
-
 @app.route("/create-account/<username>", methods=["GET", "POST"])
 def create_account(username):
         if request.method == "POST":
@@ -106,18 +105,11 @@ def create_account(username):
 def index():
     return render_template("index.html")
 
-# Sending Email Verifications
-load_dotenv()
-#this is a SMTP Server used for gmail
-app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
-app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
- 
-mail = Mail(app)
+# Sending Email Verifications (Lizeth)
 
+@app.route("/verify/<token>")
 def verify():
-    pass
+    user = users_collection
 
 def send_verification(email,token):
     # sender =['letshangogo@gmail.com']
@@ -127,6 +119,15 @@ def send_verification(email,token):
     mail.send(msg)
 
     return "Verification email sent"
+
+load_dotenv()
+#this is a SMTP Server used for gmail
+app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+ 
+mail = Mail(app)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -4,7 +4,7 @@ import pandas as pd
 import time
 
 
-api_key = ""
+api_key = "AIzaSyDHkwv5g7hUxpT8YS2MfnxJguUc87babIc"
 #base_url = "https://places.googleapis.com/v1/places:searchNearby"
 
 map_client = googlemaps.Client(api_key)
@@ -90,21 +90,27 @@ removal_mapping ={
 #Place API limits us to at most 60 points of interest per request thus we
 #will search multiple coords in the area.
 locations = [
-    # Los Angeles County
-    "34.0522, -118.2437",  # Los Angeles Downtown
-    "34.0227, -118.4956",  # Santa Monica
-    "34.1478, -118.1445",  # Pasadena
-    "33.7701, -118.1937",  # Long Beach
-    "34.0900, -118.4065",  # Beverly Hills
-    "34.1425, -118.2551",  # Glendale
+    "34.0529, -118.2669", # Hollywood
+    "34.0836, -118.3447", # West Hollywood
+    "34.1899, -118.2837", # North Hollywood
+    "34.0619, -118.3074", # Koreatown
+    "33.9874, -118.4727", # Culver City
+    "34.0696, -118.4054", # Westwood
+    "34.0689, -118.4052", # Century City
+    "33.9760, -118.3904", # Marina del Rey
+    "34.2219, -118.5360", # Calabasas
+    "34.2729, -118.5086", # Woodland Hills
 
-    # Orange County
-    "33.6846, -117.8265",  # Irvine
-    "33.8366, -117.9143",  # Anaheim
-    "33.6603, -117.9992",  # Huntington Beach
-    "33.6189, -117.9289",  # Newport Beach
-    "33.5427, -117.7854",  # Laguna Beach
-    "33.6412, -117.9187",  # Costa Mesa
+    "33.6938, -117.8182", # Tustin
+    "33.7198, -117.9974", # Fountain Valley
+    "33.7255, -117.8387", # Orange
+    "33.6405, -117.8443", # Mission Viejo
+    "33.6846, -117.8265", # Irvine (again)
+    "33.6705, -117.8890", # Santa Ana
+    "33.6064, -117.6724", # San Clemente
+    "33.8346, -117.9135", # Fullerton
+    "33.7683, -117.2530", # Riverside
+    "33.4970, -117.6605"  # Dana Point
 ]
 
 
@@ -113,7 +119,7 @@ def mi_2_meters(miles):
     return miles*1609
 
 #This is measured in meters
-radius = mi_2_meters(10)  #in meters adjust as needed
+radius = mi_2_meters(3)  #in meters adjust as needed
 
 
 def get_results_from_api(location, radius, place_type):

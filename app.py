@@ -41,8 +41,8 @@ def register():
         # sending email verifcation 
         send_verification(email, username, verification_token)
 
-        print("Registration successful. Redirecting to verify email.")
-        return redirect(url_for("verify", username=username, token=verification_token))
+        print("Registration successful. Redirecting to verify email page.")
+        return render_template("verify.html")
 
     return render_template("register.html")
 

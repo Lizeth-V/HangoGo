@@ -5,6 +5,8 @@ import bcrypt
 from flask import Flask, render_template, request, redirect, url_for
 # from pymongo import MongoClient
 from db import users_collection
+from datetime import datetime, timedelta
+
 
 app = Flask(__name__)
 
@@ -18,7 +20,7 @@ def is_email_valid(email):
     email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
     return re.match(email_regex, email)
 
-def register_user(username, email, password, confirm_password):
+def register_user(username, email, password, confirm_password, verification_token):
 
     # Check if password is provided
     if password is None:
@@ -48,6 +50,9 @@ def register_user(username, email, password, confirm_password):
         # "full_name": full_name,
         "email": email,
         "password": hashed_password,
+        "verification_token": verification_token,
+        "verified": False,
+        'token_expiration': datetime.utcnow() + timedelta(hours=24),
         # "age": age,
         # "address": {
         #     "street": street,

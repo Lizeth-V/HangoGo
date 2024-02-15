@@ -27,7 +27,10 @@ def register():
         password = request.form.get("password")
         confirm_password = request.form.get("confirm_password")
 
-        registration_error = register_user(username, email, password, confirm_password)
+        #email verification token generated (Lizeth)
+        verification_token = ''.join(random.choices(string.ascii_letters + string.digits, k=30))
+
+        registration_error = register_user(username, email, password, confirm_password, verification_token)
 
         if registration_error is not None:
             print("Registration error:", registration_error)
@@ -35,6 +38,8 @@ def register():
             print("Form values:", username, email, password, confirm_password)
             return render_template("register.html", error=registration_error)
         
+        # sending email verifcation 
+        send_verification(email, verification_token)
 
         print("Registration successful. Redirecting to index.")
         return redirect(url_for("create_account", username = username))
@@ -108,8 +113,18 @@ def index():
 # Sending Email Verifications (Lizeth)
 
 @app.route("/verify/<token>")
-def verify():
-    user = users_collection
+def verify(token):
+    user = users_collection.find_one({'verification_token': token, 'token_expiration': {'$gt': datetime.utcnow()}})
+
+    if user:
+        # Mark user as verified in the database
+        users_collection.update_one({'_id': user['_id']}, {'$set': {'verified': True}})
+
+        flash('Email verification successful! You can now log in.')
+        return redirect(url_for('login'))
+
+    flash('Invalid or expired verification link.')
+    return redirect(url_for('login'))
 
 def send_verification(email,token):
     # sender =['letshangogo@gmail.com']

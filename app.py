@@ -39,10 +39,10 @@ def register():
             return render_template("register.html", error=registration_error)
         
         # sending email verifcation 
-        send_verification(email, verification_token)
+        send_verification(email, username, verification_token)
 
-        print("Registration successful. Redirecting to index.")
-        return redirect(url_for("create_account", username = username))
+        print("Registration successful. Redirecting to verify email.")
+        return redirect(url_for("verify", username=username, token=verification_token))
 
     return render_template("register.html")
 
@@ -112,35 +112,42 @@ def index():
 
 # Sending Email Verifications (Lizeth)
 
-@app.route("/verify/<token>")
-def verify(token):
-    user = users_collection.find_one({'verification_token': token, 'token_expiration': {'$gt': datetime.utcnow()}})
+@app.route("/verify/<username>/<token>")
+def verify(username, token):
+    print("verify page")
+    user = users_collection.find_one({'username': username,'verification_token': token, 'token_expiration': {'$gt': datetime.utcnow()}})
 
     if user:
         # Mark user as verified in the database
         users_collection.update_one({'_id': user['_id']}, {'$set': {'verified': True}})
 
         flash('Email verification successful! You can now log in.')
-        return redirect(url_for('login'))
+        return redirect(url_for("create_account", username=username))
 
     flash('Invalid or expired verification link.')
-    return redirect(url_for('login'))
+    return render_template("verify.html")
 
-def send_verification(email,token):
+def send_verification(email,username, token):
     # sender =['letshangogo@gmail.com']
-    msg = Message('Verify Your Email - Hangogo',  recipients=[email])
-    verification_link = url_for('verify', token=token, _external=True)
+    msg = Message('Verify Your Email - Hangogo', sender = 'hangogo.verify@gmail.com' ,recipients=[email])
+    verification_link = url_for('verify', username=username,token=token, _external=True)
     msg.body = f'Hi! I cant wait to be friends! Click the following link to verify your email: {verification_link}'
-    mail.send(msg)
+
+    try:
+        mail.send(msg)
+    except Exception as e:
+        flash(f"Failed to send email.")
 
     return "Verification email sent"
 
 load_dotenv()
 #this is a SMTP Server used for gmail
 app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
-app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
  
 mail = Mail(app)
 

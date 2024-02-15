@@ -142,7 +142,7 @@ def login():
                 user["_id"] = str(user["_id"])
                 session["user"] = user
                 print("Login Success")
-                return redirect(url_for("index"))
+                return redirect(url_for("landing_page", username=username))
             else:
                 # password did not match
                 print("Invalid username or password")
@@ -151,6 +151,21 @@ def login():
             # User not found
             print("User not found.")
     return render_template("login.html")
+
+@app.route('/<username>.html')
+def landing_page(username):
+    user = users_collection.find_one({"username": username})
+    if user is None:
+        return "Page not found", 404
+    return render_template("landing_page.html",
+                           username = username,
+                           first_name = user["first_name"],
+                           last_name = user["last_name"],
+                           email = user["email"],
+                           birth_month = user["birth_month"],
+                           birth_day = user["birth_day"],
+                           birth_year = user["birth_year"]
+                           )  
 
 
 

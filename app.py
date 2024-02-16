@@ -39,6 +39,7 @@ def register():
             return render_template("register.html", error=registration_error)
         
         # sending email verifcation 
+        print("Email address: ", email)
         send_verification(email, username, verification_token)
 
         print("Registration successful. Redirecting to verify email page.")
@@ -127,16 +128,16 @@ def verify(username, token):
     flash('Invalid or expired verification link.')
     return render_template("verify.html")
 
-def send_verification(email,username, token):
-    # sender =['letshangogo@gmail.com']
+def send_verification(email, username, token):
     msg = Message('Verify Your Email - Hangogo', sender = 'hangogo.verify@gmail.com' ,recipients=[email])
     verification_link = url_for('verify', username=username,token=token, _external=True)
     msg.body = f'Hi! I cant wait to be friends! Click the following link to verify your email: {verification_link}'
 
     try:
         mail.send(msg)
+        print("Email Sent!")
     except Exception as e:
-        flash(f"Failed to send email.")
+        flash(f"Failed to send email. Error: {str(e)}")
 
     return "Verification email sent"
 

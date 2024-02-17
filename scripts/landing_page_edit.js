@@ -42,6 +42,50 @@ document.getElementById('saveButton').style.display = 'none';
 document.getElementById('cancelButton').style.display = 'none';
 }
 
+// saves users new changes and updates the database
+function saveDetails() {
+// Prepare the data to be sent to the server for updating MongoDB
+const userId = 'replace-with-the-actual-user-id'; // Replace with the actual user ID
+const updatedDetails = {
+    first_name: document.getElementById('first_name').textContent,
+    last_name: document.getElementById('last_name').textContent,
+    email: document.getElementById('email').textContent,
+};
+
+// Makes an AJAX request to update user details in MongoDB
+$.ajax({
+    url: '/update-user',
+    type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({ userId, updatedDetails }),
+    success: function (response) {
+    console.log('User details updated:', response);
+
+    // Update the displayed user details with the updated data
+    document.getElementById('first_name').textContent = response.first_name;
+    document.getElementById('last_name').textContent = response.last_name;
+    document.getElementById('email').textContent = response.email;
+
+    
+    },
+    error: function (error) {
+    console.error('Error updating user details:', error);
+    
+    },
+});
+
+// Reverts back to the original styling when saving details
+var editableElements = document.querySelectorAll('.editable');
+editableElements.forEach(function (element) {
+    element.classList.remove('editing-mode');
+});
+
+// Shows Edit button - hides save and cancel buttons
+document.getElementById('editButton').style.display = 'inline-block';
+document.getElementById('saveButton').style.display = 'none';
+document.getElementById('cancelButton').style.display = 'none';
+}
+
 function createInputField(value, id) {
     var input = document.createElement('input');
     input.type = 'text';

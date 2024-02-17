@@ -2,13 +2,15 @@
 from bson import ObjectId
 import json
 import bcrypt
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_mail import Mail, Message
 import os
 from dotenv import load_dotenv
 import random
 import string
 from datetime import datetime, timedelta
+
+from flask_pymongo import PyMongo
 
 from register import register_user, hash_password
 from create_account import user_create_account, calculate_age
@@ -196,6 +198,25 @@ app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
+
+@app.route('/update-user', methods=['POST'])
+def update_user():
+    try:
+        # Get data from the AJAX request
+        data = request.get_json()
+        user_id = data.get('userId')
+        updated_details = data.get('updatedDetails')
+
+        # Update user details in MongoDB
+        users_collection.update_one({'_id': user_id}, {'$set': updated_details})
+
+        # Return the updated user details as a response
+        updated_user = users_collection.find_one({'_id': user_id})
+        return jsonify(updated_user)
+
+    except Exception as e:
+        print(f"Error updating user details: {e}")
+        return jsonify({'error': 'Internal Server Error'}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -28,6 +28,7 @@ def calculate_age(birth_year, birth_month, birth_day):
 
 @app.route("/create_account/<username>", methods=["GET", "POST"])
 def create_account(username):
+    print("User verified...now in create account page")
     user_id = session.get("_id")
     # username = request.form.get("username")
 
@@ -59,7 +60,7 @@ def create_account(username):
             print("Updated create account page", first_name, last_name, birth_month, birth_day, birth_year)
             return redirect(url_for("index"))
     else:
-        return render_template("create_account.html", username=username)
+        return render_template("create_account.html")
 
 # Register new User (Gloria & Lizeth)
 @app.route("/register", methods=["GET", "POST"])
@@ -169,7 +170,7 @@ def verify(username, token):
         return redirect(url_for("create_account", username=username))
 
     flash('Invalid or expired verification link.')
-    return render_template("verify.html")
+    return redirect(url_for("verify", username=username))
 
 
 def send_verification(email, username, token):

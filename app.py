@@ -81,7 +81,7 @@ def register():
             # print(username, user)
             return render_template("verify.html")
         
-        # sending email verifcation (Lizeth)
+        # sending email verifcation 
         print("Email address: ", email)
         send_verification(email, username, verification_token)
 
@@ -152,10 +152,9 @@ def index():
 
 @app.route("/verify/<username>/<token>")
 def verify(username, token):
-    # After the user register their account with an email or password they get redirected to this verify page that indiactes them to check their email to verify their account 
     print("verify page")
     user = users_collection.find_one({'username': username,'verification_token': token, 'token_expiration': {'$gt': datetime.utcnow()}})
-    # Only if user has already registered
+
     if user:
         # Mark user as verified in the database
         users_collection.update_one({'_id': user['_id']}, {'$set': {'verified': True}})
@@ -166,9 +165,7 @@ def verify(username, token):
     flash('Invalid or expired verification link.')
     return render_template("verify.html")
 
-
 def send_verification(email, username, token):
-    # Sends Verification Email from the Hangogo Verification email. The email contains unique link to verify a users account. 
     msg = Message('Verify Your Email - Hangogo', sender = 'hangogo.verify@gmail.com' ,recipients=[email])
     verification_link = url_for('verify', username=username,token=token, _external=True)
     msg.body = f'Hi! I cant wait to be friends! Click the following link to verify your email: {verification_link}'
@@ -182,7 +179,7 @@ def send_verification(email, username, token):
     return "Verification email sent"
 
 load_dotenv()
-#this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
+#this is a SMTP Server used for gmail
 app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
 app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')

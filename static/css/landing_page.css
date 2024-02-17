@@ -54,9 +54,22 @@ html{
     box-sizing: border-box;
 }
 
-/* .user-edit{
+/* uses the same format as .user-profile p but allows it ot be used by 
+span tag and make it editable (Lizeth) */
+.account-details .editable {
+    display: flex;
+    background-color: #fff;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    padding: 12px 20px;
+    margin: 8px 0;
+    border: 1px solid rgb(255, 255, 255);
+    border-radius: 5px;
+    box-sizing: border-box;
+}
 
-} */
 .user-chatbox {
     display: flex;
     flex-direction: column;

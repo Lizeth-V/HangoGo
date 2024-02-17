@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../scripts/landing_page_edit.js"></script>
     <div class="logo">
         <h1>hangogo</h1>
         <ul>
@@ -19,17 +20,24 @@
         <div class="user-profile">
             <h1>User Profile</h1>
             <img src="../static/icons/hangogo.png" alt="">
-            <label for="first_name">First Name</label>
-            <p>{{first_name}}</p>
-            <label for="last_name">Last Name</label>
-            <p>{{last_name}}</p>
-            <label for="email">Email</label>
-            <p>{{email}}</p>
-            <label for="birthday">Birthday</label>
-            <p>{{birth_month}}/{{birth_day}}/{{birth_year}}</p>
+            <div class="account-details">
+                <label for="first_name">First Name</label>
+                <span id="first_name" class="editable">{{first_name}}</span>
+                <label for="last_name">Last Name</label>
+                <span id="last_name" class="editable">{{last_name}}</span>
+                <label for="email">Email</label>
+                <span id="email" class="editable">{{email}}</span>
+                <label for="birthday">Birthday</label>
+                <span id="birthday" class="editable">{{birth_month}}/{{birth_day}}/{{birth_year}}</span>
+            </div>
             <!-- Adding the edit functionality (Lizeth) -->
 
             <button id="editButton" onclick="enableEditMode()">Edit Details</button>
+
+            <!-- Cancel and Save Button for when enabeling editing mode -->
+            <button id="cancelButton" onclick="cancelEditMode()" style="display: none;">Cancel</button>
+
+            <button id="saveButton" onclick="saveDetails()" style="display: none;">Save Details</button>
 
         </div>
         <div class="user-chatbox">
@@ -44,31 +52,51 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
     
     <!-- Editing mode (Lizeth) -->
+    <script src="../scripts/landing_page_edit.js"></script>
     <script>
         function enableEditMode() {
-            // Get the elements to be edited
+            // elements being edited - birthday is not allowed to be edited 
             var firstName = document.getElementById('first_name');
             var lastName = document.getElementById('last_name');
             var email = document.getElementById('email');
 
-            // Create input fields for editing
+            // create input fields for editing
             var inputFirstName = createInputField(firstName.innerText, 'first_name');
             var inputLastName = createInputField(lastName.innerText, 'last_name');
             var inputEmail = createInputField(email.innerText, 'email');
 
             // Replace text with input fields
-            firstName.innerHTML = '';  // Clear existing content
+            firstName.innerHTML = '';  // Clears existing content
             firstName.appendChild(inputFirstName);
             
-            lastName.innerHTML = '';  // Clear existing content
+            lastName.innerHTML = '';  
             lastName.appendChild(inputLastName);
 
-            email.innerHTML = '';  // Clear existing content
+            email.innerHTML = '';
             email.appendChild(inputEmail);
 
-            // Disable the Edit button to prevent multiple edits
-            document.getElementById('editButton').disabled = true;
+            // Shows only the save and cancel buttons
+            document.getElementById('editButton').style.display = 'none';
+            document.getElementById('saveButton').style.display = 'inline-block';
+            document.getElementById('cancelButton').style.display = 'inline-block'
         }
+        // Cancel Edit Mode
+        function cancelEditMode() {
+    
+        var firstName = document.getElementById('first_name');
+        var lastName = document.getElementById('last_name');
+        var email = document.getElementById('email');
+
+        // revert to original content
+        firstName.innerHTML = '{{first_name}}';
+        lastName.innerHTML = '{{last_name}}';
+        email.innerHTML = '{{email}}';
+
+        // Shows Edit button - hides save and cancel buttons
+        document.getElementById('editButton').style.display = 'inline-block';
+        document.getElementById('saveButton').style.display = 'none';
+        document.getElementById('cancelButton').style.display = 'none';
+    }
 
         function createInputField(value, id) {
             var input = document.createElement('input');

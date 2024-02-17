@@ -3,7 +3,7 @@ import pandas as pd
 
 data = []
 
-# extract data from yelp
+# extract data from json file & only keep restaurants that are good for groups
 with open('yelp_data.json', encoding="utf8") as f:
     places = json.load(f)
     for place in places:
@@ -13,6 +13,7 @@ with open('yelp_data.json', encoding="utf8") as f:
         else:
            data.append(place)
 
+# add filter data into json file
 with open('yelp_data.json', 'w') as f:
     json.dump(data, f)
 

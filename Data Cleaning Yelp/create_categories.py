@@ -3,7 +3,7 @@ import pandas as pd
 
 data = []
 
-# extract data from yelp
+# extract data from json file & make a new category called 'main_type' for each json object depending on the place category
 with open('yelp_data2.json', encoding="utf8") as f:
     places = json.load(f)
     for place in places:
@@ -11,6 +11,7 @@ with open('yelp_data2.json', encoding="utf8") as f:
             #place["main_type"] = 'Nature/Recreation'
             data.append(place)
 
+# create a new json file after cleaning
 with open('yelp_data2.json', 'w') as f:
     json.dump(data, f)
 

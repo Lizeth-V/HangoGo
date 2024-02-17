@@ -3,7 +3,7 @@ import pandas as pd
 
 data = []
 
-# extract data from yelp
+# extract data from json file & make new sub categories such as age and sub_types
 with open('yelp_data3.json', encoding="utf8") as f:
     places = json.load(f)
     for place in places:

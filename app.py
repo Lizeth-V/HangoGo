@@ -36,7 +36,7 @@ def calculate_age(birth_year, birth_month, birth_day):
     age = today.year - birth_year - ((today.month, today.day) < (birth_month, birth_day))
     return age
 
-
+# Gloria
 @app.route("/create_account/<username>", methods=["GET", "POST"])
 def create_account(username):
     print("User verified...now in create account page")
@@ -159,7 +159,7 @@ def landing_page(username):
                            birth_year = user["birth_year"]
                            )  
 
-# This should update the users changes in the Editing mode in their profile
+# This should update the users changes in the Editing mode in their profile (Lizeth)
 @app.route('/update-user', methods=['POST'])
 def update_user():
     print("Update User route being used")
@@ -189,7 +189,6 @@ def index():
     return render_template("index.html")
 
 # Sending Email Verifications (Lizeth)
-
 @app.route("/verify/<username>/<token>")
 def verify(username, token):
     # After the user register their account with an email or password they get redirected to this verify page that indiactes them to check their email to verify their account 

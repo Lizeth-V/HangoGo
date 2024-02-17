@@ -103,7 +103,7 @@ def register():
         print("Registration error:", registration_error)
         # comment out below the one line of code below before presentation and launch
         print("Form values:", username, email, password, confirm_password)
-        # return render_template("register.html", error=registration_error)
+        return render_template("register.html", error=registration_error)
         
 
     return render_template("register.html")

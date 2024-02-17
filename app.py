@@ -81,7 +81,7 @@ def register():
             # session["user"] = user
             print("Registration successful. Goes to email-verify. then create-account")
             # sending email verifcation 
-            print("Email address: ", email)
+            print("Send_Verification inputs: ", email," ", username," ",verification_token)
             send_verification(email, username, verification_token)
             # print(username, user)
             return render_template("verify.html")

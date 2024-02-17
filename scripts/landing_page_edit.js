@@ -24,6 +24,7 @@ function enableEditMode() {
     document.getElementById('saveButton').style.display = 'inline-block';
     document.getElementById('cancelButton').style.display = 'inline-block'
 }
+
 // Cancel Edit Mode
 function cancelEditMode() {
 
@@ -42,10 +43,12 @@ document.getElementById('saveButton').style.display = 'none';
 document.getElementById('cancelButton').style.display = 'none';
 }
 
-// saves users new changes and updates the database
+
+// Saves users new changes and updates the database
 function saveDetails() {
 // Prepare the data to be sent to the server for updating MongoDB
-const userId = 'replace-with-the-actual-user-id'; // Replace with the actual user ID
+const userId = document.getElementById('userId').value; 
+
 const updatedDetails = {
     first_name: document.getElementById('first_name').textContent,
     last_name: document.getElementById('last_name').textContent,

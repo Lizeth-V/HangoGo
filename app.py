@@ -13,13 +13,22 @@ from datetime import datetime, timedelta
 from flask_pymongo import PyMongo
 
 from register import register_user, hash_password
-from create_account import user_create_account, calculate_age
 from db import users_collection
 
 app = Flask(__name__)
 
 # secret key
 app.secret_key = "supersecrethangogo!!!!"
+
+load_dotenv()
+#this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
+app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
 
 # Calculate age (Gloria)
 def calculate_age(birth_year, birth_month, birth_day):
@@ -78,7 +87,7 @@ def register():
 
         registration_error = register_user(username, email, password, confirm_password, users_collection, verification_token)
 
-        if registration_error is not None:
+        if registration_error:
             # user = users_collection.find_one({"username": username})
             # user["_id"] = str(user["_id"])
             # session["user"] = user
@@ -94,7 +103,7 @@ def register():
         print("Registration error:", registration_error)
         # comment out below the one line of code below before presentation and launch
         print("Form values:", username, email, password, confirm_password)
-        return render_template("register.html", error=registration_error)
+        # return render_template("register.html", error=registration_error)
         
 
     return render_template("register.html")
@@ -150,6 +159,30 @@ def landing_page(username):
                            birth_year = user["birth_year"]
                            )  
 
+# This should update the users changes in the Editing mode in their profile
+@app.route('/update-user', methods=['POST'])
+def update_user():
+    print("Update User route being used")
+    try:
+        # Get data from the AJAX request
+        data = request.get_json()
+        user_id = data.get('userId')
+        updated_details = data.get('updatedDetails')
+
+        # Update user details in MongoDB
+        updated_user = users_collection.update_one({'_id': user_id}, {'$set': updated_details})
+
+        if updated_user.modified_count == 1:
+            print("Update user info")
+            # Return the updated user details as a response
+            updated_user = users_collection.find_one({'_id': user_id})
+            return jsonify(updated_user)
+        else:
+            return jsonify({'error': 'User not found or no changes were made'}), 404
+
+    except Exception as e:
+        print(f"Error updating user details: {e}")
+        return jsonify({'error': 'Internal Server Error'}), 500
 
 @app.route("/")
 def index():
@@ -177,6 +210,8 @@ def verify(username, token):
 
 def send_verification(email, username, token):
     # Sends Verification Email from the Hangogo Verification email. The email contains unique link to verify a users account. 
+    user_id = session.get("_id")
+
     msg = Message('Verify Your Email - Hangogo', sender = 'hangogo.verify@gmail.com' ,recipients=[email])
     verification_link = url_for('verify', username=username,token=token, _external=True)
     msg.body = f'Hi! I cant wait to be friends! Click the following link to verify your email: {verification_link}'
@@ -189,34 +224,9 @@ def send_verification(email, username, token):
 
     return "Verification email sent"
 
-load_dotenv()
-#this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
-app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
-app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
-mail = Mail(app)
 
-@app.route('/update-user', methods=['POST'])
-def update_user():
-    try:
-        # Get data from the AJAX request
-        data = request.get_json()
-        user_id = data.get('userId')
-        updated_details = data.get('updatedDetails')
 
-        # Update user details in MongoDB
-        users_collection.update_one({'_id': user_id}, {'$set': updated_details})
 
-        # Return the updated user details as a response
-        updated_user = users_collection.find_one({'_id': user_id})
-        return jsonify(updated_user)
-
-    except Exception as e:
-        print(f"Error updating user details: {e}")
-        return jsonify({'error': 'Internal Server Error'}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

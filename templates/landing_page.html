@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../scripts/landing_page_edit.js"></script>
+    <!-- <script src="../scripts/landing_page_edit.js"></script> -->
     <div class="logo">
         <h1>hangogo</h1>
         <ul>
@@ -52,7 +52,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
     
     <!-- Editing mode (Lizeth) -->
-    <script src="../scripts/landing_page_edit.js"></script>
     <script>
         function enableEditMode() {
             // elements being edited - birthday is not allowed to be edited 
@@ -82,20 +81,68 @@
         }
         // Cancel Edit Mode
         function cancelEditMode() {
+            console.log('Cancel Edit Mode called');
     
-        var firstName = document.getElementById('first_name');
-        var lastName = document.getElementById('last_name');
-        var email = document.getElementById('email');
+            var firstName = document.getElementById('first_name');
+            var lastName = document.getElementById('last_name');
+            var email = document.getElementById('email');
 
-        // revert to original content
-        firstName.innerHTML = '{{first_name}}';
-        lastName.innerHTML = '{{last_name}}';
-        email.innerHTML = '{{email}}';
+            // revert to original content
+            firstName.innerHTML = '{{first_name}}';
+            lastName.innerHTML = '{{last_name}}';
+            email.innerHTML = '{{email}}';
 
-        // Shows Edit button - hides save and cancel buttons
-        document.getElementById('editButton').style.display = 'inline-block';
-        document.getElementById('saveButton').style.display = 'none';
-        document.getElementById('cancelButton').style.display = 'none';
+            // Shows Edit button - hides save and cancel buttons
+            document.getElementById('editButton').style.display = 'inline-block';
+            document.getElementById('saveButton').style.display = 'none';
+            document.getElementById('cancelButton').style.display = 'none';
+        }
+
+        // Saves users new changes and updates the database
+        function saveDetails() {
+            console.log('Save Details Function called');
+            // Prepare the data to be sent to the server for updating MongoDB
+            const userId = document.getElementById('userId').value; 
+
+            const updatedDetails = {
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value,
+                email: document.getElementById('email').value,
+            };
+
+            // Makes an AJAX request to update user details in MongoDB
+            $.ajax({
+                url: '/update-user',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ userId, updatedDetails }),
+                success: function (response) {
+                    console.log('User details updated:', response);
+
+                    // Update the displayed user details with the updated data
+                    document.getElementById('first_name').textContent = response.first_name;
+                    document.getElementById('last_name').textContent = response.last_name;
+                    document.getElementById('email').textContent = response.email;
+
+                    // Revert back to the original styling when saving details
+                    var editableElements = document.querySelectorAll('.editable');
+                    editableElements.forEach(function (element) {
+                        element.classList.remove('editing-mode');
+                        console.log('Removed editing-mode class:', element);
+                    });
+
+                    // Shows Edit button - hides save and cancel buttons
+                    document.getElementById('editButton').style.display = 'inline-block';
+                    document.getElementById('saveButton').style.display = 'none';
+                    document.getElementById('cancelButton').style.display = 'none';
+                },
+                error: function (error) {
+                    console.error('Error updating user details:', error);
+                    // Handle the error as needed
+                },
+            });
+
+                
         }
 
         function createInputField(value, id) {

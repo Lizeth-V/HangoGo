@@ -72,18 +72,18 @@ $.ajax({
     console.error('Error updating user details:', error);
     
     },
-});
+    });
 
-// Reverts back to the original styling when saving details
-var editableElements = document.querySelectorAll('.editable');
-editableElements.forEach(function (element) {
-    element.classList.remove('editing-mode');
-});
+    // Reverts back to the original styling when saving details
+    var editableElements = document.querySelectorAll('.editable');
+    editableElements.forEach(function (element) {
+        element.classList.remove('editing-mode');
+    });
 
-// Shows Edit button - hides save and cancel buttons
-document.getElementById('editButton').style.display = 'inline-block';
-document.getElementById('saveButton').style.display = 'none';
-document.getElementById('cancelButton').style.display = 'none';
+    // Shows Edit button - hides save and cancel buttons
+    document.getElementById('editButton').style.display = 'inline-block';
+    document.getElementById('saveButton').style.display = 'none';
+    document.getElementById('cancelButton').style.display = 'none';
 }
 
 function createInputField(value, id) {

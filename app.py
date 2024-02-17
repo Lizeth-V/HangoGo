@@ -26,67 +26,38 @@ def calculate_age(birth_year, birth_month, birth_day):
     return age
 
 
-# @app.route("/create_account", methods=["GET", "POST"])
-# def create_account():
-#     user_id = session.get("_id")
-#     if request.method == "POST":
-#         first_name = request.form.get("first_name")
-#         last_name = request.form.get("last_name")
-#         birth_month = int(request.form.get("birth_month"))
-#         birth_day = int(request.form.get("birth_day"))
-#         birth_year = int(request.form.get("birth_year"))
+@app.route("/create_account", methods=["GET", "POST"])
+def create_account():
+    user_id = session.get("_id")
+    if request.method == "POST":
+        first_name = request.form.get("first_name")
+        last_name = request.form.get("last_name")
+        birth_month = int(request.form.get("birth_month"))
+        birth_day = int(request.form.get("birth_day"))
+        birth_year = int(request.form.get("birth_year"))
 
-#         # Check if the user is at least 13 years old
-#         age = calculate_age(birth_year, birth_month, birth_day)
-#         if age < 13:
-#             return render_template("create_account.html", error="You must be at least 13 years old")
-#         else:
-#             # Update user information in the database
-#             users_collection.update_one({"_id": ObjectId(user_id)}, 
-#                                         {"$set": 
-#                                             {  
-#                                                 "first_name": first_name,
-#                                                 "last_name": last_name,
-#                                                 "birth_month": birth_month,
-#                                                 "birth_day": birth_day,
-#                                                 "birth_year": birth_year,
-#                                                 "age": age
-#                                             }
-#                                         })
-#             print("Form Data:", request.form) 
-#             print("Updated create account page", first_name, last_name, birth_month, birth_day, birth_year)
-#             return redirect(url_for("index"))
-#     else:
-#         return render_template("create_account.html")
-
-@app.route("/create-account/<username>", methods=["GET", "POST"])
-def create_account(username):
-        if request.method == "POST":
-            first_name = request.form.get("first_name")
-            last_name = request.form.get("last_name")
-            birth_month = int(request.form.get("birth_month"))
-            birth_day = int(request.form.get("birth_day"))
-            birth_year = int(request.form.get("birth_year"))
-
-            # Check if the user is at least 13 years old
-            age = calculate_age(birth_year, birth_month, birth_day)
-            if age < 13:
-                return render_template("create-account.html", error = "You must be at least 13 years old")
-
-            create_account_error = user_create_account(first_name, last_name, birth_month, birth_day, birth_year, age)
-            if create_account_error is not None:
-                print("Create account error:", create_account_error)
-                print("Form values:", first_name, last_name, birth_month, birth_day, birth_year, age)
-                return render_template("create-account.html", error=create_account_error)
-
-            # if "first_name" not in request.form or "last_name" not in request.form or \
-            #     "birth_month" not in request.form or "birth_day" not in request.form or \
-            #     "birth_year" not in request.form:
-            #         return render_template("create-account.html", error="Incomplete form data")
-
-
+        # Check if the user is at least 13 years old
+        age = calculate_age(birth_year, birth_month, birth_day)
+        if age < 13:
+            return render_template("create_account.html", error="You must be at least 13 years old")
+        else:
+            # Update user information in the database
+            users_collection.update_one({"_id": ObjectId(user_id)}, 
+                                        {"$set": 
+                                            {  
+                                                "first_name": first_name,
+                                                "last_name": last_name,
+                                                "birth_month": birth_month,
+                                                "birth_day": birth_day,
+                                                "birth_year": birth_year,
+                                                "age": age
+                                            }
+                                        })
+            print("Form Data:", request.form) 
+            print("Updated create account page", first_name, last_name, birth_month, birth_day, birth_year)
             return redirect(url_for("index"))
-        return render_template("create-account.html", username=username)
+    else:
+        return render_template("create_account.html")
 
 # Register new User (Gloria & Lizeth)
 @app.route("/register", methods=["GET", "POST"])
@@ -96,23 +67,29 @@ def register():
         email = request.form.get("email")
         password = request.form.get("password")
         confirm_password = request.form.get("confirm_password")
+        
         #email verification token generated (Lizeth)
         verification_token = ''.join(random.choices(string.ascii_letters + string.digits, k=30))
 
-        registration_error = register_user(username, email, password, confirm_password, verification_token)
+        registration_error = register_user(username, email, password, confirm_password, users_collection, verification_token)
 
         if registration_error is not None:
-            print("Registration error:", registration_error)
-            # comment out below the one line of code below before presentation and launch
-            print("Form values:", username, email, password, confirm_password)
-            return render_template("register.html", error=registration_error)
+            # user = users_collection.find_one({"username": username})
+            # user["_id"] = str(user["_id"])
+            # session["user"] = user
+            print("Registration successful. Goes to email-verify. then create-account")
+            # print(username, user)
+            return render_template("verify.html")
 
         # sending email verifcation 
         print("Email address: ", email)
         send_verification(email, username, verification_token)
 
-        print("Registration successful. Redirecting to verify email page.")
-        return render_template("verify.html")
+        print("Registration error:", registration_error)
+        # comment out below the one line of code below before presentation and launch
+        print("Form values:", username, email, password, confirm_password)
+        return render_template("register.html", error=registration_error)
+        
 
     return render_template("register.html")
 

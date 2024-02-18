@@ -1,9 +1,11 @@
+#install all of these dependencies, 
+#tensorflow however required me to change some paths in my windows machine
+
 import tensorflow as tf
 import pandas as pd
 import keras
 from keras.utils import FeatureSpace
 import random
-#Libraries
 
 #read in dataframe from the cleaned datafile
 df = pd.read_json('Hango.Places.json')

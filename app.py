@@ -1,27 +1,38 @@
 # app.py
 from bson import ObjectId
 import json
+
 import bcrypt
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+import os
+import random
+import string
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask_mail import Mail, Message
+from dotenv import load_dotenv
+from datetime import datetime, timedelta
+
+from flask_pymongo import PyMongo
 from register import register_user, hash_password
-from datetime import datetime
 from db import users_collection
 
 app = Flask(__name__)
 
-# secret key
+# secret key (Lizeth)
 app.secret_key = "supersecrethangogo!!!!"
 
-# Calculate age
+# Calculate age (Gloria)
 def calculate_age(birth_year, birth_month, birth_day):
     today = datetime.today()
     age = today.year - birth_year - ((today.month, today.day) < (birth_month, birth_day))
     return age
 
 
+# Gloria
 @app.route("/create_account", methods=["GET", "POST"])
 def create_account():
+    print("User verified...now in create account page")
     user_id = session.get("_id")
+
     if request.method == "POST":
         first_name = request.form.get("first_name")
         last_name = request.form.get("last_name")
@@ -32,7 +43,8 @@ def create_account():
         # Check if the user is at least 13 years old
         age = calculate_age(birth_year, birth_month, birth_day)
         if age < 13:
-            return render_template("create_account.html", error="You must be at least 13 years old")
+            return render_template("create_account.html", 
+                                   error="sorry! we would love to be friends but you don’t meet our age requirements! (we don’t want to get sued pls)")
         else:
             # Update user information in the database
             users_collection.update_one({"_id": ObjectId(user_id)}, 
@@ -52,47 +64,7 @@ def create_account():
     else:
         return render_template("create_account.html")
 
-
-# @app.route("/create_account", methods=["GET", "POST"])
-# def create_account():
-        
-#         # Retrieve the user's _id from the session
-#         user_id = session.get("_id")
-#         print(user_id)
-#         # if user_id:
-#         if request.method == "POST":
-#             first_name = request.form.get("first_name")
-#             last_name = request.form.get("last_name")
-#             birth_month = int(request.form.get("birth_month"))
-#             birth_day = int(request.form.get("birth_day"))
-#             birth_year = int(request.form.get("birth_year"))
-
-#             print("updated create account page", {first_name}, {last_name}, {birth_month}, {birth_day}, {birth_year})
-#             # Check if the user is at least 13 years old
-#             age = calculate_age(birth_year, birth_month, birth_day)
-#             if age < 13:
-#                 return render_template("create_account.html", error = "You must be at least 13 years old")
-#             else:
-#                 users_collection.update_one({"_id": ObjectId(user_id)}, 
-#                                             {"$set": 
-#                                                 {  
-#                                                     "first_name": first_name,
-#                                                     "last_name": last_name,
-#                                                     "birth_month": birth_month,
-#                                                     "birth_day": birth_day,
-#                                                     "birth_year": birth_year,
-#                                                     "age": age
-#                                                 }
-#                                             })
-#                 print("Form Data:", request.form) 
-#                 print("updated create account page", {first_name}, {last_name}, {birth_month}, {birth_day}, {birth_year})
-#                 return redirect(url_for("index"))
-#         else:
-#             # Render the create account page for GET requests
-#             return render_template("create_account.html")   
-#         # else:
-#         #     return "User not found"
-
+# Register new User (Gloria & Lizeth)
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -100,25 +72,31 @@ def register():
         email = request.form.get("email")
         password = request.form.get("password")
         confirm_password = request.form.get("confirm_password")
+        
+        #email verification token generated (Lizeth)
+        verification_token = ''.join(random.choices(string.ascii_letters + string.digits, k=30))
 
-        registration_error = register_user(username, email, password, confirm_password, users_collection)
+        registration_error = register_user(username, email, password, confirm_password, users_collection, verification_token)
 
-        if registration_error:
-            # user = users_collection.find_one({"username": username})
-            # user["_id"] = str(user["_id"])
-            # session["user"] = user
+        if registration_error is not None:
             print("Registration successful. Goes to email-verify. then create-account")
+            # sending email verifcation 
+            print("Send_Verification inputs: ", email," ", username," ",verification_token)
+            send_verification(email, username, verification_token)
             # print(username, user)
-            return redirect(url_for("create_account"))
+            return render_template("verify.html")
 
         
+
         print("Registration error:", registration_error)
         # comment out below the one line of code below before presentation and launch
         print("Form values:", username, email, password, confirm_password)
         return render_template("register.html", error=registration_error)
+        
 
     return render_template("register.html")
 
+# Gloria
 @app.route("/login", methods= ["GET","POST"])
 def login():
     if request.method == "POST":
@@ -152,6 +130,8 @@ def login():
             print("User not found.")
     return render_template("login.html")
 
+
+# Gloria
 @app.route('/<username>.html')
 def landing_page(username):
     user = users_collection.find_one({"username": username})
@@ -167,14 +147,74 @@ def landing_page(username):
                            birth_year = user["birth_year"]
                            )  
 
-
-
-
-
-
+# Gloria
 @app.route("/")
 def index():
     return render_template("index.html")
+
+# Sending Email Verifications (Lizeth)
+@app.route("/verify/<username>/<token>")
+def verify(username, token):
+    # After the user register their account with an email or password they get redirected to this verify page that indiactes them to check their email to verify their account 
+    print("verify page")
+    user = users_collection.find_one({'username': username,'verification_token': token, 'token_expiration': {'$gt': datetime.utcnow()}})
+    # Only if user has already registered
+    if user:
+        # Mark user as verified in the database
+        users_collection.update_one({'_id': user['_id']}, {'$set': {'verified': True}})
+
+        flash('Email verification successful! You can now log in.')
+        print("Email Verified...Redirect to create Account")
+        return redirect(url_for("create_account", username=username))
+
+    flash('Invalid or expired verification link.')
+    return redirect(url_for("verify", username=username))
+
+# Lizeth
+def send_verification(email, username, token):
+    # Sends Verification Email from the Hangogo Verification email. The email contains unique link to verify a users account. 
+    msg = Message('Verify Your Email - Hangogo', sender = 'hangogo.verify@gmail.com' ,recipients=[email])
+    verification_link = url_for('verify', username=username,token=token, _external=True)
+    msg.body = f'Hi! I cant wait to be friends! Click the following link to verify your email: {verification_link}'
+
+    try:
+        mail.send(msg)
+        print("Email Sent!")
+    except Exception as e:
+        flash(f"Failed to send email. Error: {str(e)}")
+
+    return "Verification email sent"
+
+# Lizeth
+load_dotenv()
+#this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
+app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
+
+# Lizeth
+@app.route('/update-user', methods=['POST'])
+def update_user():
+    try:
+        # Get data from the AJAX request
+        data = request.get_json()
+        user_id = data.get('userId')
+        updated_details = data.get('updatedDetails')
+
+        # Update user details in MongoDB
+        users_collection.update_one({'_id': user_id}, {'$set': updated_details})
+
+        # Return the updated user details as a response
+        updated_user = users_collection.find_one({'_id': user_id})
+        return jsonify(updated_user)
+
+    except Exception as e:
+        print(f"Error updating user details: {e}")
+        return jsonify({'error': 'Internal Server Error'}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

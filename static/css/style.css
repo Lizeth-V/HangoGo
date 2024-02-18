@@ -42,30 +42,7 @@ form {
     width: 50%;
 }
 
-.center-form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
 
-.center-form p {
-    margin-left: -30%;
-}
-
-.register-description,
-.register-form label {
-    font-family: 'Inter', sans-serif;
-    font-size: medium;
-    font-weight: lighter;
-}
-
-.register-form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
 
 .logo {
     display: flex;
@@ -74,6 +51,7 @@ form {
 }
 
 .logo h1 {
+    font-size: 150%;
     font-weight: bolder;
     color: white;
     padding: 10px;
@@ -106,24 +84,7 @@ body p {
     padding: 10px;
 }
 
-/* create-account styles */        
-.row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    margin-left: 10px;
 
-}
-
-.row label {
-    margin-right: 10px;
-}
-
-.row input {
-    margin-right: 10px;
-    text-align: center;
-}
 
 /* Login/Signin Buttons */
 .button1{ 

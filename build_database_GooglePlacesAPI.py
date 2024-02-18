@@ -231,7 +231,7 @@ columns_to_drop = ['icon','icon_mask_base_uri','business_status','icon_backgroun
 places_df = places_df.drop(columns=columns_to_drop)
 
 ################################################################
-
+# THIS IS FOR SAVING TO EXCEL UNCOMMENT THE LINES TO SAVE THE DATA TO EXCEL
 # Print the DataFrame
 #excel_filename = "places_data.xlsx"
 #places_df.to_excel(excel_filename, index=False)
@@ -241,7 +241,7 @@ places_df = places_df.drop(columns=columns_to_drop)
 
 
 ################################################################################################
-#MONGO DB STUFF
+#MONGO DB INSERTION
 from pymongo import MongoClient, ASCENDING, errors
 
 connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"

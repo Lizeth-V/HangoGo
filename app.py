@@ -37,8 +37,8 @@ def calculate_age(birth_year, birth_month, birth_day):
     return age
 
 # Gloria
-@app.route("/create_account/<username>", methods=["GET", "POST"])
-def create_account(username):
+@app.route("/create_account", methods=["GET", "POST"])
+def create_account():
     print("User verified...now in create account page")
     user_id = session.get("_id")
     # username = request.form.get("username")
@@ -201,7 +201,7 @@ def verify(username, token):
 
         flash('Email verification successful! You can now log in.')
         print("Email Verified...Redirect to create Account")
-        return redirect(url_for("create_account", username=username))
+        return redirect(url_for("create_account"))
 
     flash('Invalid or expired verification link.')
     return redirect(url_for("verify", username=username))

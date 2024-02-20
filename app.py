@@ -11,24 +11,14 @@ import string
 from datetime import datetime, timedelta
 
 from flask_pymongo import PyMongo
-
 from register import register_user, hash_password
 from db import users_collection
 
 app = Flask(__name__)
 
-# secret key
+# secret key (Lizeth)
 app.secret_key = "supersecrethangogo!!!!"
 
-load_dotenv()
-#this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
-app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
-app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
-mail = Mail(app)
 
 # Calculate age (Gloria)
 def calculate_age(birth_year, birth_month, birth_day):
@@ -87,7 +77,7 @@ def register():
 
         registration_error = register_user(username, email, password, confirm_password, users_collection, verification_token)
 
-        if registration_error:
+        if registration_error is not None:
             # user = users_collection.find_one({"username": username})
             # user["_id"] = str(user["_id"])
             # session["user"] = user
@@ -224,6 +214,15 @@ def send_verification(email, username, token):
     return "Verification email sent"
 
 
+load_dotenv()
+#this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
+app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
 
 
 

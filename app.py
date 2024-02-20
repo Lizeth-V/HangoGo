@@ -1,13 +1,14 @@
 # app.py
 from bson import ObjectId
 import json
+
 import bcrypt
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-from flask_mail import Mail, Message
 import os
-from dotenv import load_dotenv
 import random
 import string
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask_mail import Mail, Message
+from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
 from flask_pymongo import PyMongo
@@ -19,19 +20,18 @@ app = Flask(__name__)
 # secret key (Lizeth)
 app.secret_key = "supersecrethangogo!!!!"
 
-
 # Calculate age (Gloria)
 def calculate_age(birth_year, birth_month, birth_day):
     today = datetime.today()
     age = today.year - birth_year - ((today.month, today.day) < (birth_month, birth_day))
     return age
 
+
 # Gloria
 @app.route("/create_account", methods=["GET", "POST"])
 def create_account():
     print("User verified...now in create account page")
     user_id = session.get("_id")
-    # username = request.form.get("username")
 
     if request.method == "POST":
         first_name = request.form.get("first_name")
@@ -43,7 +43,8 @@ def create_account():
         # Check if the user is at least 13 years old
         age = calculate_age(birth_year, birth_month, birth_day)
         if age < 13:
-            return render_template("create_account.html", error="You must be at least 13 years old")
+            return render_template("create_account.html", 
+                                   error="sorry! we would love to be friends but you don’t meet our age requirements! (we don’t want to get sued pls)")
         else:
             # Update user information in the database
             users_collection.update_one({"_id": ObjectId(user_id)}, 
@@ -78,9 +79,6 @@ def register():
         registration_error = register_user(username, email, password, confirm_password, users_collection, verification_token)
 
         if registration_error is not None:
-            # user = users_collection.find_one({"username": username})
-            # user["_id"] = str(user["_id"])
-            # session["user"] = user
             print("Registration successful. Goes to email-verify. then create-account")
             # sending email verifcation 
             print("Send_Verification inputs: ", email," ", username," ",verification_token)
@@ -149,6 +147,55 @@ def landing_page(username):
                            birth_year = user["birth_year"]
                            )  
 
+# Gloria
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+# Sending Email Verifications (Lizeth)
+@app.route("/verify/<username>/<token>")
+def verify(username, token):
+    # After the user register their account with an email or password they get redirected to this verify page that indiactes them to check their email to verify their account 
+    print("verify page")
+    user = users_collection.find_one({'username': username,'verification_token': token, 'token_expiration': {'$gt': datetime.utcnow()}})
+    # Only if user has already registered
+    if user:
+        # Mark user as verified in the database
+        users_collection.update_one({'_id': user['_id']}, {'$set': {'verified': True}})
+
+        flash('Email verification successful! You can now log in.')
+        print("Email Verified...Redirect to create Account")
+        return redirect(url_for("create_account"))
+
+    flash('Invalid or expired verification link.')
+    return redirect(url_for("verify", username=username))
+
+# Lizeth
+def send_verification(email, username, token):
+    # Sends Verification Email from the Hangogo Verification email. The email contains unique link to verify a users account. 
+    msg = Message('Verify Your Email - Hangogo', sender = 'hangogo.verify@gmail.com' ,recipients=[email])
+    verification_link = url_for('verify', username=username,token=token, _external=True)
+    msg.body = f'Hi! I cant wait to be friends! Click the following link to verify your email: {verification_link}'
+
+    try:
+        mail.send(msg)
+        print("Email Sent!")
+    except Exception as e:
+        flash(f"Failed to send email. Error: {str(e)}")
+
+    return "Verification email sent"
+
+# Lizeth
+load_dotenv()
+#this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
+app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
+
 # This should update the users changes in the Editing mode in their profile (Lizeth)
 @app.route('/update-user', methods=['POST'])
 def update_user():
@@ -173,56 +220,6 @@ def update_user():
     except Exception as e:
         print(f"Error updating user details: {e}")
         return jsonify({'error': 'Internal Server Error'}), 500
-
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-# Sending Email Verifications (Lizeth)
-@app.route("/verify/<username>/<token>")
-def verify(username, token):
-    # After the user register their account with an email or password they get redirected to this verify page that indiactes them to check their email to verify their account 
-    print("verify page")
-    user = users_collection.find_one({'username': username,'verification_token': token, 'token_expiration': {'$gt': datetime.utcnow()}})
-    # Only if user has already registered
-    if user:
-        # Mark user as verified in the database
-        users_collection.update_one({'_id': user['_id']}, {'$set': {'verified': True}})
-
-        flash('Email verification successful! You can now log in.')
-        print("Email Verified...Redirect to create Account")
-        return redirect(url_for("create_account"))
-
-    flash('Invalid or expired verification link.')
-    return redirect(url_for("verify", username=username))
-
-
-def send_verification(email, username, token):
-    # Sends Verification Email from the Hangogo Verification email. The email contains unique link to verify a users account. 
-    user_id = session.get("_id")
-
-    msg = Message('Verify Your Email - Hangogo', sender = 'hangogo.verify@gmail.com' ,recipients=[email])
-    verification_link = url_for('verify', username=username,token=token, _external=True)
-    msg.body = f'Hi! I cant wait to be friends! Click the following link to verify your email: {verification_link}'
-
-    try:
-        mail.send(msg)
-        print("Email Sent!")
-    except Exception as e:
-        flash(f"Failed to send email. Error: {str(e)}")
-
-    return "Verification email sent"
-
-
-load_dotenv()
-#this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
-app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
-app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
-mail = Mail(app)
 
 
 

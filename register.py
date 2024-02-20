@@ -3,10 +3,11 @@
 import re
 import bcrypt
 from flask import Flask, render_template, request, redirect, url_for, session
-# from pymongo import MongoClient
-from db import users_collection
-from datetime import datetime, timedelta
 
+from db import users_collection
+from db import users_collection
+# (Lizeth)
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
@@ -35,7 +36,7 @@ def is_email_valid(email):
     else:
         return False
 
-def register_user(username, email, password, confirm_password,  users_collection, verification_token):
+def register_user(username, email, password, confirm_password, users_collection, verification_token):
 
     # Check if email is valid
     if is_email_valid(email) is False:
@@ -63,12 +64,13 @@ def register_user(username, email, password, confirm_password,  users_collection
     # Inserting user data into the collection
     user_data = {
         "username": username,
- 
         "email": email,
         "password": hashed_password,
+
+        # Added verification_token, verified, token_expiration (Lizeth)
         "verification_token": verification_token,
         "verified": False,
-        'token_expiration': datetime.utcnow() + timedelta(hours=24),
+        "token_expiration": datetime.utcnow() + timedelta(hours=24),
 
     }
     result = users_collection.insert_one(user_data)

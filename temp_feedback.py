@@ -5,9 +5,6 @@ connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/
 dbname = "Hango"
 collection_name = "ratings"
 
-def main():
-    #TESTING ARTIFICIAL INSERT
-    accept_recommendation_update('6567dcefba91df16f20f718d', '65c7c805d20df83fcf08aa71')
 
 def accept_recommendation_update(user_id, place_id):
     client = MongoClient(connection_string)
@@ -91,5 +88,4 @@ def block_recommendation_update(user_id, place_id):
 
     insert_result = collection.insert_one(data_to_insert)
 
-main()
 

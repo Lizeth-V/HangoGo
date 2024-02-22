@@ -28,6 +28,9 @@ def sign_in_email():
     else:
         print("Check Spelling or email in the database.")
         return None
+    
+    client.close()
+
 
 
 
@@ -68,7 +71,8 @@ def generate_location(radius, user_location):
         print(f"An error occurred: {e}")
         return []
 
-    
+    client.close()
+
 
 
 # Print the user ID if found

@@ -1,5 +1,7 @@
+from pymongo import MongoClient, ASCENDING
 import time
-from pymongo import MongoClient
+import datetime
+
 
 connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
 dbname = "Hango"
@@ -9,83 +11,127 @@ collection_name = "ratings"
 def accept_recommendation_update(user_id, place_id):
     client = MongoClient(connection_string)
     db = client[dbname]
-    #use mongo  to connect to hango db
-
-    #access specifically rating db collection
+    
     collection = db[collection_name]
 
-    #package unit
+    collection.create_index([("user_id", 1), ("place_id", 1)], unique=True)
+
+    #the index in question
+    collection.create_index([("timestamp", ASCENDING)], expireAfterSeconds=2628000)
+    
+    #for upsert
+    criteria = {"user_id": user_id, "place_id": place_id}
+    
+    #fields to keep
     data_to_insert = {
-    "user_id":user_id,
-    "place_id":place_id,
-    "timestamp": time.time(),
-    "feedback": 1
+        "user_id": user_id,
+        "place_id": place_id,
+        "timestamp": datetime.datetime.utcnow(),
+        "feedback": 1
     }
 
-    #make sure it inserts
-    try:
-        insert_result = collection.insert_one(data_to_insert)
-        print("Insertion successful:", insert_result.inserted_id)
-    except Exception as e:
-        print("Error occurred:", e)
+    update_result = collection.update_one(criteria, {"$set": data_to_insert}, upsert=True)
+
+    if update_result.upserted_id:
+        print("Insertion successful:", update_result.upserted_id)
+    else:
+        print("Update successful. Matched document:", update_result.matched_count)
 
     client.close()
 
-def add_to_favorites_update(user_id, place_id):
 
+def add_to_favorites_update(user_id, place_id):
     client = MongoClient(connection_string)
     db = client[dbname]
-
-    #use mongo  to connect to hango db
-
-    #access specifically rating db collection
+    
     collection = db[collection_name]
 
-    #package unit
+    collection.create_index([("user_id", 1), ("place_id", 1)], unique=True)
+
+    #the index in question
+    collection.create_index([("timestamp", ASCENDING)], expireAfterSeconds=2628000)
+    
+    #for upsert
+    criteria = {"user_id": user_id, "place_id": place_id}
+    
+    #fields to keep
     data_to_insert = {
-    "user_id":user_id,
-    "place_id":place_id,
-    "timestamp": time.time(),
-    "feedback": 1
+        "user_id": user_id,
+        "place_id": place_id,
+        "timestamp": datetime.datetime.utcnow(),
+        "feedback": 1
     }
 
-    insert_result = collection.insert_one(data_to_insert)
+    update_result = collection.update_one(criteria, {"$set": data_to_insert}, upsert=True)
+
+    if update_result.upserted_id:
+        print("Insertion successful:", update_result.upserted_id)
+    else:
+        print("Update successful. Matched document:", update_result.matched_count)
+
+    client.close()
+
 
 
 def decline_recommendation_update(user_id, place_id):
     client = MongoClient(connection_string)
     db = client[dbname]
-    #use mongo  to connect to hango db
-
-    #access specifically rating db collection
+    
     collection = db[collection_name]
 
-     #package unit
+    collection.create_index([("user_id", 1), ("place_id", 1)], unique=True)
+
+    #the index in question
+    collection.create_index([("timestamp", ASCENDING)], expireAfterSeconds=2628000)
+    
+    #for upsert
+    criteria = {"user_id": user_id, "place_id": place_id}
+    
+    #fields to keep
     data_to_insert = {
-    "user_id":user_id,
-    "place_id":place_id,
-    "timestamp": time.time(),
-    "feedback": 0
+        "user_id": user_id,
+        "place_id": place_id,
+        "timestamp": datetime.datetime.utcnow(),
+        "feedback": 0
     }
 
-    insert_result = collection.insert_one(data_to_insert)
+    update_result = collection.update_one(criteria, {"$set": data_to_insert}, upsert=True)
+
+    if update_result.upserted_id:
+        print("Insertion successful:", update_result.upserted_id)
+    else:
+        print("Update successful. Matched document:", update_result.matched_count)
+
+    client.close()
+
 
 def block_recommendation_update(user_id, place_id):
     client = MongoClient(connection_string)
     db = client[dbname]
-    #use mongo  to connect to hango db
-
-    #access specifically rating db collection
+    
     collection = db[collection_name]
 
-     #package unit
+    collection.create_index([("user_id", 1), ("place_id", 1)], unique=True)
+
+    #the index in question
+    collection.create_index([("timestamp", ASCENDING)], expireAfterSeconds=2628000)
+    
+    #for upsert
+    criteria = {"user_id": user_id, "place_id": place_id}
+    
+    #fields to keep
     data_to_insert = {
-    "user_id":user_id,
-    "place_id":place_id,
-    "timestamp": time.time(),
-    "feedback": 0
+        "user_id": user_id,
+        "place_id": place_id,
+        "timestamp": datetime.datetime.utcnow(),
+        "feedback": 0
     }
 
-    insert_result = collection.insert_one(data_to_insert)
+    update_result = collection.update_one(criteria, {"$set": data_to_insert}, upsert=True)
 
+    if update_result.upserted_id:
+        print("Insertion successful:", update_result.upserted_id)
+    else:
+        print("Update successful. Matched document:", update_result.matched_count)
 
+    client.close()

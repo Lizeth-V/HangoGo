@@ -16,7 +16,6 @@ html{
     height: 100%;
 }
 
-
 .container {
     display:flex;
     flex-direction: row;
@@ -40,26 +39,11 @@ html{
     margin-bottom: 5px;
 }
 
-.user-profile p {
+.user-profile p,
+.user-profile input[type="text"]{
     display:flex;
     background-color: #fff;
     width: 70%;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Inter', sans-serif;
-    padding: 12px 20px;
-    margin: 8px 0;
-    border: 1px solid rgb(255, 255, 255);
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-/* uses the same format as .user-profile p but allows it ot be used by 
-span tag and make it editable (Lizeth) */
-.account-details .editable {
-    display: flex;
-    background-color: #fff;
-    width: 100%;
     justify-content: center;
     align-items: center;
     font-family: 'Inter', sans-serif;
@@ -77,8 +61,6 @@ span tag and make it editable (Lizeth) */
     min-width: 50%;
 }
 
-
-
 .chat1 p {
     background-color:#FEE8C8;
 }
@@ -94,4 +76,12 @@ span tag and make it editable (Lizeth) */
     font-family: 'Inter';
     font-style: normal;
     src: url('https://fonts.googleapis.com/css?family=Inter');
+}
+
+button{
+    display: flex;
+    background-color: #5EBA47;
+    color: white;
+    text-align: center;
+    border: none;
 }

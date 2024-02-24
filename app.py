@@ -132,11 +132,29 @@ def login():
 
 
 # Gloria
-@app.route('/<username>.html')
+@app.route('/<username>.html', methods=['GET', 'POST'])
 def landing_page(username):
     user = users_collection.find_one({"username": username})
     if user is None:
         return "Page not found", 404
+    
+    # This should update the users changes in the Editing mode in their profile (Lizeth)
+    if request.method == 'POST':
+    # get the new user data from the form  
+        print("User updating info")
+        first_name = request.form.get('edit_first_name')
+        last_name = request.form.get('edit_last_name')
+        email = request.form.get('edit_email')
+
+        # update the database
+        users_collection.update_one(
+            {'user_id': username},  
+            {'$set': {'first_name': first_name, 'last_name': last_name, 'email': email}}
+        )
+        print("update user successful..?")
+        return redirect(url_for('landing_page', username=username))
+    
+
     return render_template("landing_page.html",
                            username = username,
                            first_name = user["first_name"],
@@ -197,29 +215,25 @@ app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 
 # This should update the users changes in the Editing mode in their profile (Lizeth)
-@app.route('/update-user', methods=['POST'])
-def update_user():
-    print("Update User route being used")
-    try:
-        # Get data from the AJAX request
-        data = request.get_json()
-        user_id = data.get('userId')
-        updated_details = data.get('updatedDetails')
+# @app.route('/update-user/username', methods=['GET', 'POST'])
+# def update_user(username):
+#     print("Update User being used")
+#     user = users_collection.find_one({"username": username})
 
-        # Update user details in MongoDB
-        updated_user = users_collection.update_one({'_id': user_id}, {'$set': updated_details})
+#     if request.method == 'POST':
+#     # get the new user data from the form  
+#         first_name = request.form.get('edit_first_name')
+#         last_name = request.form.get('edit_last_name')
+#         email = request.form.get('edit_email')
 
-        if updated_user.modified_count == 1:
-            print("Update user info")
-            # Return the updated user details as a response
-            updated_user = users_collection.find_one({'_id': user_id})
-            return jsonify(updated_user)
-        else:
-            return jsonify({'error': 'User not found or no changes were made'}), 404
+#         # update the database
+#         users_collection.update_one(
+#             {'user_id': username},  
+#             {'$set': {'first_name': first_name, 'last_name': last_name, 'email': email}}
+#         )
+#         return redirect(url_for('landing_page', username=username))
 
-    except Exception as e:
-        print(f"Error updating user details: {e}")
-        return jsonify({'error': 'Internal Server Error'}), 500
+#     return render_template("edit_user.html", username=username, user=user)
 
 
 

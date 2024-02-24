@@ -148,7 +148,7 @@ def landing_page(username):
 
         # update the database
         users_collection.update_one(
-            {'user_id': username},  
+            {'username': username},  
             {'$set': {'first_name': first_name, 'last_name': last_name, 'email': email}}
         )
         print("update user successful..?")

@@ -147,11 +147,29 @@ def landing_page(username):
         email = request.form.get('edit_email')
 
         # update the database
-        users_collection.update_one(
-            {'username': username},  
-            {'$set': {'first_name': first_name, 'last_name': last_name, 'email': email}}
-        )
-        print("update user successful..?")
+        # making a dictionary with the fields that are not None (left empty)
+        update_data = {}
+        if first_name:
+            update_data['first_name'] = first_name
+        if last_name:
+            update_data['last_name'] = last_name
+        if email:
+            update_data['email'] = email
+
+        # updating database with the new changes (ignoreing empty fileds)
+        if update_data:
+            users_collection.update_one(
+                {'username': username},
+                {'$set': update_data}
+            )
+            print("update user successful..?")
+        else:
+            print("no changes made")
+
+        # users_collection.update_one(
+        #     {'username': username},  
+        #     {'$set': {'first_name': first_name, 'last_name': last_name, 'email': email}}
+        # )
         return redirect(url_for('landing_page', username=username))
     
 

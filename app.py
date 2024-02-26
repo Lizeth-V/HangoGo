@@ -131,7 +131,8 @@ def login():
     return render_template("login.html")
 
 
-# Gloria
+# Landing Page that will display the chatbox and the user profile  - (Gloria & Lizeth)
+# Also allows users to update thier name and email if preferred - but won't reverify emails
 @app.route('/<username>.html', methods=['GET', 'POST'])
 def landing_page(username):
     user = users_collection.find_one({"username": username})
@@ -156,7 +157,7 @@ def landing_page(username):
         if email:
             update_data['email'] = email
 
-        # updating database with the new changes (ignoreing empty fileds)
+        # updating database with the new changes (ignoring empty fileds)
         if update_data:
             users_collection.update_one(
                 {'username': username},
@@ -166,10 +167,6 @@ def landing_page(username):
         else:
             print("no changes made")
 
-        # users_collection.update_one(
-        #     {'username': username},  
-        #     {'$set': {'first_name': first_name, 'last_name': last_name, 'email': email}}
-        # )
         return redirect(url_for('landing_page', username=username))
     
 

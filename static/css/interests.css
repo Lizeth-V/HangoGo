@@ -26,6 +26,31 @@
   opacity: 0;
 }
 
+.option_item .option_inner{
+  width: 100%;
+}
+
+.option_item .option_inner .icon{
+  margin-bottom: 10px;
+}
+
+.option_item .option_inner .icon .fab{
+  font-size: 32px;
+}
+
+.option_item .option_inner .name{
+  user-select: none;
+}
+
+.option_item .checkbox:checked ~.option_inner.food{
+  color:blueviolet; 
+  /* colot can be changed later */
+}
+
+/* .option_item .option_inner .tickmark{
+
+} */
+
 /* not sure if this bottom one is needed
 .clearfix::after {
     content: "";

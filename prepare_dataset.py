@@ -1,143 +1,227 @@
 #install all of these dependencies, 
 #tensorflow however required me to change some paths in my windows machine
 
+import os
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
+#import warnings
+#warnings.filterwarnings("ignore", category=DeprecationWarning, module="tensorflow")
+################################################################
 import tensorflow as tf
+
 import pandas as pd
-import keras
-from keras.utils import FeatureSpace
-import random
+import numpy as np
+import time
+################################################################
 
-#read in dataframe from the cleaned datafile
-df = pd.read_json('Hango.Places.json')
+from pymongo import MongoClient
+from bson import ObjectId
+################################################################
 
-subtypes = set()
-
-for sub_types_list in df['sub_types']:
-    for subtype in sub_types_list:
-        subtypes.add(subtype)
-
-df.rename(columns={'_id': 'place_id'}, inplace=True)
-
-df['place_id'] = df['place_id'].apply(lambda x: x['$oid'])
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, classification_report
+################################################################
 
 
-df.head()
+def generate_place_probablities(uid):
+    start = time.time()
+
+    #read in dataframe from the cleaned datafile
+    place_df = pd.read_json('Hango.Places.json')
+    print('Running time: ', int((time.time() - start) * 1000), 'ms')
+
+    #where Nhu's subtype coding will go
+
+    place_df.rename(columns={'_id': 'place_id'}, inplace=True)
 
 
-userdata ={
-  "_id": {
-    "$oid": "6567dcefba91df16f20f718d"
-  },
-  "username": "john_doe",
-  "full_name": "John Doe",
-  "email": "john@example.com",
-  "age": 30,
-  "address": {
-    "street": "123 Main St",
-    "city": "Anytown",
-    "state": "CA",
-    "zip_code": "12345",
-    "country": "USA"
-  }
-}
+    place_df['place_id'] = place_df['place_id'].apply(lambda x: x['$oid'])
 
-#This is a function that builds fake reviews.
-#We have no data due to a cold start so we need to create artificial feedback
-def generateFakeReviews(id,age):
-    
-    reviewTable = pd.DataFrame()
+    #print(place_df.head())
+    ################################################################
+    #ENCODE TYPES
 
-    #This chooses 100 random places to give positive implicit feedback
-    #Put into a temporary table
+    # Get unique subtypes
+    unique_subtypes = set(subtype for sublist in place_df['sub_types'] for subtype in sublist)
 
-    #Change k to change amount
-    positive_choices = random.sample(df['place_id'].tolist(), k=100)
-    positive_reviews = [{'user_id': id, 'u_age': age, 'place': place, 'feedback': 1} for place in positive_choices]
-    
-    #This chooses 75 random places to give negative implicit feedback
-    #Put into a temporary table
+    # Create a DataFrame with one-hot encoding columns for subtypes
+    subtype_df = pd.DataFrame({subtype: place_df['sub_types'].apply(lambda x: 1 if subtype in x else 0) for subtype in unique_subtypes})
 
-    #Change k to change amount
-    negative_choices = random.sample(df['place_id'].tolist(), k=75)
-    negative_reviews = [{'user_id': id, 'u_age': age, 'place': place, 'feedback': 0} for place in negative_choices]
-    
-    #append both to the temporary review table and return it
-    reviewTable = reviewTable.append(positive_reviews, ignore_index=True)
-    reviewTable = reviewTable.append(negative_reviews, ignore_index=True)
+    # Concatenate the original DataFrame with the new subtype DataFrame
+    place_df = pd.concat([place_df, subtype_df], axis=1)
 
-    return reviewTable
+    # Apply one-hot encoding to 'main_type' column
+    place_df = pd.get_dummies(place_df, columns=['main_type'], prefix='main_type')
 
-# Example usage
-#age = 25 Need to figure out how this can help in content based filtering
+    # Drop the original 'sub_types' column if needed
+    place_df = place_df.drop('sub_types', axis=1)
+    #place_df = place_df.drop('main_type', axis=1)
 
-#temp user id for programming and testing
-uid = '6567dcefba91df16f20f718d'
+    #place_df['age'] = place_df_features['age'].map({'Y': 1, 'N': 0})
 
-#generate the fake review table
-#keep age in it for now
-generated_reviews = generateFakeReviews(id=uid, age=25)
+    # Display the resulting DataFrame
+    #place_df.head()
+    #place_df.shape
 
-generated_reviews.head(100)
+    ################################################################
+    #Build Ratings Matrix
 
-#merge the two dataframes based on the place id to generate factor matrix
-#drop features that are irrelevant to the model (distinction)
-merged_db = pd.merge(generated_reviews, df, left_on='place', right_on='place_id', how='inner')
-merged_db = merged_db.drop(columns=['user_id','place_id','place', 'name', 'address', 'weblink','price'])
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    dbname = "Hango"
+    collection_name = "ratings"
 
-#For now I think, we might be overfitting with every amount of data
-merged_db['sub_types'] = merged_db['sub_types'].apply(lambda x: x[:3] if isinstance(x, list) else x)
-merged_db[['subtype_1', 'subtype_2', 'subtype_3']] = pd.DataFrame(merged_db['sub_types'].tolist(), index=merged_db.index)
+    client = MongoClient(connection_string)
+    db = client[dbname]
 
-# Drop the original 'sub_types' column if needed
-merged_db = merged_db.drop(columns=['sub_types'])
-    
-# Display the combined dataset
-print(merged_db.head())
-print(merged_db.size)
+    collection = db[collection_name]
+    #reviewTable = pd.DataFrame()
 
-#turn into datasets
+    query = {'user_id': uid}
 
-#divide the data in 2 sets train and validation
-val_dataframe = merged_db.sample(frac=0.2, random_state=1337)
-train_dataframe = merged_db.drop(val_dataframe.index)
+    review_table = list(collection.find(query))
 
-#divide into features and the output value
-val_ds_y = val_dataframe['feedback']
-train_ds_y = train_dataframe['feedback']
-
-val_ds_x = val_dataframe.drop(['feedback'], axis=1)
-train_ds_x = train_dataframe.drop('feedback', axis=1)
+    generated_reviews = pd.DataFrame(review_table)
+    print('Running time: ', int((time.time() - start) * 1000), 'ms')
 
 
 
-#pardon if this is changed in the future this is only a month old not much documentation on it ;-;
-feature_space = FeatureSpace(
-    features={
-        
-        #"price": "integer_categorical", ##NEEDS TO BE PREPROCESSED SOMETIMES DICT SOMETIMES NOT
-        
-        "main_type": "string_categorical",
-        "sub_type_1": "string_categorical",
-        "sub_type_2": "string_categorical",
-        "sub_type_3": "string_categorical",
-        "age": "string_categorical",
-        
-        #"u_age": "float_discretized",
-        #I'm not sure if we can even use age to predict.
-        
-        #normalized stuff
-        "lat": "float_normalized",
-        "lon": "float_normalized",
-        "rating": "float_normalized",
-        "rating_amount": "float_normalized",
-    },
-    #We make features that depend on both im not certain how reliable this will be.
-    crosses=[("lat", "lon"), ("rating", "rating_amount")],
-    crossing_dim=32,
-    
-    output_mode="concat",
-)
+    #################################################################
+
+    #merge the two dataframes based on the place id to generate factor matrix
+    #drop features that are irrelevant to the model (distinction)
+
+    #merged_df related to the ratings
+
+    merged_df = pd.merge(generated_reviews, place_df, left_on='place_id', right_on='place_id', how='inner')
+
+    place_df =  pd.merge(place_df, generated_reviews, left_on='place_id', right_on='place_id', how='outer', indicator=True)
+
+    # Rows unique to generated_reviews
+    unique_to_generated_reviews = place_df[place_df['_merge'] == 'left_only'].drop(columns=['_merge'])
+
+    # Display or use the unique rows as needed
+    #print(unique_to_generated_reviews)
+    #print(merged_df)       
+
+    merged_df = merged_df.drop(columns=['_id','user_id','place_id','name', 'address', 'weblink','price','age','timestamp'])
+
+    print('Running time: ', int((time.time() - start) * 1000), 'ms')
+
+    # Display the combined dataset
+    #print(merged_df.head())
+    #print(merged_df.size)
+
+    #print(place_df.head)
 
 
-#Here are our test and validation sets ^
-#Build the Model Below
+    #split the data into test/train
+
+
+    # Extract features (X) and target variable (y)
+    X = merged_df.drop(['feedback'], axis=1)
+    y = merged_df['feedback']
+
+    # Split the data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Display the shapes of the resulting sets
+    #print("Train set shape:", X_train.shape, y_train.shape)
+    #print("Test set shape:", X_test.shape, y_test.shape)
+
+    # Standardize features (optional but often recommended for neural networks)
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    '''model = tf.keras.Sequential([
+        tf.keras.layers.Dense(256, activation='relu', input_shape=(X_train.shape[1],)),
+        tf.keras.layers.Dense(64, activation='relu'),
+        tf.keras.layers.Dense(16, activation='relu'),  # Additional layer
+        tf.keras.layers.Dense(8, activation='relu'),   # Additional layer
+        tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+
+    # Compile the model
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])'''
+
+    model = tf.keras.Sequential([
+        tf.keras.layers.Dense(256, activation='relu', input_shape=(X_train.shape[1],)),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(64, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+        ])
+
+    # Compile the model with a lower learning rate
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+
+    # Train the model on the training set
+    model.fit(X_train_scaled, y_train, epochs=10, batch_size=16, validation_split=0.2)
+
+    # Evaluate the model on the test set
+    y_pred_proba = model.predict(X_test_scaled)
+    y_pred = np.round(y_pred_proba)
+
+    # Convert predictions to binary (0 or 1)
+    y_pred = y_pred.flatten().astype(int)
+
+    # Evaluate the performance of the model
+    accuracy = accuracy_score(y_test, y_pred)
+    print("Accuracy:", accuracy)
+
+    # Display additional metrics if needed
+    #print("Classification Report:\n", classification_report(y_test, y_pred))
+
+    # Drop unnecessary columns from place_df
+    place_df_features = place_df.drop(columns=['address', 'weblink', 'price', 'age','timestamp', '_id', '_merge', 'feedback', 'user_id'])
+
+    #STandardize here with drop
+    # Standardize features
+    place_df_features_scaled = scaler.transform(place_df_features.drop(columns=['place_id','name']))
+
+    # Use the trained model to predict acceptance probabilities
+    acceptance_probabilities = model.predict(place_df_features_scaled)
+
+    # Add the predicted probabilities to place_df_features
+    place_df_features['acceptance_probability'] = acceptance_probabilities
+
+    # Sort by acceptance probability in descending order
+    top_locations = place_df_features.sort_values(by='acceptance_probability', ascending=False) 
+
+
+    collection_name = "User Data"
+
+    client = MongoClient(connection_string)
+    db = client[dbname]
+
+    collection = db[collection_name]
+
+    try:
+        collection.update_one(
+        {"_id": ObjectId(uid)},
+        {
+            "$set": {
+                "rec_probs": top_locations['place_id'].head(10).tolist()
+            }
+        },
+         upsert=True  # This will insert a new document if it doesn't exist
+
+    )
+        print("Update successful!")
+    except Exception as e:
+        print(f"Update failed: {e}")
+
+
+    # Display the top locations
+    #print(top_locations[['place_id', 'name', 'acceptance_probability']].head(20))
+    print('Running time: ', int((time.time() - start) * 1000), 'ms')
+
+def main():
+    generate_place_probablities('6568cbef4a9658311b3ee704')
+
+main()

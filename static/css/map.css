@@ -32,6 +32,13 @@ html{
     min-width: 50%;
 }
 
+.locationText{
+    display: block;
+    width: 450px;
+    text-align: left;
+    
+}
+
 .map label {
     font-family: 'Inter', sans-serif;
     font-size: medium;
@@ -39,10 +46,7 @@ html{
     margin-bottom: 5px;
 }
 
-.googleMap{
-    width: 100%;
-    height: 400px;
-}
+
 
 .user-chatbox {
     display: flex;

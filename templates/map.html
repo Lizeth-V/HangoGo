@@ -19,9 +19,17 @@
     <body>
         <div class="container">
             <div class="map">
-                <div class="googleMap">
-
-
+                <iframe
+                width= "450"
+                height="450"
+                frameborder="0" style="border:0"
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk&q=/California+State+University+Long+Beach"
+                allowfullscreen>
+                </iframe>
+                <div class = "locationText">
+                    <br>
+                    <p>CSULB</p>
                 </div>
             </div>
            
@@ -33,19 +41,7 @@
                 </div>
             </div>
 
-
-
         </div>
-
-        <script>
-            function map(){
-                var mapProp = {
-                    center:new google.maps.LatLng(33.7838,118.1141),
-                    zoom:5,
-                };
-                var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
-            }
-        </script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk&callback=map"></script>
    
     </body>

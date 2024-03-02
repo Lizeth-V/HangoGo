@@ -1,0 +1,19 @@
+nav {
+    float: left;
+    position: relative;
+    top: 0;
+    left: 0;
+    background: transparent;
+}
+
+nav ul{
+    text-align: center;
+}
+
+nav ul li{
+    position: relative;
+    width: 70px;
+    cursor: pointer;
+    background: #FEE8C8;
+    
+}

@@ -1,19 +1,26 @@
-nav {
-    float: left;
-    position: relative;
-    top: 0;
+.navbar{
+    position: fixed;
+    top: 50%;
     left: 0;
-    background: transparent;
+    transform: translateY(-50%);
+    background-color: #FEE8C8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
 }
 
-nav ul{
-    text-align: center;
-}
-
-nav ul li{
-    position: relative;
-    width: 70px;
+.icon-container{
+    margin-bottom: 20px;
     cursor: pointer;
-    background: #FEE8C8;
-    
+}
+
+.icon{
+    width: 40px;
+    height: 40px;
+    fill: #B19468;
+}
+
+.icon:hover{
+    fill: #5DB946;
 }

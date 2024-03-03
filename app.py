@@ -239,6 +239,13 @@ def update_user():
     except Exception as e:
         print(f"Error updating user details: {e}")
         return jsonify({'error': 'Internal Server Error'}), 500
+    
+
+# Gloria
+# contact us/report an issue form
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -18,3 +18,5 @@ for sub_types_list in df['sub_types']:
     for i in range(len(sub_types_list)):
         sub_types_list[i] = np.where(unique_labels == sub_types_list[i])[0][0]
 print(df[['main_type', 'sub_types']])
+
+# hmm what about two-step recommendation process? first main_type (initial preference) and then sub_categories

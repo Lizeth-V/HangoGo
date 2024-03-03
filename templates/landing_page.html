@@ -28,8 +28,10 @@
                 <i class="bx bxs-user-detail icon"></i>
         </div>
         <!-- Map -->
-        <div class="icon-container" onclick="navigateTo('/map')"> 
+        <div class="icon-container"> 
+            <a href="/map">
                 <i class="bx bxs-map-pin icon"></i>
+            </a>
         </div>
         <!-- Favorites Page -->
         <div class="icon-container"> 
@@ -82,14 +84,6 @@
     
     <!-- Editing mode (Lizeth) -->
     <script>
-        function navigateTo(route) {
-            fetch(route)
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('content').innerHTML = html;
-                })
-                .catch(error => console.error('Error loading page:', error));
-        }
 
         function enableEditMode() {
             console.log('Edit Mode enabled');

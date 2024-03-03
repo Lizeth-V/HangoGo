@@ -22,6 +22,10 @@
     transition: color 0.3s;
 }
 
+.icon-container.active .icon{
+    color: #5DB946;
+}
+
 .icon-container:hover .icon{
     color: #5DB946;
 }

@@ -144,9 +144,33 @@ def landing_page(username):
                            email = user["email"],
                            birth_month = user["birth_month"],
                            birth_day = user["birth_day"],
-                           birth_year = user["birth_year"]
-                           )  
+                           birth_year = user["birth_year"],
+                           place_list=place_list # recommended places is the temp placeholder for the AI generated suggested places
+                           ) 
+ 
 
+# Gloria
+# Add to Favorites List
+
+# temp sample data for list of places, temp placeholder for AI generated suggested places
+place_list = [
+    {"name": "Place 1", "address": "Address 1"},
+    {"name": "Place 2", "address": "Address 2"},
+    {"name": "Place 3", "address": "Address 3"}
+]
+saved_places = []
+
+# Gloria
+@app.route('/add_to_favorites', methods = ["POST"])
+def add_to_favorites():
+    place_index = int(request.form['place_index'])
+    place = place_list[place_index]
+    if place in saved_places:
+        return jsonify(success=False, message=" ")
+    else:
+        saved_places.append(place)
+        print(saved_places)
+        return jsonify(success=True, message = "Added to Favorites List")
 # Gloria
 @app.route("/")
 def index():

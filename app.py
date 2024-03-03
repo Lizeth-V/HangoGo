@@ -250,6 +250,11 @@ mail = Mail(app)
 
 #     return render_template("edit_user.html", username=username, user=user)
 
+@app.route("/map")
+def map():
+    print("Redirected to Map Page!")
+    return render_template('map.html')
+
 
 
 if __name__ == "__main__":

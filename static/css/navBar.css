@@ -17,11 +17,11 @@
 }
 
 .icon{
-    width: 40px;
-    height: 40px;
-    fill: #B19468;
+    font-size: 40px;
+    color: #B19468;
+    transition: color 0.3s;
 }
 
-.icon:hover{
-    fill: #5DB946;
+.icon-container:hover .icon{
+    color: #5DB946;
 }

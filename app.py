@@ -241,11 +241,47 @@ def update_user():
         return jsonify({'error': 'Internal Server Error'}), 500
     
 
+
+
+# Gloria
+# send contact form
+def send_contact_form(result):
+    sender = 'hangogo.verify@gmail.com'
+    recipients = [result["email"], sender]
+    subject = "Feedback from {}".format(result["email"])
+    msg = Message(subject, sender = sender, recipients=recipients)
+
+    msg.body = """
+    Hello There,
+
+    The feedback you left us:
+    Email: {}
+    Message: {}
+
+    -hangogo Webmaster
+    """.format(result["email"], result["message"])
+
+
+    mail.send(msg)
+    print("Contact form sent")
+
 # Gloria
 # contact us/report an issue form
-@app.route("/contact")
+@app.route("/contact", methods=["GET","POST"])
 def contact():
+    if request.method == "POST":
+        try:
+            result = {}
+            result["email"] = request.form.get("email").replace(' ', '').lower()
+            result["message"] = request.form.get("message")
+
+            send_contact_form(result)
+            print("email sent")
+            return redirect(url_for("index"))
+        except Exception as e:
+            return f"An error occurred: {e}"
     return render_template("contact.html")
+     
 
 if __name__ == "__main__":
     app.run(debug=True)

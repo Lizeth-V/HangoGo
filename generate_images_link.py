@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from bson import ObjectId
 from selenium import webdriver
-import dda
 import time
 from concurrent.futures import ThreadPoolExecutor
 
@@ -53,7 +52,7 @@ def scrape_images(doc):
             else: print("No Visiible Picture")
 
 def multithread_scrape():
-    l = list(collection.find({{"weblink": {"$exists": True}, "image_url": {"$exists": False}}}))
+    l = list(collection.find({"weblink": {"$exists": True}, "image_url": {"$exists": False}}))
 
     num_threads = 4
     with ThreadPoolExecutor(max_workers=num_threads) as executor:

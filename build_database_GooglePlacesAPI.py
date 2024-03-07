@@ -181,7 +181,7 @@ def get_results_from_api(location, radius, place_type):
             )
             c+=1
 
-
+        
             # Append results to the results list adding the main type as a category
         for item in response.get('results'):
             if place_type == 'Nightlife': item['age'] = 'Y'

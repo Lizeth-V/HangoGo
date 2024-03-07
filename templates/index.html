@@ -1,24 +1,16 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Flask App</title>
+    <title>Active Place Details</title>
 </head>
-
 <body>
-    <h1>Recommendation</h1>
-    <a class="web_link" href=""> <button type="submit">View On Google</button> </a>
-    <div class="rec_card" style="display: flex; flex-direction: row; gap: 2%;">
-        <h1 name="place_name"></h1>
-        <form action="/accept_rec" method="post">
-            <button type="submit">Accept</button>
-        </form>
-        <form action="/decline_rec" method="post">
-            <button type="submit">Decline</button>
-        </form>
-    </div>
+    <h1>Active Place Details</h1>
+
+    <p>Place Name: {{ active_place.name }}</p>
+    <p>Location: {{ active_place.location }}</p>
+    <!-- Add more fields as needed -->
+
 </body>
 </html>

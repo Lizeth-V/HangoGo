@@ -49,7 +49,7 @@ def scrape_images(doc):
                     upsert=True
                 )
 
-            else: print("No Visiible Picture")
+            else: print("No Visible Picture")
 
 def multithread_scrape():
     l = list(collection.find({"weblink": {"$exists": True}, "image_url": {"$exists": False}}))
@@ -58,7 +58,45 @@ def multithread_scrape():
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
         executor.map(scrape_images, l)
 
-    
+def multithread_scrape_yelp():
+    l = list(collection.find({"image_url": {"$exists": False}}))
+    #print(len(l))
+    num_threads = 4
+    with ThreadPoolExecutor(max_workers=num_threads) as executor:
+        executor.map(scrape_images_yelp, l)
 
-multithread_scrape()
+
+def scrape_images_yelp(doc):
+        weblink = 'https://www.google.com/search?tbm=isch&q=' + doc['name'] + doc['address']
+        
+        driver = webdriver.Chrome()
+
+        driver.get(weblink)
+
+        time.sleep(1)
+        page_source = driver.page_source
+
+        soup = BeautifulSoup(page_source, 'html.parser')
+
+        div_tag = soup.find('div', class_='fR600b islir')
+
+        driver.quit()
+
+        if div_tag:
+            img_tag = div_tag.find('img')
+            image_url = img_tag.get('src')
+
+            #print(f"Place: {doc['name']}, Image URL: {image_url}")
+
+            if image_url:
+                collection.update_one(
+                    {"_id": doc["_id"]},
+                    {"$set": {"image_url": image_url}},
+                    upsert=True
+                )
+
+            else: print("No Visible Picture")
+
+#multithread_scrape()
+multithread_scrape_yelp()
 client.close()

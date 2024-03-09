@@ -42,34 +42,54 @@
 
     <div class="container">
         <div class="user-profile">
-            <form action ="/{{ username }}.html" method="post">
-                <h1>User Profile</h1>
-                <img src="../static/icons/hangogo.png" alt=""><br>
-                <!-- Adding the edit functionality with a form (Lizeth) -->
-                <label for="first_name">First Name</label>
-                <p id="first_name">{{first_name}}</p>
-                <input type="text" id="edit_first_name" name="edit_first_name" style="display: none;">
-                    
-                <label for="last_name">Last Name</label>
-                <p id="last_name">{{last_name}}</p>
-                <input type="text" id="edit_last_name" name="edit_last_name" style="display: none;">
-                    
-                <label for="email">Email</label>
-                <p id="email">{{email}}</p>
-                <input type="text" id="edit_email" name="edit_email" style="display: none;">
-                    
-                <label for="birthday">Birthday</label>
-                <p>{{birth_month}}/{{birth_day}}/{{birth_year}}</p>
+            <div class="user-details" id="userProfileContainer">
+                <form action ="/{{ username }}.html" method="post">
+                    <h1>User Profile</h1>
+                    <img src="../static/icons/hangogo.png" alt=""><br>
+                    <!-- Adding the edit functionality with a form (Lizeth) -->
+                    <label for="first_name">First Name</label>
+                    <p id="first_name">{{first_name}}</p>
+                    <input type="text" id="edit_first_name" name="edit_first_name" style="display: none;">
+                        
+                    <label for="last_name">Last Name</label>
+                    <p id="last_name">{{last_name}}</p>
+                    <input type="text" id="edit_last_name" name="edit_last_name" style="display: none;">
+                        
+                    <label for="email">Email</label>
+                    <p id="email">{{email}}</p>
+                    <input type="text" id="edit_email" name="edit_email" style="display: none;">
+                        
+                    <label for="birthday">Birthday</label>
+                    <p>{{birth_month}}/{{birth_day}}/{{birth_year}}</p>
 
-                <!-- Buttons to submit the form with the changes the user makes -->
-                <button id="editButton" type="button" onclick="enableEditMode()">Edit Details</button>
-                <button type="submit" style="display: none;">Save Changes</button>
-                <button id="cancelButton" type="button" onclick="cancelEditMode()" style="display: none;">Cancel</button>
+                    <!-- Buttons to submit the form with the changes the user makes -->
+                    <button id="editButton" type="button" onclick="enableEditMode()">Edit Details</button>
+                    <button type="submit" style="display: none;">Save Changes</button>
+                    <button id="cancelButton" type="button" onclick="cancelEditMode()" style="display: none;">Cancel</button>
 
-            </form>
+                    
+
+                </form>
+            </div>
+
+            <!-- Hidden choices -->
+            <div class="more-choices" id="moreChoicesContainer" style="display: none;">
+                <form action="/delete_account/{{ username }}.html" method="post">
+                    <!-- Existing form fields and buttons -->
+                    <p>Location</p>
+                
+                    <!-- Delete Account button -->
+                    <button id="deleteButton" type="button" onclick="delete_acct()">Delete Account</button>
+                </form>
+            </div>
+
+            <button class="arrow_down" onclick="toggleDetails()">
+                <p3>▼</p3>
+            </button>
+
+            
 
         </div>
-
 
         <div class="user-chatbox">
             <hr class="horizontal-line">
@@ -121,6 +141,31 @@
             document.getElementById('editButton').style.display = 'inline-block';
             document.querySelector('button[type="submit"]').style.display = 'none';
             document.getElementById('cancelButton').style.display = 'none';
+        }
+
+        // switching between the profile details conatiner and other
+        function toggleDetails(){
+            var userProfileContainer = document.getElementById('userProfileContainer');
+            var moreChoicesContainer = document.getElementById('moreChoicesContainer');
+
+            if (userProfileContainer.style.display !== 'none') {
+            // hiding profile details to show other content 
+            userProfileContainer.style.display = 'none';
+            moreChoicesContainer.style.display = 'block';
+            } 
+            else {
+            // hiding other content and displaying profile again
+            userProfileContainer.style.display = 'block';
+            moreChoicesContainer.style.display = 'none';
+            }
+        }
+
+        // Option for user to delete account
+        function delete_acct(){
+            var confirmDelete = confirm("Are you sure you want to delete your account?");
+            if (confirmDelete){
+                document.forms[0].submit(); 
+            }
         }
 
     </script>

@@ -1,9 +1,14 @@
-body{
+/* body{
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
-}
+} */
+
+.logo img {
+    width: 100px;
+    height: auto; 
+  }
 
 .header-container{
     display: flex;
@@ -32,7 +37,7 @@ body{
 /* top navigation bar */
 .top-nav {
     color: white;
-    padding: 10px;
+    display: flex;
     text-align: center;
 }
 

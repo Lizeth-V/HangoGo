@@ -16,6 +16,16 @@ html{
     height: 100%;
 }
 
+form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; 
+}
+form label{
+    color: #989898;
+}
+
 .container {
     display:flex;
     flex-direction: row;
@@ -43,6 +53,7 @@ html{
 .user-profile input[type="text"]{
     display:flex;
     background-color: #fff;
+    color: #989898;
     width: 70%;
     justify-content: center;
     align-items: center;
@@ -84,4 +95,43 @@ button{
     color: white;
     text-align: center;
     border: none;
+}
+
+.arrow_down {
+    text-align: center;
+    margin-top: 20px; 
+    color: #666; 
+}
+
+.arrow_down p {
+    display: inline-block; /* Center the text horizontally */
+}
+
+#moreChoicesContainer {
+    display: flex;
+    flex-direction: column;
+    background-color: #FEE8C8; 
+    justify-content: center;
+    align-items: center;
+    min-width: 50%;
+    padding: 20px; 
+    border-radius: 5px; 
+}
+
+#moreChoicesContainer #deleteButton{
+    background-color: red;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    padding: 12px 20px;
+    margin: 8px 0;
+}
+
+#moreChoicesContainer #deleteButton:hover {
+    background-color: darkred;
 }

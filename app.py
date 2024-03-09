@@ -250,10 +250,30 @@ mail = Mail(app)
 
 #     return render_template("edit_user.html", username=username, user=user)
 
+# Map Page (Lizeth)
 @app.route("/map")
 def map():
     print("Redirected to Map Page!")
     return render_template('map.html')
+
+# About Us/ How to use the site (Lizeth)
+@app.route("/about_us")
+def about_us():
+    print("Redirect to About Us page!")
+    return render_template('about_us.html')
+
+# Delete Account
+@app.route("/delete_account/<username>", methods=["POST"])
+def delete_acct(username):
+    print("Delete Account")
+    result = users_collection.delete_one({'username': username})
+    if result.deleted_count == 1:
+        # Account deletion successful, redirect to the index page or any other desired destination
+        return redirect(url_for('index'))
+    else:
+        flash('Failed to delete account.')
+
+    return redirect(url_for('index'))
 
 
 

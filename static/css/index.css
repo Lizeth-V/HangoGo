@@ -1,7 +1,20 @@
-/* Add styles for the login and signup buttons */
+body{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.header-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+/*  styles for the login and signup buttons */
 .login-signup {
     display: flex;
-    justify-content: flex-end;
     align-items: center;
     padding: 10px;
 }
@@ -14,4 +27,18 @@
     border: 1px solid;
     border-radius: 5px;
     background-color: #5DB946;
+}
+
+/* top navigation bar */
+.top-nav {
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+.top-nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 20px;
+    font-size: 16px;
 }

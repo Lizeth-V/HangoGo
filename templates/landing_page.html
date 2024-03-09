@@ -74,12 +74,11 @@
 
             <!-- Hidden choices -->
             <div class="more-choices" id="moreChoicesContainer" style="display: none;">
-                <form action="/delete_account/{{ username }}.html" method="post">
-                    <!-- Existing form fields and buttons -->
+                <form action="{{ url_for('delete_acct') }}" method="post">
                     <p>Location</p>
                 
                     <!-- Delete Account button -->
-                    <button id="deleteButton" type="button" onclick="delete_acct()">Delete Account</button>
+                    <button type="submit" id="deleteButton" onclick="delete_acct()">Delete Account</button>
                 </form>
             </div>
 

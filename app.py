@@ -133,11 +133,19 @@ def login():
 
 # Landing Page that will display the chatbox and the user profile  - (Gloria & Lizeth)
 # Also allows users to update thier name and email if preferred - but won't reverify emails
-@app.route('/<username>.html', methods=['GET', 'POST'])
+@app.route('/<username>', methods=['GET', 'POST'])
 def landing_page(username):
-    user = users_collection.find_one({"username": username})
-    if user is None:
-        return "Page not found", 404
+    user = session.get('user')
+    
+    if not user:
+        return redirect(url_for('login'))
+
+    username = user['username']
+    landing_page_url = f"/{username}.html"
+
+    # user = users_collection.find_one({"username": username})
+    # if user is None:
+    #     return "Page not found", 404
     
     # This should update the users changes in the Editing mode in their profile (Lizeth)
     if request.method == 'POST':
@@ -263,14 +271,25 @@ def about_us():
     return render_template('about_us.html')
 
 # Delete Account
-@app.route("/delete_account/<username>", methods=["POST"])
-def delete_acct(username):
+@app.route("/delete_account", methods=["POST"])
+def delete_acct():
     print("Delete Account")
-    result = users_collection.delete_one({'username': username})
-    if result.deleted_count == 1:
-        # Account deletion successful, redirect to the index page or any other desired destination
-        return redirect(url_for('index'))
-    else:
+
+    user = session.get('user')
+    user_id = user.get('_id')
+    print(user_id)
+
+    try:
+        result = users_collection.delete_one({'_id': ObjectId(user_id)})
+        if result.deleted_count == 1:
+            # Account deletion successful, redirect to the index page or any other desired destination
+            # Clear user session
+            print('Delete Account Success')
+            session.pop('user', None)
+            return redirect(url_for('index'))
+        else:
+            flash('Failed to delete account.')
+    except Exception as e:
         flash('Failed to delete account.')
 
     return redirect(url_for('index'))

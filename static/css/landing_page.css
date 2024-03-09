@@ -19,11 +19,13 @@ html{
 
 
 .container {
-    display:flex;
-    flex-direction: row;
+    display: flex; 
+    flex-direction: row;   
     height: 100%;
-    min-width: 100%;
+    width: 100%;
+    justify-content: center;
 }
+
 
 .user-profile {
     display: flex;
@@ -31,7 +33,6 @@ html{
     background-color:#FEE8C8;
     justify-content: center;
     align-items: center;
-    min-width: 50%;
 }
 
 .user-profile label {
@@ -59,7 +60,6 @@ html{
     display: flex;
     flex-direction: column;
     background-color:rgba(242,197,130,1);
-    min-width: 50%;
 }
 
 
@@ -78,6 +78,57 @@ html{
     box-shadow: none;
 
 }
+
+
+
+.user-profile,
+.user-chatbox {
+    width: 100%;
+    transition: width 0.5s;
+    overflow: hidden;
+    pointer-events: auto;
+    flex-grow: 1;
+}
+
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hide-profile {
+    width: 0;
+}
+
+.expanded-chatbox {
+    width: 100%;
+}
+
+.hide-chatbox {
+    width: 0;
+}
+
+.expanded-profile {
+    width: 100%;
+}
+
+.expandProfileBtn {
+    font-size: xx-large;
+    color: #FEE8C8;
+    background: transparent;
+    outline: none;
+    border: none;
+}
+
+.expandChatboxBtn {
+    font-size: xx-large;
+    color: #FEE8C8;;
+    background: transparent;
+    outline: none;
+    border: none;
+}
+
 
 @font-face {
     font-family: 'Roboto';

@@ -142,10 +142,6 @@ def landing_page(username):
 
     username = user['username']
     landing_page_url = f"/{username}.html"
-
-    # user = users_collection.find_one({"username": username})
-    # if user is None:
-    #     return "Page not found", 404
     
     # This should update the users changes in the Editing mode in their profile (Lizeth)
     if request.method == 'POST':
@@ -270,14 +266,14 @@ def about_us():
     print("Redirect to About Us page!")
     return render_template('about_us.html')
 
-# Delete Account
+# Delete Account (Lizeth)
 @app.route("/delete_account", methods=["POST"])
 def delete_acct():
     print("Delete Account")
 
     user = session.get('user')
     user_id = user.get('_id')
-    print(user_id)
+
 
     try:
         result = users_collection.delete_one({'_id': ObjectId(user_id)})

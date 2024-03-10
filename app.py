@@ -285,7 +285,7 @@ def contact():
 # Gloria
 # favorites page
 
-@app.route("/favorites", methods=["GET", "POST"])
+@app.route("/favorites", methods=["GET"])
 def favorites():
     user_id = session.get("_id")
     page = request.args.get("page", default=1, type=int)

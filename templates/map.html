@@ -24,13 +24,13 @@
         <div class="navbar">
             <!-- User Profile -->
             <div class="icon-container"> 
-                <a href="">
+                <a href="{{ url_for('landing_page', username=user['username']) }}">
                     <i class="bx bxs-user-detail icon"></i>
                 </a>
             </div>
             <!-- Map -->
             <div class="icon-container"> 
-                <a href="/map">
+                <a href="{{ url_for('map') }}">
                     <i class="bx bxs-map-pin icon"></i>
                 </a>
             </div>

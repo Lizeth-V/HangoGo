@@ -48,20 +48,25 @@ def match_highest_list(top_choices, radius = 500, place_type = None):
 
 
     center_point = {
-        "lat": user_loc[0],
-        "lon": user_loc[1]
+        "type": "Point",
+        "coordinates": [user_loc[1], user_loc[0]] 
     }
 
     radius = mi_2_meters(radius)
 
-    #conversion for radius calculation
-    radius_radians = radius / 6371  # Earth's radius is approximately 6371 km
-
-    object_ids = [ObjectId(choice) for choice in top_choices[:10]]
+    object_ids = [ObjectId(choice) for choice in top_choices]
 
     #query the objects in the list
     query = {
-        '_id': {'$in': object_ids},
+    '_id': {'$in': object_ids},
+    'location': {
+        '$geoWithin': {
+            '$centerSphere': [
+                center_point['coordinates'],
+                radius / 6371000  # Convert radius to radians (earth's radius in meters)
+            ]
+            }
+        }
     }
 
     #if the type is included in the function call add it to the query
@@ -71,11 +76,15 @@ def match_highest_list(top_choices, radius = 500, place_type = None):
     #return top 5 and choose randomly giving higher weight to better recommendations.
     result = list(collection.find(query).limit(5))
 
+
     best = random.choice(result)
 
     return best
     #print(best)
 
-#temp = get_highest_list('6568cbef4a9658311b3ee704')
-#match_highest_list(top_choices=temp)
+#Just for demo purposes: the just easily pass parameter to the functions
+temp = get_highest_list('6568cbef4a9658311b3ee704')
+
+print(temp)
+print(match_highest_list(top_choices=temp))
 

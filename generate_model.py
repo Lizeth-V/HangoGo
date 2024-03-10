@@ -7,7 +7,6 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 #import warnings
 #warnings.filterwarnings("ignore", category=DeprecationWarning, module="tensorflow")
 ################################################################
-import tensorflow as tf
 
 import pandas as pd
 import numpy as np
@@ -24,7 +23,9 @@ from sklearn.metrics import accuracy_score, classification_report
 ################################################################
 
 
-def generate_place_probablities(uid):
+def generate_place_probabilities(uid):
+    import tensorflow as tf
+
     start = time.time()
 
     #read in dataframe from the cleaned datafile
@@ -191,3 +192,5 @@ def generate_place_probablities(uid):
     print('Running time: ', int((time.time() - start) * 1000), 'ms')
 
 
+#this is just for demoing
+#generate_place_probabilities('6568cbef4a9658311b3ee704')

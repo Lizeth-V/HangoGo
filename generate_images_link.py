@@ -56,7 +56,7 @@ def scrape_images(doc):
 
 def multithread_scrape():
     #find all documents with weblink and not already operated on 
-    l = list(collection.find({"weblink": {"$exists": True}, "image_url": {"$exists": False}}))
+    l = list(collection.find({"weblink": {"$exists": True}}))
 
     #mulithread the process since we it takes so long to run one
     num_threads = 4
@@ -107,6 +107,6 @@ def scrape_images_yelp(doc):
             else: print("No Visible Picture")
 
 #uncomment the following to scrape 
-#multithread_scrape() #for documents with google weblinks
+multithread_scrape() #for documents with google weblinks
 #multithread_scrape_yelp() #for all other documents (yelp, etc.)
 client.close()

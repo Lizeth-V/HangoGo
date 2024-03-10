@@ -1,0 +1,6 @@
+def delete_all_user_data(uid):
+    #delete from ratings database
+
+    #then delete from user database
+
+def delete_user_feedback(uid):

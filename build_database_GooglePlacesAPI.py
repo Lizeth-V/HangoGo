@@ -249,10 +249,9 @@ connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/
 dbname = "Hango"
 collection_name = "Places"
 
-# Establish a connection to MongoDB Atlas
 client = MongoClient(connection_string)
 
-# Accessing the database
+#Accessing the database
 db = client[dbname]
 
 # Accessing the collection

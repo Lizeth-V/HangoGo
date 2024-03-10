@@ -1,6 +1,9 @@
 from pymongo import MongoClient
 from bson import ObjectId
 
+#run once per db update
+#adds the location field to the place database for geo-loaction queries
+
 #mongo
 connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
 dbname = "Hango"

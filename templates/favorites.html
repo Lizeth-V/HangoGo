@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div class="logo">
+        <h1>hangogo</h1>
+        <ul>
+            <li><a href="logout">logout</a></li>
+        </ul>
+    </div>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../static/css/favorites.css">
+    <title>Hangogo</title>
+</head>
+<body>
+
+    <div class="responsive-three-column-grid">
+        <div class="favorites-list">
+            {% for favorite in favorites %}
+            <div class="favorite">
+                <img src="{{ favorite.icon }}" alt="Icon">
+                <div>
+                    <p>{{ favorite.name }}</p>
+                    <p>{{ favorite.address }}</p>
+                    <button type="button" class="btn btn-success">visit</button>
+                    <button type="button" class="btn btn-danger">delete</button>
+                </div>
+            </div>
+            {% endfor %}
+
+
+            <ul class="pagination">
+                {% for p in range(1, (total_places // per_page) + 2) %}
+                <li><a href="/favorites?page={{ p }}">{{ p }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="button-container">
+            <button onclick="expandFavorites()" class="expandFavoritesBtn"><i class="fa-solid fa-chevron-right"></i></button>
+            <button onclick="expandChatbox()" class="expandChatboxBtn"><i class="fa-solid fa-chevron-left"></i></button>
+        </div>
+        <div class="user-chatbox">
+            <hr class="horizontal-line">
+            <div class="chat1">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            </div>
+            <div id="place-list">
+                {% for place in place_list %}
+                <div>
+                    <p>{{place.name}}</p>
+                    <p>{{place.address}}</p>
+                    <button onclick="addToFavorites({{loop.index0}})">
+                    Add to Favorites List
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+    <script>
+        function expandChatbox() {
+            const favoritesList = document.querySelector('.favorites-list');
+            const userChatbox = document.querySelector('.user-chatbox');
+            favoritesList.classList.toggle('hide-favorites');
+            userChatbox.classList.toggle('expanded-chatbox');
+        } 
+
+        function expandFavorites() {
+            const favoritesList = document.querySelector('.favorites-list');
+            const userChatbox = document.querySelector('.user-chatbox');
+            favoritesList.classList.toggle('expanded-favorites');
+            userChatbox.classList.toggle('hide-chatbox');
+        }
+    </script>
+</body>
+</html>

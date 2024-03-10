@@ -79,8 +79,6 @@ html{
 
 }
 
-
-
 .user-profile,
 .user-chatbox {
     width: 100%;
@@ -141,3 +139,18 @@ html{
     font-style: normal;
     src: url('https://fonts.googleapis.com/css?family=Inter');
 }
+
+/* @media only screen and (min-width: 600px) {
+    .container {
+        flex-direction: row;
+        justify-content: space-between; 
+    }
+    .user-profile {
+        flex: 1;
+        overflow-y: auto;
+    }
+    .user-chatbox {
+        flex: 2;
+        overflow-y: auto;
+    }
+}   */

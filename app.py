@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 from flask_pymongo import PyMongo
 from register import register_user, hash_password
-from db import users_collection
+from db import users_collection, places_collection
 
 app = Flask(__name__)
 
@@ -246,7 +246,7 @@ def update_user():
 # Gloria
 # send contact form
 def send_contact_form(result):
-    sender = 'hangogo.verify@gmail.com'
+    sender = 'letshangogo@gmail.com'
     recipients = [result["email"], sender]
     subject = "Feedback from {}".format(result["email"])
     msg = Message(subject, sender = sender, recipients=recipients)
@@ -281,7 +281,27 @@ def contact():
         except Exception as e:
             return f"An error occurred: {e}"
     return render_template("contact.html")
-     
+
+# Gloria
+# favorites page
+
+@app.route("/favorites", methods=["GET", "POST"])
+def favorites():
+    page = request.args.get("page", default=1, type=int)
+    per_page = 10
+    query = {"sub_types": "cafe"}
+    places = places_collection.find(query)
+    total_places = 24
+    print(total_places)
+    places = places.skip((page - 1) * per_page).limit(per_page)
+    favorites_list = []
+    for place in places:
+        favorites_list.append({
+            "icon": place["image_url"],
+            "name": place["name"],
+            "address": place["address"]
+        })
+    return render_template("favorites.html", favorites=favorites_list, page=page, per_page=per_page, total_places=total_places)
 
 if __name__ == "__main__":
     app.run(debug=True)

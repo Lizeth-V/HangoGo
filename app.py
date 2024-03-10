@@ -10,12 +10,13 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
-
 from flask_pymongo import PyMongo
 from register import register_user, hash_password
 from db import users_collection, places_collection
 
 app = Flask(__name__)
+
+
 
 # secret key (Lizeth)
 app.secret_key = "supersecrethangogo!!!!"
@@ -162,6 +163,7 @@ saved_places = []
 
 # Gloria
 @app.route('/add_to_favorites', methods = ["POST"])
+@login_required
 def add_to_favorites():
     place_index = int(request.form['place_index'])
     place = place_list[place_index]
@@ -282,9 +284,10 @@ def contact():
             return f"An error occurred: {e}"
     return render_template("contact.html")
 
+
+
 # Gloria
 # favorites page
-
 @app.route("/favorites", methods=["GET"])
 def favorites():
     user_id = session.get("_id")

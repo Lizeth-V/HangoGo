@@ -127,6 +127,17 @@ html{
     background-color:#FEE8C8;
 }
 
+#place-list button {
+    background-color: #FEE8C8;
+    color: #000;
+    border: 2px solid #FEE8C8;
+    border-radius: 5px;
+    padding: 1em;
+    margin-left: 10%;
+    box-shadow: none;
+
+}
+
 @font-face {
     font-family: 'Roboto';
     font-style: normal;

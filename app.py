@@ -163,7 +163,6 @@ saved_places = []
 
 # Gloria
 @app.route('/add_to_favorites', methods = ["POST"])
-@login_required
 def add_to_favorites():
     place_index = int(request.form['place_index'])
     place = place_list[place_index]

@@ -287,11 +287,12 @@ def contact():
 
 @app.route("/favorites", methods=["GET", "POST"])
 def favorites():
+    user_id = session.get("_id")
     page = request.args.get("page", default=1, type=int)
     per_page = 10
     query = {"sub_types": "cafe"}
     places = places_collection.find(query)
-    total_places = 24
+    total_places = 24 #hard code the total places count() does not work
     places = places.skip((page - 1) * per_page).limit(per_page)
     favorites_list = []
     for place in places:
@@ -300,7 +301,7 @@ def favorites():
             "name": place["name"],
             "address": place["address"]
         })
-    return render_template("favorites.html", favorites=favorites_list, page=page, per_page=per_page, total_places=total_places)
+    return render_template("favorites.html", user_id=user_id, favorites=favorites_list, page=page, per_page=per_page, total_places=total_places)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -292,7 +292,6 @@ def favorites():
     query = {"sub_types": "cafe"}
     places = places_collection.find(query)
     total_places = 24
-    print(total_places)
     places = places.skip((page - 1) * per_page).limit(per_page)
     favorites_list = []
     for place in places:

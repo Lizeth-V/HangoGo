@@ -139,9 +139,12 @@ def landing_page(username):
     
     if not user:
         return redirect(url_for('login'))
-
+    
+    # Retrive user session information
+    user_id = user.get('_id')
     username = user['username']
-    landing_page_url = f"/{username}.html"
+    # Retrieve user information from the database
+    user_from_db = users_collection.find_one({"_id": user_id})
     
     # This should update the users changes in the Editing mode in their profile (Lizeth)
     if request.method == 'POST':
@@ -175,6 +178,7 @@ def landing_page(username):
     
 
     return render_template("landing_page.html",
+                           user=user_from_db,
                            username = username,
                            first_name = user["first_name"],
                            last_name = user["last_name"],
@@ -233,32 +237,22 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 
-# This should update the users changes in the Editing mode in their profile (Lizeth)
-# @app.route('/update-user/username', methods=['GET', 'POST'])
-# def update_user(username):
-#     print("Update User being used")
-#     user = users_collection.find_one({"username": username})
-
-#     if request.method == 'POST':
-#     # get the new user data from the form  
-#         first_name = request.form.get('edit_first_name')
-#         last_name = request.form.get('edit_last_name')
-#         email = request.form.get('edit_email')
-
-#         # update the database
-#         users_collection.update_one(
-#             {'user_id': username},  
-#             {'$set': {'first_name': first_name, 'last_name': last_name, 'email': email}}
-#         )
-#         return redirect(url_for('landing_page', username=username))
-
-#     return render_template("edit_user.html", username=username, user=user)
 
 # Map Page (Lizeth)
 @app.route("/map")
 def map():
+    # Retrive user session information
+    user = session.get('user')
+
+    if user is None:
+        flash('Please log in to access the map.')
+        return redirect(url_for('login'))
+    
+    # Retrieve user information from the database
+    # user_id = user.get('_id') 
+    # user_from_db = users_collection.find_one({"_id": user_id})
     print("Redirected to Map Page!")
-    return render_template('map.html')
+    return render_template('map.html', user=user)
 
 # About Us/ How to use the site (Lizeth)
 @app.route("/about_us")
@@ -273,7 +267,6 @@ def delete_acct():
 
     user = session.get('user')
     user_id = user.get('_id')
-
 
     try:
         result = users_collection.delete_one({'_id': ObjectId(user_id)})

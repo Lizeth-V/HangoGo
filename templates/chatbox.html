@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbox</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+
+  <body>
+    <div class="container mt-5">
+        <div class="chatbox">
+                  <div class="messages" id="messages">
+                    <div class="scroll" class="scroll">
+                    <div id="message-stack" class="message-stack"></div>
+                    </div>
+                  </div>
+
+              
+              
+              <form id="message-form" class="send-message-form" method="post" action="{{ url_for('index') }}">
+                <div class="input-group">
+                  <select class="selector" id="message_type" name="message_type" required onchange="showFields()">
+                    <option value="">Please select...</option>
+                    <option value="default">Recommend me anything!</option>
+                    <option value="radius">Recommend me anything in a radius</option>
+                    <option value="type">Recommend me a type...</option>
+                    <option value="type_radius">Recommend me this type in this radius</option>
+                  </select>
+                  
+                </div>
+
+                <button type="submit" id = "submit_button">Send</button>
+              </form> 
+              <div class="additional_fields" id="additional_fields"></div>
+            </div>
+        </div>
+
+    <script>
+      document.getElementById('message-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        //HANDLE THE UI ELEMENTS
+        /*
+        var submit_elements = this.elements;
+        for (var i = 0; i < submit_elements.length; i++) {
+          submit_elements[i].disabled = true;
+          submit_elements[i].style.visibility = 'hidden'; 
+        }
+        
+        this.style.height = "0%";
+
+        
+
+        var m_box = document.getElementById('messages');
+        m_box.style.height = '100%';
+        */
+        ////////////////////////////////////////////////////USER MESSAGE////////////////////////////////////////////////////////////////
+        var messageType = document.getElementById('message_type').value;
+        var radius = document.getElementById('radius') ? document.getElementById('radius').value : '';
+        var placeType = document.getElementById('place_type') ? document.getElementById('place_type').value : '';
+
+        var messageContent = "";
+
+        if (messageType == "default") {
+          messageContent = "Take me Anywhere!";
+        }
+        else if (messageType == "radius") {
+          messageContent = "Take me somewhere in ";
+          messageContent += radius;
+          messageContent += " miles";
+        }
+        else if (messageType == "type") {
+          messageContent = "Take me somewhere that invloves ";
+          messageContent += placeType;
+        }
+        else if (messageType == "type_radius") {
+          messageContent = "Take me somewhere in ";
+          messageContent += radius;
+          messageContent += " miles";
+          messageContent += " that invloves ";
+          messageContent += placeType
+        }
+
+        var user_req_message = document.createElement('div');
+        user_req_message.className = 'user-message';
+
+        user_req_message.appendChild(document.createTextNode(messageContent));
+
+        var userImage = document.createElement('img');
+        userImage.src = "{{ url_for('static', filename='hango.png') }}";
+        userImage.className = 'user-image';
+
+        user_req_message.appendChild(userImage);
+
+////////////////////////////////////////////////////USER MESSAGE////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////HANGO MESSAGE////////////////////////////////////////////////////////////////
+
+        var scrollDiv = document.querySelector('.scroll');
+        scrollDiv.scrollTop = scrollDiv.scrollHeight;
+        
+        var messageContent = "Fun Choice! Here's what I came up with:";
+        
+        var newMessage = document.createElement('div');
+        newMessage.className = 'message';
+
+        var messageImage = document.createElement('img');
+        messageImage.src = "{{ url_for('static', filename='hango.png') }}";
+        messageImage.className = 'message-image';
+
+        newMessage.appendChild(messageImage);
+        newMessage.appendChild(document.createTextNode(messageContent));
+
+        var messageStack = document.getElementById('message-stack');
+        messageStack.insertBefore(user_req_message, messageStack.firstChild); 
+        messageStack.insertBefore(newMessage, messageStack.firstChild);
+        
+        var scrollDiv = document.querySelector('.scroll');
+        scrollDiv.scrollTop = scrollDiv.scrollHeight;
+////////////////////////////////////////////////////HANGO MESSAGE////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////REC MESSAGE////////////////////////////////////////////////////////////////
+      var user_id = ""
+      fetchActivePlaceAndUpdate(user_id, radius, placeType)
+      .then(activePlace => {
+        // Create the active recommendation message elements
+        var active_rec_message = document.createElement('div');
+        active_rec_message.className = 'active-rec-message';
+
+        var rec_info = document.createElement('div');
+        rec_info.className = 'rec-info';
+
+        var rec_image = document.createElement('img');
+        rec_image.src = activePlace.image_url;
+        rec_image.className = 'rec-image';
+
+        var rec_text_info = document.createElement('div');
+        rec_text_info.className = 'rec-text-info';
+
+        var rec_title = document.createElement('h1');
+        rec_title.textContent = activePlace.name;
+
+        var rec_address = document.createElement('h2');
+        rec_address.textContent = activePlace.address;
+
+        rec_text_info.appendChild(rec_title);
+        rec_text_info.appendChild(rec_address);
+
+        rec_info.appendChild(rec_image);
+        rec_info.appendChild(rec_text_info);
+
+        var rec_button_group = document.createElement('div');
+        rec_button_group.className = 'rec-button-group';
+
+        var accept_button = document.createElement('button');
+        accept_button.className = 'accept-button';
+        accept_button.textContent = 'Accept';
+        accept_button.onclick = function() {
+            // Functionality to handle acceptance
+        };
+
+        var decline_button = document.createElement('button');
+        decline_button.className = 'decline-button';
+        decline_button.textContent = 'Decline';
+        decline_button.onclick = function() {
+            // Functionality to handle decline
+        };
+
+        rec_button_group.appendChild(accept_button);
+        rec_button_group.appendChild(decline_button);
+
+        active_rec_message.appendChild(rec_info);
+        active_rec_message.appendChild(rec_button_group);
+
+        // Insert the active recommendation message into the message stack
+        var messageStack = document.getElementById('message-stack');
+        messageStack.insertBefore(active_rec_message, messageStack.firstChild);
+
+        // Scroll to the bottom of the message stack
+        var scrollDiv = document.querySelector('.scroll');
+        scrollDiv.scrollTop = scrollDiv.scrollHeight;
+      })
+      .catch(error => {
+          // Handle any errors that occurred during the fetch
+          console.error('Error:', error);
+      });
+        });
+
+      function fetchActivePlaceAndUpdate(user_id, radius, placeType) {
+          var url = `/get_new_active_place?user_id=${user_id}&radius=${radius}&place_type=${placeType}`;
+          return fetch(url)
+              .then(response => response.json())
+              .then(data => {
+                  return data.active_place;
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  throw error;
+              });
+      }
+
+      
+      function showFields() {
+        var selection = document.getElementById("message_type").value;
+        var fieldsContainer = document.getElementById("additional_fields");
+        fieldsContainer.innerHTML = ""; // Clear the previous fields
+
+        if (selection === "radius" || selection === "type_radius") {
+          // If radius is needed, add the radius input field
+          fieldsContainer.innerHTML += `
+            <label for="radius">Radius (in miles):</label>
+            <select id="radius" name="radius" required>
+              <option value="">Please select...</option>
+              <option value="5">5 mi</option>
+              <option value="10">10 mi</option>
+              <option value="20">20 mi</option>
+            </select><br>
+          `;
+        }
+
+        if (selection === "type" || selection === "type_radius") {
+          // If type is needed, add the place type dropdown
+          fieldsContainer.innerHTML += `
+            <label for="place_type">Place Type:</label>
+            <select id="place_type" name="place_type" required>
+              <option value="">Please select...</option>
+              <option value="Food">Food</option>
+              <option value="Drinks">Drinks</option>
+              <option value="Entertainment">Museum</option>
+              <option value="Nature/Recreation">Nature/Recreation</option>
+              <option value="Museum/Art">Museum/Art</option>
+              <option value="Nightlife">Nightlife</option>
+            </select><br>
+          `;
+        }
+      }
+    </script>
+    
+  </body>
+  </html>

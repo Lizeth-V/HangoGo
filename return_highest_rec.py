@@ -83,8 +83,8 @@ def match_highest_list(top_choices, radius = 500, place_type = None):
     #print(best)
 
 #Just for demo purposes: the just easily pass parameter to the functions
-temp = get_highest_list('6568cbef4a9658311b3ee704')
+#temp = get_highest_list('6568cbef4a9658311b3ee704')
 
-print(temp)
-print(match_highest_list(top_choices=temp))
+#print(temp)
+#print(match_highest_list(top_choices=temp))
 

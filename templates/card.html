@@ -128,6 +128,76 @@
         function submitForm(formId) {
             document.getElementById(formId).submit();
         }
+
+        function newActiveCard() {
+
+            var newActivePlace = {
+                name: "New Place",
+                address: "New Address",
+                image_url: "path/to/image.jpg",
+                weblink: "https://example.com/new-place"
+            };
+
+            var newCardContainer = document.createElement('div');
+            newCardContainer.className = 'place_card_active';
+            newCardContainer.style.display = 'flex';
+            newCardContainer.style.gap = '20px';
+
+            var newImage = document.createElement('img');
+            newImage.src = newActivePlace.image_url;
+            newImage.alt = newActivePlace.name;
+            newImage.style.maxWidth = '180px';
+            newImage.style.maxHeight = '180px';
+            newImage.style.borderRadius = '5px';
+            newImage.style.padding = '10px';
+
+            var newTextContainer = document.createElement('div');
+            newTextContainer.className = 'place_card_active_text';
+            newTextContainer.style.display = 'flex';
+            newTextContainer.style.flexDirection = 'column';
+            newTextContainer.style.alignItems = 'start';
+            newTextContainer.style.justifyItems = 'start';
+
+            var newName = document.createElement('h1');
+            newName.textContent = newActivePlace.name;
+
+            var newAddress = document.createElement('h2');
+            newAddress.textContent = newActivePlace.address;
+
+            var newLink = document.createElement('a');
+            newLink.href = newActivePlace.weblink;
+            newLink.style.height = '30%';
+            newLink.textContent = 'View on Google';
+
+            // Append elements to the new card container
+            newTextContainer.appendChild(newName);
+            newTextContainer.appendChild(newAddress);
+            newTextContainer.appendChild(newLink);
+
+            newCardContainer.appendChild(newImage);
+            newCardContainer.appendChild(newTextContainer);
+
+            // Insert the new card container before the existing one
+            var existingCardContainer = document.getElementById('activePlaceCardContainer');
+            existingCardContainer.parentNode.insertBefore(newCardContainer, existingCardContainer);
+
+            // Clear form fields after adding a new card
+            document.getElementById('new-title').value = '';
+            document.getElementById('new-content').value = '';
+        }
+
+
+        function fetchActivePlaceAndUpdate(radius, placeType) {
+            var url = `/get_new_active_place?radius=${radius}&place_type=${placeType}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    var active_place = data.active_place;
+                    callback(active_place);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
     </script>
 
 </body>

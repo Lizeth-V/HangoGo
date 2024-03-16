@@ -2,9 +2,9 @@ import time
 from pymongo import MongoClient
 import geocoder
 import random
+from geopy.geocoders import Nominatim
 
 import temp_feedback
-
 
 def sign_in_email():
     email = input("Enter your email address: ")
@@ -30,9 +30,6 @@ def sign_in_email():
         return None
     
     client.close()
-
-
-
 
 def generate_location(radius, user_location):
     connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
@@ -66,6 +63,24 @@ def generate_location(radius, user_location):
         # Execute the query and store the results in a list
         result_list = list(collection.find(query))
         
+        #NHU'S CODE START (prevent generating the same locations)
+        #cross check results of list with ratings data
+        already_rec_collection = db["ratings"]
+        query_ratings = {"user_id": user_ID}
+        places = list(already_rec_collection.find(query_ratings))
+        #list of place_ids in the rating database to check with the result_list
+        check = [place['place_id'] for place in places]
+        #remove places that are already in the check list
+        for place in result_list[:]: #prevent length of list decreasing and not being able to delete
+            if str(place['_id']) in check:
+                result_list.remove(place) 
+        #NHU'S CODE END
+
+        #NHU's CODE
+        if len(result_list) == 0:
+            print("No new places to recommend.")
+        #END
+            
         return result_list
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -79,7 +94,19 @@ def generate_location(radius, user_location):
 user_ID = sign_in_email()
 
 if user_ID:
-    user_loc = geocoder.ip('me').latlng
+    #NHU'S CODE START (retrieve actual location from user in database and return long/lat for model)
+    # Instantiate a new Nominatim client
+    app = Nominatim(user_agent="test")
+    # Address of user
+    # query = { "_id": ObjectId(user_ID) }
+    # user_col = collection.find_one(query)['address'] #return {'street': '', 'city': '', 'state': 'CA', 'zip_code': '', 'country': 'USA'}
+    # user_add = user_col['street'] + ', ' + user_col['city'] + ', ' + user_col['state'] 
+    user_add = str(input('Enter city (like Long Beach, CA): '))
+    address = app.geocode(user_add).raw
+    # Get long and lat from data
+    user_loc = [float(address['lat']), float(address['lon'])]
+    #NHU'S CODE END
+
     radius = float(input("Choose radius in mi: "))
     
     print("User: ", user_ID, "at " , user_loc[0], user_loc[1])
@@ -96,12 +123,14 @@ if user_ID:
         print("Sub Types: ", str(choice['sub_types']))
         print("View on google: ", str(choice['weblink']))
 
-        feedback = input("'A' for accept, 'D' for decline: ")
+        feedback = input("'A' for accept, 'D' for decline, 'E' to exit: ")
 
         if feedback == 'A':
             temp_feedback.accept_recommendation_update(user_ID, place_ID)
         elif feedback == 'D':
             temp_feedback.decline_recommendation_update(user_ID, place_ID)
+        elif feedback == 'E':
+            break
         else:
             print("Please enter a valid response: ")
             print("Place: ", str(choice['name']))
@@ -110,5 +139,5 @@ if user_ID:
             print("Sub Types: ", str(choice['sub_types']))
             print("View on google: ", str(choice['weblink']))
 
-            feedback = input("'A' for accept, 'D' for decline: ")
+            feedback = input("'A' for accept, 'D' for decline, 'E' to exit: ")
 

@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from bson import ObjectId
 import random
 import geocoder
+from geopy.geocoders import Nominatim
 
 connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
 dbname = "Hango"
@@ -9,6 +10,19 @@ dbname = "Hango"
 
 def mi_2_meters(miles):
     return miles*1609
+
+#Nhu's code
+def get_location(u_id):
+    app = Nominatim(user_agent="test")
+    # UNCOMMENT CODE ONCE USERS HAVE THE CORRECT ADDRESSES (NOT DUMMY ADDRESSES)
+    # query = { "_id": ObjectId(u_id) }
+    # user_col = collection.find_one(query)['address'] #return {'street': '', 'city': '', 'state': 'CA', 'zip_code': '', 'country': 'USA'}
+    # user_add = user_col['street'] + ', ' + user_col['city'] + ', ' + user_col['state'] 
+    user_add = str(input('Enter city: '))
+    address = app.geocode(user_add).raw
+    # Get long and lat from data
+    user_loc = [float(address['lat']), float(address['lon'])]
+    return user_loc
 
 def get_highest_list(u_id):    
     #get the list of places in probability order and return
@@ -44,7 +58,7 @@ def match_highest_list(top_choices, radius = 500, place_type = None):
 
     #replace this with the html gps location coordinates, more accurate.
 
-    user_loc = geocoder.ip('me').latlng
+    user_loc = geocoder.ip('me').latlng #get_location(u_id) later when using locations from database, change get_location code too!
 
 
     center_point = {

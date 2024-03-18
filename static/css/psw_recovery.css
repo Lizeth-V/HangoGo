@@ -9,9 +9,38 @@ body {
 html{
     height: 100%;
 }
+
+input[type=text] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid rgb(255, 255, 255);
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    
+}
+
+input[type=text]::placeholder{
+    color: rgb(232, 232, 232);
+}
+
+
 header {
     padding: 50px; 
 }
+
+label{
+    font-family: 'Inter', sans-serif;
+    font-size: medium;
+    font-weight: light;
+}
+
+form {
+    width: 50%;
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -23,39 +52,34 @@ header {
     color: white;
     padding: 10px;
 }
-.center-form {
+
+
+body h1 {
     display: flex;
-    align-items: center;
+    font-weight: bold;
     justify-content: center;
-    flex-direction: column;
-}
-
-.center-form p {
-    margin-left: -30%;
-}
-
-.psw-description,
-.psw-form label {
-    font-family: 'Inter', sans-serif;
-    font-size: medium;
-    font-weight: lighter;
-}
-
-.psw-form {
-    display: flex;
     align-items: center;
-    justify-content: center;
-    flex-direction: column;
 }
-.btn.reset {
+
+
+.resetBtn{ 
+    /* Reset Button */
     background-color: #5EBA47;
+    border: none;
+    border-radius: 5px;
     color: white;
     text-align: center;
     width: 100%;
     padding: 10px;
 }
-.form-group {
-    width: 33vw;
+
+
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px;
+    font-family: 'Inter', sans-serif;
 }
 
 @font-face {
@@ -70,6 +94,21 @@ header {
     src: url('https://fonts.googleapis.com/css?family=Inter');
 }
 
+/* logo? */
+#logo{
+    float: left;
+}
+#logo img {
+    width: 150px;
+    height: auto; 
+  }
+.centerlogo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 70px;
+}
+
 /* Text Formatting */
 h1 {
     /* position: : */
@@ -81,15 +120,19 @@ h1 {
     /* font-style: */
   }
 
-h2 {
-    color: black;
+.container h2 {
+    color: white;
+    text-shadow: 1px 1px 5px rgb(207, 207, 207)y;
     font-family: 'Inter', sans-serif;
     font-weight: bold;
 }
 
+
 p {
     color: black;
     font-family: 'Inter', sans-serif;
+    font-size: medium;
+    font-weight: light;
   }
 
 p1 {

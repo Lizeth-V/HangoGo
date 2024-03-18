@@ -17,6 +17,21 @@ from db import users_collection
 
 app = Flask(__name__)
 
+# Lizeth - COnfigureing Flask Mail
+load_dotenv()
+#this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
+app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
+# Verify
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+# Default
+app.config['DEFAULT_USERNAME'] = os.getenv('DEFAULT_USERNAME')
+app.config['DEFAULT_PASSWORD'] = os.getenv('DEFAULT_PASSWORD')
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
+
 # secret key (Lizeth)
 app.secret_key = "supersecrethangogo!!!!"
 
@@ -211,9 +226,20 @@ def verify(username, token):
     flash('Invalid or expired verification link.')
     return redirect(url_for("verify", username=username))
 
+# Function to organize sending emails through default or verify 
+def get_sender(choice, app):
+    if choice == 1:
+        # choice 1 - verify email 
+        return app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD']
+    else:
+        # choice 2 - default email
+        return app.config['DEFAULT_USERNAME'], app.config['DEFAULT_PASSWORD']
+
 # Lizeth
 def send_verification(email, username, token):
     # Sends Verification Email from the Hangogo Verification email. The email contains unique link to verify a users account. 
+    # sender, sender_psw = 
+    get_sender(1, app) #'1' to send email from the verify email 
     msg = Message('Verify Your Email - Hangogo', sender = 'hangogo.verify@gmail.com' ,recipients=[email])
     verification_link = url_for('verify', username=username,token=token, _external=True)
     msg.body = f'Hi! I cant wait to be friends! Click the following link to verify your email: {verification_link}'
@@ -225,17 +251,6 @@ def send_verification(email, username, token):
         flash(f"Failed to send email. Error: {str(e)}")
 
     return "Verification email sent"
-
-# Lizeth
-load_dotenv()
-#this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
-app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
-app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
-mail = Mail(app)
 
 
 # Map Page (Lizeth)
@@ -282,6 +297,51 @@ def delete_acct():
         flash('Failed to delete account.')
 
     return redirect(url_for('index'))
+
+@app.route("/forgot_password", methods=['GET', 'POST'])
+def forgot_password():
+
+    if request.method == "POST":
+        email = request.form.get("email")
+        user_inDB = users_collection.find_one({'email': email})
+
+        if user_inDB:
+            print("Valid User in DB - generating token")
+            reset_token = ''.join(random.choices(string.ascii_letters + string.digits, k=30))
+            reset_email(email, reset_token)
+            print("reset psw email sent!")
+            return render_template('recovery.html')
+
+        else:
+            print("Email not valid")
+            flash('Email not valid')
+
+    return render_template("forgot_password.html")
+            
+    
+
+@app.route("/reset_sent")
+def reset_sent():
+    return render_template('recovery.html')
+
+def reset_email(email, token):
+    # Sends Reset Password Email from the official Hangogo email. The email contains unique link to users so they can securely recovery their  account. 
+    get_sender(2, app) #'2' to send email from the default email 
+    msg = Message('Verify Your Email - Hangogo', sender = 'letshangogo@gmail.com' ,recipients=[email])
+    reset_link = url_for('reset_password', token=token, _external = True)
+    msg.body = f'Hi! Trouble signing in? No worries just click the following link to reset your password ->  {reset_link}'
+
+    try:
+        mail.send(msg)
+        print("Email Sent!")
+    except Exception as e:
+        flash(f"Failed to send email. Error: {str(e)}")
+
+    return "Reset Password email sent"
+
+@app.route("/reset_password/<token>")
+def reset_password(token):
+    return render_template("reset_password.html")
 
 
 

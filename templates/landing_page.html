@@ -21,7 +21,7 @@
     <title>Welcome to hangogo</title>
 </head>
 <body>
-    <!--  Nav Bar -->
+    <!--  Nav Bar (Lizeth)-->
     <div class="navbar">
         <!-- User Profile -->
         <div class="icon-container"> 
@@ -72,7 +72,7 @@
                 </form>
             </div>
 
-            <!-- Hidden choices -->
+            <!-- Hidden choices (Lizeth)-->
             <div class="more-choices" id="moreChoicesContainer" style="display: none;">
                 <form action="{{ url_for('delete_acct') }}" method="post">
                     <p>Location</p>
@@ -101,7 +101,7 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
     
-    <!-- Editing mode (Lizeth) -->
+    <!-- Editing mode & Delete Account (Lizeth) -->
     <script>
 
         function enableEditMode() {
@@ -142,7 +142,7 @@
             document.getElementById('cancelButton').style.display = 'none';
         }
 
-        // switching between the profile details conatiner and other
+        // switching between the profile details conatiner and other 
         function toggleDetails(){
             var userProfileContainer = document.getElementById('userProfileContainer');
             var moreChoicesContainer = document.getElementById('moreChoicesContainer');
@@ -159,7 +159,7 @@
             }
         }
 
-        // Option for user to delete account
+        // Option for user to delete account 
         function delete_acct(){
             var confirmDelete = confirm("Are you sure you want to delete your account?");
             if (confirmDelete){

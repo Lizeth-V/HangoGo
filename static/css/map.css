@@ -1,0 +1,81 @@
+.logo h1 {
+    font-weight: bolder;
+    color: white;
+    padding: 10px;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-image: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(93,185,70,1) 0%, rgba(242,197,130,1) 37%);
+  }
+
+html{
+    height: 100%;
+}
+
+.container {
+    display:flex;
+    flex-direction: row;
+    height: 100%;
+    min-width: 100%;
+}
+
+.map {
+    display: flex;
+    flex-direction: column;
+    background-color:#FEE8C8;
+    justify-content: center;
+    align-items: center;
+    min-width: 50%;
+}
+
+.locationText{
+    display: block;
+    width: 450px;
+    text-align: left;
+    
+}
+
+.map label {
+    font-family: 'Inter', sans-serif;
+    font-size: medium;
+    font-weight: lighter;
+    margin-bottom: 5px;
+}
+
+
+
+.user-chatbox {
+    display: flex;
+    flex-direction: column;
+    background-color:rgba(242,197,130,1);
+    min-width: 50%;
+}
+
+.chat1 p {
+    background-color:#FEE8C8;
+}
+
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    src: url('https://fonts.googleapis.com/css?family=Roboto');
+}
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    src: url('https://fonts.googleapis.com/css?family=Inter');
+}
+
+button{
+    display: flex;
+    background-color: #5EBA47;
+    color: white;
+    text-align: center;
+    border: none;
+}

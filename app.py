@@ -4,6 +4,7 @@ import return_highest_rec as retH
 import generate_model
 from bson import ObjectId
 import math
+from celery import Celery
 
 app = Flask(__name__)
 
@@ -84,6 +85,32 @@ def block_rec_model(user_id=None, place_id=None):
         generate_model.generate_place_probabilities(str(user_id))
 
     return render_template('result.html') 
+
+@app.route('/save_chat/', methods=['GET'])
+def save_messages():
+
+    user_id = '6568cbef4a9658311b3ee704'  #\test id
+
+    radius = request.args.get('radius', default=None, type=int)
+    place_type = request.args.get('place_type', default=None, type=str)
+    place_name = request.args.get('place_name', default=None, type=str)
+    user_action = request.args.get('user_action', default=None, type=str)
+
+
+    user_req_message = 'You' + ' asked for a recommendation'
+    if place_type:
+        user_req_message = user_req_message + ' of type ' + place_type
+    if radius:
+        user_req_message = user_req_message + ' in radius ' + radius
+    user_req_message = user_req_message + '.'
+
+    temp_feedback.insert_user_chat(user_id=user_id, string=user_req_message)
+
+    rec_message = 'Hango recommended ' + place_name + 'and you ' + user_action + 'ed it.'
+
+    temp_feedback.insert_user_chat(user_id=user_id, string=rec_message)
+
+    return 'Success'
 
 
 

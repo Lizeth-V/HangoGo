@@ -28,12 +28,11 @@
                     <option value="type">Recommend me a type...</option>
                     <option value="type_radius">Recommend me this type in this radius</option>
                   </select>
-                  
+                <div class="additional-fields" id="additional-fields"></div>
                 </div>
 
                 <button type="submit" id = "submit_button">Send</button>
               </form> 
-              <div class="additional_fields" id="additional_fields"></div>
             </div>
         </div>
 
@@ -65,6 +64,14 @@
           submit_elements[i].style.visibility = 'hidden'; 
         }
         
+        var add_elements = document.getElementById('additional-fields');
+        
+        add_elements.innerHTML = '';
+
+        var selector = document.getElementById('message_type');
+        if (selector) {
+            selector.selectedIndex = 0;
+        }
       }
 
       function create_messages(latitude,longitude) {
@@ -170,6 +177,7 @@
         decline_button.textContent = 'Decline';
 
         accept_button.onclick = function() {
+            save_user_chat(user_id, radius, placeType, activePlace.name, 'accept');
             accept_button.remove();
             decline_button.remove();
             acceptRec(place_id);
@@ -181,6 +189,7 @@
         };
 
         decline_button.onclick = function() {
+            save_user_chat(user_id, radius, placeType, activePlace.name, 'decline');
             accept_button.remove();
             decline_button.remove();
             declineRec(place_id);
@@ -208,7 +217,7 @@
             messageStack.insertBefore(active_rec_message, messageStack.firstChild);
             // Scroll to the bottom of the message stack
             var scrollDiv = document.querySelector('.scroll');
-            hideQuery(this);
+            hideQuery();
             scrollDiv.scrollTop = scrollDiv.scrollHeight;
           }, 1000);
 
@@ -287,6 +296,21 @@
       }
 
 
+      function save_user_chat(user_id, radius, place_type, place_name, user_action) {
+          var url = `/save_chat?user_id=${user_id}&radius=${radius}&place_type=${place_type}&place_name=${place_name}&user_action=${user_action}`;
+          return fetch(url)
+              .then(response => response.json())
+              .then(data => {
+                  return data.active_place;
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  throw error;
+              });
+      }
+      
+
+
       function catch_loc_error(error) {
           switch(error.code) {
               case error.PERMISSION_DENIED:
@@ -322,7 +346,7 @@
       
       function showFields() {
         var selection = document.getElementById("message_type").value;
-        var fieldsContainer = document.getElementById("additional_fields");
+        var fieldsContainer = document.getElementById("additional-fields");
         fieldsContainer.innerHTML = ""; // Clear the previous fields
 
         if (selection === "radius" || selection === "type_radius") {

@@ -159,7 +159,7 @@ body, input, button, select {
     background-color: #1c4a21;
 }
 
-.additional_fields{
+.additional-fields{
   display: flex;
   flex-direction: horizontal;
   justify-content:center;
@@ -170,11 +170,10 @@ body, input, button, select {
   margin-left: 1%;
 }
 
-.additional_fields label{
+.additional-fields label{
   background-color: #ffffff;
   border-radius: 2px;
   padding-inline: 10px;
-  
 }
 
 

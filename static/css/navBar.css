@@ -1,0 +1,31 @@
+.navbar{
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    background-color: #FEE8C8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.icon-container{
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.icon{
+    font-size: 40px;
+    color: #B19468;
+    transition: color 0.3s;
+}
+
+.icon-container.active .icon{
+    color: #5DB946;
+}
+
+.icon-container:hover .icon{
+    color: #5DB946;
+}

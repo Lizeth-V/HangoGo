@@ -10,19 +10,19 @@
     </div>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/create_account.css">
     <title>create account</title>
 </head>
 <body>
     <div class="center-form">
-        <div class="register-description">
+        <div class="create-account-description">
             <h1>finish creating account &hearts;</h1>
             <p>please don't leave</p>
         </div>
     {% if error %}
         <p style="color: red;">{{ error }}</p>
     {% endif %}
-    <form class="create-account-form" method="POST" action="/register">
+    <form class="create-account-form" method="POST" action="/create_account">
         <div class="form-group">
             <label for="first_name">first name</label>
             <input type="text" class="form-control" id="first_name" name="first_name" required>

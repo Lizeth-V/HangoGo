@@ -1,16 +1,17 @@
+<!-- Interests.html -->
 <!DOCTYPE html>
 <!-- Create Account Page, get user's first and last name, birthday (verify age-->
 <html>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="style.css">
-        <link rel="stylesheet2" href="interests.css">
+        <link rel="stylesheet" href="../static/css/style.css">
+        <link rel="stylesheet2" href="../static/css/interests.css">
     </head>
     <body>
         <header>
             <div id="logo">
-                <img src="../Logos/hangogo.png" alt="Hangogo">
+                <img src="../static/icons/hangogo.png" alt="Hangogo">
             </div>
         </header>
         <section id = interests>
@@ -22,8 +23,18 @@
                     <p1>do a little quiz! we ll be using this to generate your
                         first recommendation :) select 3-5 categories that interest you.</p1>
                     <br><br>
-                    <input type="checkbox" id="interest1" name="interest1" value="Food">
-                    <label for="interest1"> Food</label><br>
+                    <div class = interestBox>
+                        <label class = "option_item">
+                            <input type="checkbox" id="interest1" name="interest1" value="Food">
+                            <div class = "option_inner food">
+                                <div class = "tickmark"></div>
+                                <div class = "name">Food</div>
+                            </div>
+                    
+                        <!-- <img src="../icons/food.png" alt="food"> -->
+                    
+                        </label>
+                    </div>
 
                     <input type="checkbox" id="interest2" name="interest2" value="Entertainment">
                     <label for="interest2"> Entertainment</label><br>

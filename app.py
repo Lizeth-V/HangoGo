@@ -17,6 +17,7 @@ def get_active_place_details():
     user_id = '6568cbef4a9658311b3ee704'
     radius = request.args.get('radius', default=5, type=int)
     place_type = request.args.get('place_type', default=None, type=str)
+    print(place_type)
 
     active_place = retH.match_highest_list(
         retH.get_highest_list(user_id),
@@ -41,33 +42,31 @@ def convert_objectid(obj):
         return obj
 
 
-
-
-
-@app.route('/accept_rec/<user_id>/<place_id>', methods=['POST'])
-def accept_rec_model(user_id=None, place_id=None):
+@app.route('/accept_rec/', methods=['GET'])
+def accept_rec_model():
 
     user_id = '6568cbef4a9658311b3ee704'  #temp
+    place_id = request.args.get('place_id', default=None, type=str)
+
+    print(place_id)
 
     if place_id:
-        p_id = str(place_id).lstrip("ObjectId('").rstrip("')") #strip the objectid from the string so its compatible with
-        temp_feedback.accept_recommendation_update(user_id=user_id, place_id=p_id) #update the feedback page
+        temp_feedback.accept_recommendation_update(user_id=user_id, place_id=place_id) #update the feedback page
         generate_model.generate_place_probabilities(user_id)
 
-        return render_template('result.html')  #html for after
+    return 'Success' #html for after
 
-@app.route('/decline_rec/<user_id>/<place_id>', methods=['POST'])
+@app.route('/decline_rec/', methods=['GET'])
 def decline_rec_model(user_id=None, place_id=None):
 
     user_id = '6568cbef4a9658311b3ee704'  #\test id
+    place_id = request.args.get('place_id', default=None, type=str)
 
-    if place_id:
-        p_id = str(place_id).lstrip("ObjectId('").rstrip("')")
 
-        temp_feedback.decline_recommendation_update(user_id=user_id, place_id=p_id)
-        generate_model.generate_place_probabilities(str(user_id))
+    temp_feedback.decline_recommendation_update(user_id=user_id, place_id=place_id)
+    generate_model.generate_place_probabilities(str(user_id))
 
-    return render_template('result.html') 
+    return 'Success'
 
 @app.route('/block_rec/<user_id>/<place_id>', methods=['POST'])
 def block_rec_model(user_id=None, place_id=None):

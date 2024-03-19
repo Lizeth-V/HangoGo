@@ -33,7 +33,7 @@ def get_highest_list(u_id):
     
     client.close()
 
-def match_highest_list(top_choices, radius = 500, place_type = None):
+def match_highest_list(top_choices, radius = 500, place_type=None):
     #match the place ids in the top_choices list and return one or change it to many.
     client = MongoClient(connection_string)
     db = client[dbname]
@@ -46,6 +46,7 @@ def match_highest_list(top_choices, radius = 500, place_type = None):
 
     user_loc = geocoder.ip('me').latlng
 
+    print(place_type,radius)
 
     center_point = {
         "type": "Point",
@@ -55,6 +56,7 @@ def match_highest_list(top_choices, radius = 500, place_type = None):
     radius = mi_2_meters(radius)
 
     object_ids = [ObjectId(choice) for choice in top_choices]
+
 
     #query the objects in the list
     query = {
@@ -71,7 +73,7 @@ def match_highest_list(top_choices, radius = 500, place_type = None):
 
     #if the type is included in the function call add it to the query
     if place_type:
-        query['place_type'] = place_type
+        query['main_type'] = place_type
 
     #return top 5 and choose randomly giving higher weight to better recommendations.
     result = list(collection.find(query).limit(5))

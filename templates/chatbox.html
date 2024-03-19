@@ -40,22 +40,7 @@
     <script>
       document.getElementById('message-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        //HANDLE THE UI ELEMENTS
-        /*
-        var submit_elements = this.elements;
-        for (var i = 0; i < submit_elements.length; i++) {
-          submit_elements[i].disabled = true;
-          submit_elements[i].style.visibility = 'hidden'; 
-        }
-        
-        this.style.height = "0%";
-
-        
-
-        var m_box = document.getElementById('messages');
-        m_box.style.height = '100%';
-        */
+      
         ////////////////////////////////////////////////////USER MESSAGE////////////////////////////////////////////////////////////////
         var messageType = document.getElementById('message_type').value;
         var radius = document.getElementById('radius') ? document.getElementById('radius').value : '';
@@ -114,17 +99,14 @@
         newMessage.appendChild(document.createTextNode(messageContent));
 
         var messageStack = document.getElementById('message-stack');
-        messageStack.insertBefore(user_req_message, messageStack.firstChild); 
-        messageStack.insertBefore(newMessage, messageStack.firstChild);
-        
-        var scrollDiv = document.querySelector('.scroll');
-        scrollDiv.scrollTop = scrollDiv.scrollHeight;
 ////////////////////////////////////////////////////HANGO MESSAGE////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////REC MESSAGE////////////////////////////////////////////////////////////////
       var user_id = ""
       fetchActivePlaceAndUpdate(user_id, radius, placeType)
       .then(activePlace => {
+        var place_id = activePlace._id
+        console.log(place_id)
         // Create the active recommendation message elements
         var active_rec_message = document.createElement('div');
         active_rec_message.className = 'active-rec-message';
@@ -157,15 +139,30 @@
         var accept_button = document.createElement('button');
         accept_button.className = 'accept-button';
         accept_button.textContent = 'Accept';
-        accept_button.onclick = function() {
-            // Functionality to handle acceptance
-        };
 
         var decline_button = document.createElement('button');
         decline_button.className = 'decline-button';
         decline_button.textContent = 'Decline';
+
+        accept_button.onclick = function() {
+            accept_button.remove();
+            decline_button.remove();
+            acceptRec(place_id);
+            setTimeout(() => {
+              showQuery();
+              scrollDiv.scrollTop = scrollDiv.scrollHeight;
+            }, 5000); 
+
+        };
+
         decline_button.onclick = function() {
-            // Functionality to handle decline
+            accept_button.remove();
+            decline_button.remove();
+            declineRec(place_id);
+            setTimeout(() => {
+              showQuery();
+              scrollDiv.scrollTop = scrollDiv.scrollHeight;
+            }, 5000); 
         };
 
         rec_button_group.appendChild(accept_button);
@@ -176,17 +173,48 @@
 
         // Insert the active recommendation message into the message stack
         var messageStack = document.getElementById('message-stack');
-        messageStack.insertBefore(active_rec_message, messageStack.firstChild);
-
-        // Scroll to the bottom of the message stack
-        var scrollDiv = document.querySelector('.scroll');
+        messageStack.insertBefore(user_req_message, messageStack.firstChild);
         scrollDiv.scrollTop = scrollDiv.scrollHeight;
+        setTimeout(() => {
+            messageStack.insertBefore(newMessage, messageStack.firstChild);
+            scrollDiv.scrollTop = scrollDiv.scrollHeight;
+        }, 500); 
+        setTimeout(() => {
+            messageStack.insertBefore(active_rec_message, messageStack.firstChild);
+            // Scroll to the bottom of the message stack
+            var scrollDiv = document.querySelector('.scroll');
+            hideQuery(this);
+            scrollDiv.scrollTop = scrollDiv.scrollHeight;
+          }, 1000);
+
+        
       })
       .catch(error => {
           // Handle any errors that occurred during the fetch
           console.error('Error:', error);
       });
+
         });
+
+      function hideQuery(){
+        var submit_elements = document.getElementById('message-form').elements;
+
+        for (var i = 0; i < submit_elements.length; i++) {
+          submit_elements[i].disabled = true;
+          submit_elements[i].style.visibility = 'hidden'; 
+        }
+        
+      }
+
+      function showQuery(){
+        var submit_elements = document.getElementById('message-form').elements;
+
+        for (var i = 0; i < submit_elements.length; i++) {
+          submit_elements[i].disabled = false;
+          submit_elements[i].style.visibility = 'visible'; 
+        }
+        
+      }
 
       function fetchActivePlaceAndUpdate(user_id, radius, placeType) {
           var url = `/get_new_active_place?user_id=${user_id}&radius=${radius}&place_type=${placeType}`;
@@ -199,6 +227,35 @@
                   console.error('Error:', error);
                   throw error;
               });
+      }
+
+      function acceptRec(place_id) {
+        var url = `/accept_rec?place_id=${place_id}`;
+        return fetch(url)
+        .catch(error => {
+                  console.error('Error:', error);
+                  throw error;
+        });
+        //Here is where we would set active place to focus
+      }
+
+      function declineRec(place_id) {
+        var url = `/decline_rec?place_id=${place_id}`;
+        return fetch(url)
+        .catch(error => {
+                  console.error('Error:', error);
+                  throw error;
+        });
+        //Here is where we would set active place to focus
+      }
+
+      function blockRec(place_id) {
+        var url = `/block_rec?place_id=${place_id}`;
+        return fetch(url)
+        .catch(error => {
+                  console.error('Error:', error);
+                  throw error;
+        });
       }
 
       
@@ -228,7 +285,7 @@
               <option value="">Please select...</option>
               <option value="Food">Food</option>
               <option value="Drinks">Drinks</option>
-              <option value="Entertainment">Museum</option>
+              <option value="Entertainment">Entertainment</option>
               <option value="Nature/Recreation">Nature/Recreation</option>
               <option value="Museum/Art">Museum/Art</option>
               <option value="Nightlife">Nightlife</option>

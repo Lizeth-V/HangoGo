@@ -33,7 +33,7 @@ def get_highest_list(u_id):
     
     client.close()
 
-def match_highest_list(top_choices, radius = 500, place_type=None):
+def match_highest_list(top_choices, lat, long,radius = 500, place_type=None):
     #match the place ids in the top_choices list and return one or change it to many.
     client = MongoClient(connection_string)
     db = client[dbname]
@@ -44,13 +44,11 @@ def match_highest_list(top_choices, radius = 500, place_type=None):
 
     #replace this with the html gps location coordinates, more accurate.
 
-    user_loc = geocoder.ip('me').latlng
-
-    print(place_type,radius)
+    #user_loc = geocoder.ip('me').latlng
 
     center_point = {
         "type": "Point",
-        "coordinates": [user_loc[1], user_loc[0]] 
+        "coordinates": [long, lat] 
     }
 
     radius = mi_2_meters(radius)

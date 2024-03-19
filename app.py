@@ -17,10 +17,14 @@ def get_active_place_details():
     user_id = '6568cbef4a9658311b3ee704'
     radius = request.args.get('radius', default=5, type=int)
     place_type = request.args.get('place_type', default=None, type=str)
-    print(place_type)
+    lat = request.args.get('lat', default=None, type=float)
+    long = request.args.get('long', default=None, type=float)
+
 
     active_place = retH.match_highest_list(
         retH.get_highest_list(user_id),
+        lat=lat,
+        long=long,
         radius=radius,
         place_type=place_type
     )

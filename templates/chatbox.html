@@ -40,8 +40,34 @@
     <script>
       document.getElementById('message-form').addEventListener('submit', function(e) {
         e.preventDefault();
+        var latitude;
+        var longitude;
+
+        get_user_location(function(position) {
+            latitude = position.latitude;
+            longitude = position.longitude;
+            console.log("Latitude:", latitude);
+            console.log("Longitude:", longitude);
+
+            create_messages(latitude, longitude);
+            // You can now use the latitude and longitude values here
+        });
+        
+      }
+    );
       
-        ////////////////////////////////////////////////////USER MESSAGE////////////////////////////////////////////////////////////////
+
+      function hideQuery(){
+        var submit_elements = document.getElementById('message-form').elements;
+
+        for (var i = 0; i < submit_elements.length; i++) {
+          submit_elements[i].disabled = true;
+          submit_elements[i].style.visibility = 'hidden'; 
+        }
+        
+      }
+
+      function create_messages(latitude,longitude) {
         var messageType = document.getElementById('message_type').value;
         var radius = document.getElementById('radius') ? document.getElementById('radius').value : '';
         var placeType = document.getElementById('place_type') ? document.getElementById('place_type').value : '';
@@ -103,10 +129,9 @@
 
 ////////////////////////////////////////////////////REC MESSAGE////////////////////////////////////////////////////////////////
       var user_id = ""
-      fetchActivePlaceAndUpdate(user_id, radius, placeType)
+      fetchActivePlaceAndUpdate(user_id, latitude, longitude, radius, placeType)
       .then(activePlace => {
         var place_id = activePlace._id
-        console.log(place_id)
         // Create the active recommendation message elements
         var active_rec_message = document.createElement('div');
         active_rec_message.className = 'active-rec-message';
@@ -193,18 +218,7 @@
           // Handle any errors that occurred during the fetch
           console.error('Error:', error);
       });
-
-        });
-
-      function hideQuery(){
-        var submit_elements = document.getElementById('message-form').elements;
-
-        for (var i = 0; i < submit_elements.length; i++) {
-          submit_elements[i].disabled = true;
-          submit_elements[i].style.visibility = 'hidden'; 
-        }
-        
-      }
+    }
 
       function showQuery(){
         var submit_elements = document.getElementById('message-form').elements;
@@ -216,8 +230,8 @@
         
       }
 
-      function fetchActivePlaceAndUpdate(user_id, radius, placeType) {
-          var url = `/get_new_active_place?user_id=${user_id}&radius=${radius}&place_type=${placeType}`;
+      function fetchActivePlaceAndUpdate(user_id, lat, long,radius, placeType) {
+          var url = `/get_new_active_place?user_id=${user_id}&lat=${lat}&long=${long}&radius=${radius}&place_type=${placeType}`;
           return fetch(url)
               .then(response => response.json())
               .then(data => {
@@ -257,6 +271,53 @@
                   throw error;
         });
       }
+
+      function get_user_location(callback){
+        if (navigator.geolocation){
+          navigator.geolocation.getCurrentPosition(
+            function(position) {
+                callback({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                });
+            }
+              , catch_loc_error);
+        }
+        //else not supported by browser idk the solution to this
+      }
+
+
+      function catch_loc_error(error) {
+          switch(error.code) {
+              case error.PERMISSION_DENIED:
+                  console.log("User denied the request for Geolocation.");
+                  var messageContent = "Sorry, but without a location, I can't recommend :(, please activate your location services and try again!";
+        
+                  var newMessage = document.createElement('div');
+                  newMessage.className = 'message';
+
+                  var messageImage = document.createElement('img');
+                  messageImage.src = "{{ url_for('static', filename='hango.png') }}";
+                  messageImage.className = 'message-image';
+
+                  newMessage.appendChild(messageImage);
+                  newMessage.appendChild(document.createTextNode(messageContent));
+
+                  var messageStack = document.getElementById('message-stack');
+                  messageStack.insertBefore(newMessage, messageStack.firstChild);
+                  break;
+              case error.POSITION_UNAVAILABLE:
+                  console.log("Location information is unavailable.");
+                  break;
+              case error.TIMEOUT:
+                  console.log("The request to get user location timed out.");
+                  break;
+              case error.UNKNOWN_ERROR:
+                  console.log("An unknown error occurred.");
+                  break;
+          }
+      }
+
 
       
       function showFields() {

@@ -44,11 +44,15 @@
             </div>
             <div id="place-list">
                 {% for place in place_list %}
-                <div>
+                <div id="place-{{ place._id }}">
                     <p>{{place.name}}</p>
                     <p>{{place.address}}</p>
+                    <p class="place-link">{{ place.weblink}}</p>
                     <button onclick="addToFavorites({{loop.index0}})">
                     Add to Favorites List
+                    </button>
+                    <button onclick="sharePlace('{{ place._id }}')">
+                    Share Location
                     </button>
                 </div>
                 {% endfor %}
@@ -60,6 +64,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
     
     <script src="../static/js/landing_page.js"></script>
+    <script src="../static/js/share_place_location.js""></script>
 
 </body>
 </html>

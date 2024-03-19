@@ -154,12 +154,18 @@ def landing_page(username):
 # Add to Favorites List
 
 # temp sample data for list of places, temp placeholder for AI generated suggested places
-place_list = [
-    {"name": "Place 1", "address": "Address 1"},
-    {"name": "Place 2", "address": "Address 2"},
-    {"name": "Place 3", "address": "Address 3"}
-]
-saved_places = []
+# place_list = [
+#     {"name": "Place 1", "address": "Address 1"},
+#     {"name": "Place 2", "address": "Address 2"},
+#     {"name": "Place 3", "address": "Address 3"}
+# ]
+# saved_places = []
+# test share locations with the places weblinks
+
+query = {"sub_types": "cafe"}
+place_list = places_collection.find(query)
+saved_places =[]
+
 
 # Gloria
 @app.route('/add_to_favorites', methods = ["POST"])
@@ -287,9 +293,13 @@ def contact():
 
 # Gloria
 # favorites page
-@app.route("/favorites", methods=["GET"])
+@app.route("/favorites")
 def favorites():
-    user_id = session.get("_id")
+    user = session.get("user")
+    if user is None:
+        flash("Please log in to access favorites page.")
+        return redirect(url_for("login"))
+    
     page = request.args.get("page", default=1, type=int)
     per_page = 10
     query = {"sub_types": "cafe"}
@@ -303,7 +313,16 @@ def favorites():
             "name": place["name"],
             "address": place["address"]
         })
-    return render_template("favorites.html", user_id=user_id, favorites=favorites_list, page=page, per_page=per_page, total_places=total_places)
+    return render_template("favorites.html", favorites=favorites_list, page=page, per_page=per_page, total_places=total_places)
+
+# Gloria
+# get place from DB
+@app.route('/get_place', methods=['POST'])
+def get_place():
+    # Retrieve the selected place from MongoDB
+    place_id = request.form['place_id']
+    place = places_collection.find_one({"_id": ObjectId(place_id)})
+    return jsonify(place)
 
 if __name__ == "__main__":
     app.run(debug=True)

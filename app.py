@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 from flask_pymongo import PyMongo
 from register import register_user, hash_password
-from db import users_collection
+from db import users_collection, places_collection
 
 app = Flask(__name__)
 
@@ -204,6 +204,34 @@ def landing_page(username):
                            )  
 
 # Gloria
+# Add to Favorites List
+
+# temp sample data for list of places, temp placeholder for AI generated suggested places
+# place_list = [
+#     {"name": "Place 1", "address": "Address 1"},
+#     {"name": "Place 2", "address": "Address 2"},
+#     {"name": "Place 3", "address": "Address 3"}
+# ]
+# saved_places = []
+# test share locations with the places weblinks
+
+query = {"sub_types": "cafe"}
+place_list = places_collection.find(query)
+saved_places =[]
+
+
+# Gloria
+@app.route('/add_to_favorites', methods = ["POST"])
+def add_to_favorites():
+    place_index = int(request.form['place_index'])
+    place = place_list[place_index]
+    if place in saved_places:
+        return jsonify(success=False, message=" ")
+    else:
+        saved_places.append(place)
+        print(saved_places)
+        return jsonify(success=True, message = "Added to Favorites List")
+# Gloria
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -343,6 +371,79 @@ def reset_email(email, token):
 def reset_password(token):
     return render_template("reset_password.html")
 
+# Gloria
+# send contact form
+def send_contact_form(result):
+    sender = 'letshangogo@gmail.com'
+    recipients = [result["email"], sender]
+    subject = "Feedback from {}".format(result["email"])
+    msg = Message(subject, sender = sender, recipients=recipients)
+
+    msg.body = """
+    Hello There,
+
+    The feedback you left us:
+    Email: {}
+    Message: {}
+
+    -hangogo Webmaster
+    """.format(result["email"], result["message"])
+
+
+    mail.send(msg)
+    print("Contact form sent")
+
+# Gloria
+# contact us/report an issue form
+@app.route("/contact", methods=["GET","POST"])
+def contact():
+    if request.method == "POST":
+        try:
+            result = {}
+            result["email"] = request.form.get("email").replace(' ', '').lower()
+            result["message"] = request.form.get("message")
+
+            send_contact_form(result)
+            print("email sent")
+            return redirect(url_for("index"))
+        except Exception as e:
+            return f"An error occurred: {e}"
+    return render_template("contact.html")
+
+
+
+# Gloria
+# favorites page
+@app.route("/favorites")
+def favorites():
+    user = session.get("user")
+    if user is None:
+        flash("Please log in to access favorites page.")
+        return redirect(url_for("login"))
+    
+    page = request.args.get("page", default=1, type=int)
+    per_page = 10
+    query = {"sub_types": "cafe"}
+    places = places_collection.find(query)
+    total_places = 24 #hard code the total places count() does not work
+    places = places.skip((page - 1) * per_page).limit(per_page)
+    favorites_list = []
+    for place in places:
+        favorites_list.append({
+            "icon": place["image_url"],
+            "name": place["name"],
+            "address": place["address"]
+        })
+    return render_template("favorites.html", favorites=favorites_list, page=page, per_page=per_page, total_places=total_places)
+
+# Gloria
+# get place from DB
+@app.route('/get_place', methods=['POST'])
+def get_place():
+    # Retrieve the selected place from MongoDB
+    place_id = request.form['place_id']
+    place = places_collection.find_one({"_id": ObjectId(place_id)})
+    return jsonify(place)
 
 
 if __name__ == "__main__":

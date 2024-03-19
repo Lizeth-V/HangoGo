@@ -6,5 +6,8 @@ dbname = "Hango"
 client = MongoClient(connection_string)
 # Accessing the database
 db = client[dbname]
-# Accessing the collection
+# Accessing the user collection
 users_collection = db["User Data"]
+
+# Access the places collection
+places_collection = db["Places"]

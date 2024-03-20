@@ -134,3 +134,25 @@ def block_recommendation_update(user_id, place_id):
         print("Update successful. Matched document:", update_result.matched_count)
 
     client.close()
+
+def insert_user_chat(user_id, string):
+    client = MongoClient(connection_string)
+    db = client[dbname]
+    
+    collection = db['User Chats']
+
+    #fields to keep
+    data_to_insert = {
+        "user_id": user_id,
+        "message": string,
+        "timestamp": datetime.datetime.utcnow(),
+       }
+
+    update_result = collection.insert_one(data_to_insert)
+
+    if update_result:
+        print("Insertion successful:")
+    else:
+        print("Update successful. Matched document:", update_result.matched_count)
+
+    client.close()

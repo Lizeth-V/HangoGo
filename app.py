@@ -1,103 +1,87 @@
-# app.py
+from flask import Flask, render_template, request, jsonify
+import temp_feedback
+import return_highest_rec as retH
+import generate_model
 from bson import ObjectId
-import json
-import bcrypt
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from register import register_user, hash_password
-from create_account import user_create_account, calculate_age
-from db import users_collection
+import math
 
 app = Flask(__name__)
 
-# secret key
-app.secret_key = "supersecrethangogo!!!!"
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form.get("username")
-        email = request.form.get("email")
-        password = request.form.get("password")
-        confirm_password = request.form.get("confirm_password")
-
-        registration_error = register_user(username, email, password, confirm_password)
-
-        if registration_error is not None:
-            print("Registration error:", registration_error)
-            # comment out below the one line of code below before presentation and launch
-            print("Form values:", username, email, password, confirm_password)
-            return render_template("register.html", error=registration_error)
-        
-
-        print("Registration successful. Redirecting to index.")
-        return redirect(url_for("create_account", username = username))
-
-    return render_template("register.html")
-
-@app.route("/login", methods= ["GET","POST"])
-def login():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-
-        user = users_collection.find_one({"username": username})
-
-        if user:
-            # Get the hashed password from the user object
-            hashed_password = user["password"]
-
-            # check if the password the user entered matches the hashed password
-            if bcrypt.checkpw(password.encode("utf-8"), hashed_password):
-                # password is matched
-                # convert ObjectId to string for JSON serialization
-                user["_id"] = str(user["_id"])
-                session["user"] = user
-                print("Login Success")
-                return redirect(url_for("index"))
-            else:
-                # password did not match
-                print("Invalid username or password")
-
-        else:
-            # User not found
-            print("User not found.")
-    return render_template("login.html")
-
-
-
-@app.route("/create-account/<username>", methods=["GET", "POST"])
-def create_account(username):
-        if request.method == "POST":
-            first_name = request.form.get("first_name")
-            last_name = request.form.get("last_name")
-            birth_month = int(request.form.get("birth_month"))
-            birth_day = int(request.form.get("birth_day"))
-            birth_year = int(request.form.get("birth_year"))
-
-            # Check if the user is at least 13 years old
-            age = calculate_age(birth_year, birth_month, birth_day)
-            if age < 13:
-                return render_template("create-account.html", error = "You must be at least 13 years old")
-            
-            create_account_error = user_create_account(first_name, last_name, birth_month, birth_day, birth_year, age)
-            if create_account_error is not None:
-                print("Create account error:", create_account_error)
-                print("Form values:", first_name, last_name, birth_month, birth_day, birth_year, age)
-                return render_template("create-account.html", error=create_account_error)
-
-            # if "first_name" not in request.form or "last_name" not in request.form or \
-            #     "birth_month" not in request.form or "birth_day" not in request.form or \
-            #     "birth_year" not in request.form:
-            #         return render_template("create-account.html", error="Incomplete form data")
-
-
-            return redirect(url_for("index"))
-        return render_template("create-account.html", username=username)
-
-
-@app.route("/")
+@app.route('/')
 def index():
-    return render_template("index.html")
+    user_id = '6568cbef4a9658311b3ee704'  #test id until full implementation with the chat history box
+    return render_template('chatbox.html', user_id = user_id)
 
-if __name__ == "__main__":
+@app.route('/get_new_active_place', methods=['GET'])
+def get_active_place_details():
+    user_id = '6568cbef4a9658311b3ee704'
+    radius = request.args.get('radius', default=5, type=int)
+    place_type = request.args.get('place_type', default=None, type=str)
+    
+    active_place = retH.match_highest_list(
+        retH.get_highest_list(user_id),
+        radius=radius,
+        place_type=place_type
+    )
+    # Convert all ObjectId instances to strings
+    active_place = convert_objectid(active_place)
+
+    return jsonify({'active_place': active_place})
+
+def convert_objectid(obj):
+    if isinstance(obj, ObjectId):
+        return str(obj)
+    elif isinstance(obj, dict):
+        return {k: convert_objectid(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_objectid(v) for v in obj]
+    elif isinstance(obj, float) and math.isnan(obj):
+        return None  
+    else:
+        return obj
+
+
+@app.route('/accept_rec/<user_id>/<place_id>', methods=['POST'])
+def accept_rec_model(user_id=None, place_id=None):
+
+    user_id = '6568cbef4a9658311b3ee704'  #temp
+
+    if place_id:
+        p_id = str(place_id).lstrip("ObjectId('").rstrip("')") #strip the objectid from the string so its compatible with
+        temp_feedback.accept_recommendation_update(user_id=user_id, place_id=p_id) #update the feedback page
+        generate_model.generate_place_probabilities(user_id)
+
+        return render_template('result.html')  #html for after
+
+@app.route('/decline_rec/<user_id>/<place_id>', methods=['POST'])
+def decline_rec_model(user_id=None, place_id=None):
+
+    user_id = '6568cbef4a9658311b3ee704'  #\test id
+
+    if place_id:
+        p_id = str(place_id).lstrip("ObjectId('").rstrip("')")
+
+        temp_feedback.decline_recommendation_update(user_id=user_id, place_id=p_id)
+        generate_model.generate_place_probabilities(str(user_id))
+
+    return render_template('result.html') 
+
+@app.route('/block_rec/<user_id>/<place_id>', methods=['POST'])
+def block_rec_model(user_id=None, place_id=None):
+
+    user_id = '6568cbef4a9658311b3ee704'  #\test id
+
+    if place_id:
+        p_id = str(place_id).lstrip("ObjectId('").rstrip("')")
+
+        temp_feedback.block_recommendation_update(user_id=user_id, place_id=p_id)
+        generate_model.generate_place_probabilities(str(user_id))
+
+    return render_template('result.html') 
+
+if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+    

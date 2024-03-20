@@ -112,10 +112,9 @@ def block_recommendation_update(user_id, place_id):
     collection = db[collection_name]
 
     collection.create_index([("user_id", 1), ("place_id", 1)], unique=True)
-
-    #the index in question
-    collection.create_index([("timestamp", ASCENDING)], expireAfterSeconds=2628000)
     
+    #by not creating an index on the time to live we can just avoid ever regenerating the place
+
     #for upsert
     criteria = {"user_id": user_id, "place_id": place_id}
     

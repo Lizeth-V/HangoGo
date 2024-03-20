@@ -188,6 +188,7 @@ def main():
         places_list.append(df.loc[index]['place_id'])
     for index, row in least_5_similar.iterrows():
         places_list.append(df.loc[index]['place_id'])
+    print(str(user_object['_id']))
     recommendPlaces(str(user_object['_id']), places_list)
 
 main()

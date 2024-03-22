@@ -19,14 +19,11 @@ collection = db[collection_name]
 
 #return user information from database (USE WHEN INITIAL PAGE IS FINISHED)
 #Aidan's code
-def get_user_from_email(email): 
-    query = {"email": email}
+def get_user_from_id(user_id): 
+    query = {"_id": ObjectId(user_id)}
     user_object = collection.find_one(query)
     if user_object:
         return user_object
-    else:
-        print("Check Spelling or email in the database.")
-        return None
 
 #return df with places that meet the criteria (and dropping unnecessary data)
 def df_meet_criteria(user_object):
@@ -59,6 +56,7 @@ def df_meet_criteria(user_object):
         user_add = user_col['street'] + ', ' + user_col['city'] + ', ' + user_col['state'] 
     else:
         user_add = user_col['city'] + ', ' + user_col['state'] 
+    #user_add = "Long Beach, CA"
     address = app.geocode(user_add).raw
     # get long and lat from data
     user_loc = [float(address['lat']), float(address['lon'])]
@@ -95,44 +93,31 @@ def df_meet_criteria(user_object):
             d.popitem()
     df = df.drop(removeList)
     df.drop(columns=['lat', 'lon'], inplace=True)
-    
     return df
 
 def recommendPlaces(user_ID, places_list):
-    collection = db["Places"]
-    while len(places_list)>0:
-        choice = random.choice(places_list)
-        place = collection.find_one({"_id": ObjectId(choice)})
-        places_list.remove(choice)
-        print("Place: ", str(place['name']))
-        print("Address: ", str(place['address']))
-        print("Main Type: ", str(place['main_type']))
-        print("Sub Types: ", str(place['sub_types']))
-        print("View on google: ", str(place['weblink']))
-        print()
-        
-        feedback = input("'A' for accept, 'D' for decline, 'E' to exit: ")
+    already_rec_collection = db["ratings"]
+    query_ratings = {"user_id": user_ID}
+    places = list(already_rec_collection.find(query_ratings))
+    #list of place_ids in the rating database to check with the result_list
+    check = [place['place_id'] for place in places]
+    #remove places that are already in the check list
+    for place in places_list[:]: #prevent length of list decreasing and not being able to delete
+        if place in check:
+            places_list.remove(place) 
+    #return place for app
+    if len(places_list)>0:
+        # choice = random.choice(places_list)
+        # query = {"_id": ObjectId(choice)}
+        # output = places_collection.find_one(query)
+        query = {"_id": ObjectId(user_ID)}
+        print(user_ID)
+        user_object = collection.find_one(query)
+        return user_object
 
-        if feedback == 'A':
-            temp_feedback.accept_recommendation_update(user_ID, choice)
-        elif feedback == 'D':
-            temp_feedback.decline_recommendation_update(user_ID, choice)
-        elif feedback == 'E':
-            break
-        else:
-            print("Please enter a valid response: ")
-            print("Place: ", str(choice['name']))
-            print("Address: ", str(choice['address']))
-            print("Main Type: ", str(choice['main_type']))
-            print("Sub Types: ", str(choice['sub_types']))
-            print("View on google: ", str(choice['weblink']))
-
-            feedback = input("'A' for accept, 'D' for decline, 'E' to exit: ")
-
-def main():
+def get_one_initial_recommend(user_id):
     ### extract user info to generate filtered df with only relevant places ###
-    email = input("Enter your email address: ")
-    user_object = get_user_from_email(email)
+    user_object = get_user_from_id(user_id)
     df = df_meet_criteria(user_object)
 
     ### STEP 1: hot-encode ###
@@ -188,7 +173,7 @@ def main():
         places_list.append(df.loc[index]['place_id'])
     for index, row in least_5_similar.iterrows():
         places_list.append(df.loc[index]['place_id'])
-    print(str(user_object['_id']))
+    #print(str(user_object['_id']))
     recommendPlaces(str(user_object['_id']), places_list)
 
-main()
+print(get_one_initial_recommend('657245152201f887d4fa868a'))

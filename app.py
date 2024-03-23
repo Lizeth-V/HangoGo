@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 from flask_pymongo import PyMongo
 from register import register_user, hash_password
 from db import users_collection, places_collection
+from reset import reset_psw
 
 app = Flask(__name__)
 
@@ -334,6 +335,7 @@ def delete_acct():
 
     return redirect(url_for('index'))
 
+# Forget Password (Lizeth)
 @app.route("/forgot_password", methods=['GET', 'POST'])
 def forgot_password():
 
@@ -343,7 +345,9 @@ def forgot_password():
 
         if user_inDB:
             print("Valid User in DB - generating token")
+            # making a reset_token and adding it on to the user information 
             reset_token = ''.join(random.choices(string.ascii_letters + string.digits, k=30))
+            users_collection.update_one({'email': email}, {"$set": {"reset_token": reset_token}})
             reset_email(email, reset_token)
             print("reset psw email sent!")
             return render_template('recovery.html')
@@ -355,7 +359,7 @@ def forgot_password():
     return render_template("forgot_password.html")
             
     
-
+# Sending an email to reset password (Lizeth)
 @app.route("/reset_sent")
 def reset_sent():
     return render_template('recovery.html')
@@ -375,9 +379,33 @@ def reset_email(email, token):
 
     return "Reset Password email sent"
 
-@app.route("/reset_password/<token>")
+# Unique link that will reset the usesrs password and send them back to login after successfully changing password
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_password(token):
-    return render_template("reset_password.html")
+
+    if request.method == "POST":
+        newPassword = request.form.get("new_psw")
+        newConfirm_password = request.form.get("reenter_psw")
+
+        if newPassword != newConfirm_password:
+            flash("Passwords do not match. Try Again")
+            return render_template("reset_password.html", token=token)
+        
+        # find user with the reset token
+        user = users_collection.find_one({"reset_token": token})
+        if user:
+            reset_psw(user["username"], newPassword, users_collection)
+            flash("Password has be reset successfully! You can now Login")
+
+            # clearing the user reset token after being used.
+            users_collection.update_one({"_id": user["_id"]}, {"$unset": {"reset_token": ""}})
+
+            return redirect(url_for("login"))
+        else:
+            flash("Invalid or expired token.")
+            return render_template("reset_password.html", token=token)
+
+    return render_template("reset_password.html", token=token)
 
 # Gloria
 # send contact form

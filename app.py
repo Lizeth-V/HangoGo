@@ -145,6 +145,13 @@ def login():
             print("User not found.")
     return render_template("login.html")
 
+# Logout and clear the user session (Lizeth)
+@app.route("/logout")
+def logout():
+    session.clear()
+    print("Logout Success")
+    return redirect(url_for('index'))
+
 
 # Landing Page that will display the chatbox and the user profile  - (Gloria & Lizeth)
 # Also allows users to update thier name and email if preferred - but won't reverify emails
@@ -200,7 +207,8 @@ def landing_page(username):
                            email = user["email"],
                            birth_month = user["birth_month"],
                            birth_day = user["birth_day"],
-                           birth_year = user["birth_year"]
+                           birth_year = user["birth_year"],
+                           place_list=place_list # recommended places is the temp placeholder for the AI generated suggested places
                            )  
 
 # Gloria
@@ -416,10 +424,12 @@ def contact():
 # favorites page
 @app.route("/favorites")
 def favorites():
-    user = session.get("user")
+    # Retrive user session information
+    user = session.get('user')
+
     if user is None:
-        flash("Please log in to access favorites page.")
-        return redirect(url_for("login"))
+        flash('Please log in to access the map.')
+        return redirect(url_for('login'))
     
     page = request.args.get("page", default=1, type=int)
     per_page = 10
@@ -434,7 +444,7 @@ def favorites():
             "name": place["name"],
             "address": place["address"]
         })
-    return render_template("favorites.html", favorites=favorites_list, page=page, per_page=per_page, total_places=total_places)
+    return render_template("favorites.html", favorites=favorites_list, page=page, per_page=per_page, total_places=total_places, user=user)
 
 # Gloria
 # get place from DB

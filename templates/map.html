@@ -4,13 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- <script src="../scripts/landing_page_edit.js"></script> -->
-        <div class="logo">
-            <h1>hangogo</h1>
-            <ul>
-                <li><a href="logout">logout</a></li>
-            </ul>
-        </div>
+
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
         <link rel="stylesheet" href="../static/css/map.css">
@@ -20,7 +14,22 @@
         <title>Welcome to hangogo</title>
     </head>
     <body>
-         <!-- Nav Bar -->
+        <!-- Top Nav (Lizeth) -->
+        <div class ="header-container">
+            <div class="top-nav">
+                <div class="logo">
+                    <img src="../static/icons/hangogo.png" alt="hangogo">
+                </div>
+                <a href="/about_us">About</a>
+                <a href="/contact">Contact Us</a>
+            </div>
+
+            <div class = "login-signup">
+                <a href="/logout">logout</a>
+            </div>
+        </div>
+        <!-- End of Top Nav -->
+        <!-- Nav Bar -->
         <div class="navbar">
             <!-- User Profile -->
             <div class="icon-container"> 
@@ -36,7 +45,9 @@
             </div>
             <!-- Favorites Page -->
             <div class="icon-container"> 
+                <a href="{{ url_for('favorites') }}">
                     <i class="bx bxs-buildings icon"></i>
+                </a>
             </div>
         </div>
         <!-- End of Nav Bar -->

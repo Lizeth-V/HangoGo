@@ -10,13 +10,27 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
+
 from flask_pymongo import PyMongo
 from register import register_user, hash_password
 from db import users_collection, places_collection
 
 app = Flask(__name__)
 
-
+# Lizeth - COnfigureing Flask Mail
+load_dotenv()
+#this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
+app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
+# Verify
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+# Default
+app.config['DEFAULT_USERNAME'] = os.getenv('DEFAULT_USERNAME')
+app.config['DEFAULT_PASSWORD'] = os.getenv('DEFAULT_PASSWORD')
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
 
 # secret key (Lizeth)
 app.secret_key = "supersecrethangogo!!!!"
@@ -132,23 +146,62 @@ def login():
     return render_template("login.html")
 
 
-# Gloria
-@app.route('/<username>.html')
+# Landing Page that will display the chatbox and the user profile  - (Gloria & Lizeth)
+# Also allows users to update thier name and email if preferred - but won't reverify emails
+@app.route('/<username>', methods=['GET', 'POST'])
 def landing_page(username):
-    user = users_collection.find_one({"username": username})
-    if user is None:
-        return "Page not found", 404
+    user = session.get('user')
+    
+    if not user:
+        return redirect(url_for('login'))
+    
+    # Retrive user session information
+    user_id = user.get('_id')
+    username = user['username']
+    # Retrieve user information from the database
+    user_from_db = users_collection.find_one({"_id": user_id})
+    
+    # This should update the users changes in the Editing mode in their profile (Lizeth)
+    if request.method == 'POST':
+    # get the new user data from the form  
+        print("User updating info")
+        first_name = request.form.get('edit_first_name')
+        last_name = request.form.get('edit_last_name')
+        email = request.form.get('edit_email')
+
+        # update the database
+        # making a dictionary with the fields that are not None (left empty)
+        update_data = {}
+        if first_name:
+            update_data['first_name'] = first_name
+        if last_name:
+            update_data['last_name'] = last_name
+        if email:
+            update_data['email'] = email
+
+        # updating database with the new changes (ignoring empty fileds)
+        if update_data:
+            users_collection.update_one(
+                {'username': username},
+                {'$set': update_data}
+            )
+            print("update user successful..?")
+        else:
+            print("no changes made")
+
+        return redirect(url_for('landing_page', username=username))
+    
+
     return render_template("landing_page.html",
+                           user=user_from_db,
                            username = username,
                            first_name = user["first_name"],
                            last_name = user["last_name"],
                            email = user["email"],
                            birth_month = user["birth_month"],
                            birth_day = user["birth_day"],
-                           birth_year = user["birth_year"],
-                           place_list=place_list # recommended places is the temp placeholder for the AI generated suggested places
-                           ) 
- 
+                           birth_year = user["birth_year"]
+                           )  
 
 # Gloria
 # Add to Favorites List
@@ -196,14 +249,25 @@ def verify(username, token):
 
         flash('Email verification successful! You can now log in.')
         print("Email Verified...Redirect to create Account")
-        return redirect(url_for("create_account", username=username))
+        return redirect(url_for("create_account"))
 
     flash('Invalid or expired verification link.')
     return redirect(url_for("verify", username=username))
 
+# Function to organize sending emails through default or verify 
+def get_sender(choice, app):
+    if choice == 1:
+        # choice 1 - verify email 
+        return app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD']
+    else:
+        # choice 2 - default email
+        return app.config['DEFAULT_USERNAME'], app.config['DEFAULT_PASSWORD']
+
 # Lizeth
 def send_verification(email, username, token):
     # Sends Verification Email from the Hangogo Verification email. The email contains unique link to verify a users account. 
+    # sender, sender_psw = 
+    get_sender(1, app) #'1' to send email from the verify email 
     msg = Message('Verify Your Email - Hangogo', sender = 'hangogo.verify@gmail.com' ,recipients=[email])
     verification_link = url_for('verify', username=username,token=token, _external=True)
     msg.body = f'Hi! I cant wait to be friends! Click the following link to verify your email: {verification_link}'
@@ -216,39 +280,96 @@ def send_verification(email, username, token):
 
     return "Verification email sent"
 
-# Lizeth
-load_dotenv()
-#this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
-app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
-app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
-mail = Mail(app)
 
-# Lizeth
-@app.route('/update-user', methods=['POST'])
-def update_user():
+# Map Page (Lizeth)
+@app.route("/map")
+def map():
+    # Retrive user session information
+    user = session.get('user')
+
+    if user is None:
+        flash('Please log in to access the map.')
+        return redirect(url_for('login'))
+    
+    # Retrieve user information from the database
+    # user_id = user.get('_id') 
+    # user_from_db = users_collection.find_one({"_id": user_id})
+    print("Redirected to Map Page!")
+    return render_template('map.html', user=user)
+
+# About Us/ How to use the site (Lizeth)
+@app.route("/about_us")
+def about_us():
+    print("Redirect to About Us page!")
+    return render_template('about_us.html')
+
+# Delete Account (Lizeth)
+@app.route("/delete_account", methods=["POST"])
+def delete_acct():
+    print("Delete Account")
+
+    user = session.get('user')
+    user_id = user.get('_id')
+
     try:
-        # Get data from the AJAX request
-        data = request.get_json()
-        user_id = data.get('userId')
-        updated_details = data.get('updatedDetails')
-
-        # Update user details in MongoDB
-        users_collection.update_one({'_id': user_id}, {'$set': updated_details})
-
-        # Return the updated user details as a response
-        updated_user = users_collection.find_one({'_id': user_id})
-        return jsonify(updated_user)
-
+        result = users_collection.delete_one({'_id': ObjectId(user_id)})
+        if result.deleted_count == 1:
+            # Account deletion successful, redirect to the index page or any other desired destination
+            # Clear user session
+            print('Delete Account Success')
+            session.pop('user', None)
+            return redirect(url_for('index'))
+        else:
+            flash('Failed to delete account.')
     except Exception as e:
-        print(f"Error updating user details: {e}")
-        return jsonify({'error': 'Internal Server Error'}), 500
+        flash('Failed to delete account.')
+
+    return redirect(url_for('index'))
+
+@app.route("/forgot_password", methods=['GET', 'POST'])
+def forgot_password():
+
+    if request.method == "POST":
+        email = request.form.get("email")
+        user_inDB = users_collection.find_one({'email': email})
+
+        if user_inDB:
+            print("Valid User in DB - generating token")
+            reset_token = ''.join(random.choices(string.ascii_letters + string.digits, k=30))
+            reset_email(email, reset_token)
+            print("reset psw email sent!")
+            return render_template('recovery.html')
+
+        else:
+            print("Email not valid")
+            flash('Email not valid')
+
+    return render_template("forgot_password.html")
+            
     
 
+@app.route("/reset_sent")
+def reset_sent():
+    return render_template('recovery.html')
 
+def reset_email(email, token):
+    # Sends Reset Password Email from the official Hangogo email. The email contains unique link to users so they can securely recovery their  account. 
+    get_sender(2, app) #'2' to send email from the default email 
+    msg = Message('Verify Your Email - Hangogo', sender = 'letshangogo@gmail.com' ,recipients=[email])
+    reset_link = url_for('reset_password', token=token, _external = True)
+    msg.body = f'Hi! Trouble signing in? No worries just click the following link to reset your password ->  {reset_link}'
+
+    try:
+        mail.send(msg)
+        print("Email Sent!")
+    except Exception as e:
+        flash(f"Failed to send email. Error: {str(e)}")
+
+    return "Reset Password email sent"
+
+@app.route("/reset_password/<token>")
+def reset_password(token):
+    return render_template("reset_password.html")
 
 # Gloria
 # send contact form
@@ -323,6 +444,7 @@ def get_place():
     place_id = request.form['place_id']
     place = places_collection.find_one({"_id": ObjectId(place_id)})
     return jsonify(place)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

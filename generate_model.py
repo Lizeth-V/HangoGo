@@ -165,6 +165,15 @@ def generate_place_probabilities(uid):
     #new df in order of acceptance probability
     top_locations = place_df_features.sort_values(by='acceptance_probability', ascending=False) 
 
+    # Get all place IDs
+    all_place_ids = set(top_locations['place_id'])
+
+    # Get place IDs that the user has reviewed
+    reviewed_place_ids = set(generated_reviews['place_id'])
+
+    # Find the set difference to get place IDs that the user hasn't reviewed
+    unreviewed_place_ids = all_place_ids - reviewed_place_ids
+
     #mongo upload into the user database as a list
     collection_name = "User Data"
 
@@ -178,7 +187,7 @@ def generate_place_probabilities(uid):
         {"_id": ObjectId(uid)},
         {
             "$set": {
-                "rec_probs": top_locations['place_id'].tolist()
+                "rec_probs": list(unreviewed_place_ids)
             }
         },
         upsert=True  #needed since users wont have the list until the first time they use the model

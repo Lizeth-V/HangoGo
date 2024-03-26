@@ -5,6 +5,8 @@ import generate_model
 from bson import ObjectId
 import math
 from celery import Celery
+from get_history import pull_history
+
 
 app = Flask(__name__)
 
@@ -13,6 +15,7 @@ def index():
     user_id = '6568cbef4a9658311b3ee704'  #test id until full implementation with the chat history box
     return render_template('chatbox.html', user_id = user_id)
 
+#take in the parameters and return a recommendation, from the AI
 @app.route('/get_new_active_place', methods=['GET'])
 def get_active_place_details():
     user_id = '6568cbef4a9658311b3ee704'
@@ -29,11 +32,13 @@ def get_active_place_details():
         radius=radius,
         place_type=place_type
     )
-    # Convert all ObjectId instances to strings
+    #Convert all ObjectId instances to strings for easier coding
     active_place = convert_objectid(active_place)
 
+    #Return data to be displayed and used, as json.
     return jsonify({'active_place': active_place})
 
+#convert to string
 def convert_objectid(obj):
     if isinstance(obj, ObjectId):
         return str(obj)
@@ -46,24 +51,24 @@ def convert_objectid(obj):
     else:
         return obj
 
-
+#Called when user presses accept
 @app.route('/accept_rec/', methods=['GET'])
 def accept_rec_model():
-
+    #takes user and place parameters and inputs the feedback and regenerates the model for the user
     user_id = '6568cbef4a9658311b3ee704'  #temp
     place_id = request.args.get('place_id', default=None, type=str)
 
-    print(place_id)
 
     if place_id:
         temp_feedback.accept_recommendation_update(user_id=user_id, place_id=place_id) #update the feedback page
         generate_model.generate_place_probabilities(user_id)
 
-    return 'Success' #html for after
+    return 'Success' 
 
+#Called when user presses decline
 @app.route('/decline_rec/', methods=['GET'])
-def decline_rec_model(user_id=None, place_id=None):
-
+def decline_rec_model():
+    #takes user and place parameters and inputs the feedback and regenerates the model for the user
     user_id = '6568cbef4a9658311b3ee704'  #\test id
     place_id = request.args.get('place_id', default=None, type=str)
 
@@ -73,19 +78,21 @@ def decline_rec_model(user_id=None, place_id=None):
 
     return 'Success'
 
-@app.route('/block_rec/<user_id>/<place_id>', methods=['POST'])
-def block_rec_model(user_id=None, place_id=None):
 
+#Called when user presses block
+@app.route('/block_rec/', methods=['GET'])
+def block_rec_model():
+    #takes user and place parameters and inputs the feedback and regenerates the model for the user, prevents this place from being shown again.
     user_id = '6568cbef4a9658311b3ee704'  #\test id
+    place_id = request.args.get('place_id', default=None, type=str)
 
-    if place_id:
-        p_id = str(place_id).lstrip("ObjectId('").rstrip("')")
 
-        temp_feedback.block_recommendation_update(user_id=user_id, place_id=p_id)
-        generate_model.generate_place_probabilities(str(user_id))
+    temp_feedback.block_recommendation_update(user_id=user_id, place_id=place_id)
+    generate_model.generate_place_probabilities(str(user_id))
 
-    return render_template('result.html') 
+    return 'Success'
 
+#deprecated, we just save history as feedback instead, save data
 @app.route('/save_chat/', methods=['GET'])
 def save_messages():
 
@@ -104,14 +111,31 @@ def save_messages():
         user_req_message = user_req_message + ' in radius ' + radius
     user_req_message = user_req_message + '.'
 
-    temp_feedback.insert_user_chat(user_id=user_id, string=user_req_message)
+    #temp_feedback.insert_user_chat(user_id=user_id, string=user_req_message)
 
     rec_message = 'Hango recommended ' + place_name + 'and you ' + user_action + 'ed it.'
 
-    temp_feedback.insert_user_chat(user_id=user_id, string=rec_message)
+    #temp_feedback.insert_user_chat(user_id=user_id, string=rec_message)
 
     return 'Success'
 
+
+@app.route('/inflate_user_history', methods=['GET'])
+def fetch_user_history():
+
+    user_id = '6568cbef4a9658311b3ee704'  #\test id
+
+    user_rec_history = []
+    #calculate the place and the feedback response and apply it to a list of strings to display.
+    if user_id:
+        for item in pull_history(user_id):
+            if item['feedback'] == 0:
+                fb = "rejected"
+            else:
+                fb = "accepted"
+            user_rec_history.append('You ' + fb + ' a recommendation to ' + item['name'])
+            
+    return jsonify({'history': user_rec_history})
 
 
 if __name__ == '__main__':

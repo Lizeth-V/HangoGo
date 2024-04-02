@@ -407,6 +407,66 @@ def reset_password(token):
 
     return render_template("reset_password.html", token=token)
 
+# Users can change their passwords from their account page (Lizeth)
+@app.route("/change_password", methods=["GET", "POST"])
+def change_password():
+    print("In Change Password Page")
+    # Retrive user session information
+    user = session.get('user')
+    print(user)
+    
+    if user is None:
+        # redirect to login if user is not signed in
+        return redirect(url_for('login'))
+    
+    if request.method == "POST":
+        newPassword = request.form.get("new_psw")
+        newConfirm_password = request.form.get("reenter_psw")
+        current_password = request.form.get("old_psw")
+
+        if newPassword != newConfirm_password:
+            flash("Passwords do not match. Try Again")
+            return render_template("change_password.html")
+        
+        username = user.get('username')
+        # Verify current password in order to reset password
+        if not verify_password(username, current_password):
+            print("Incorrect Current Password.")
+            return render_template("change_password.html")
+        
+        # Reseting the password
+        reset_psw(user["username"], newPassword, users_collection)
+        print("password reset!")
+        flash("Password has be reset successfully! You can now Login")
+        return redirect(url_for("login"))
+        
+
+    return render_template("change_password.html")
+
+def verify_password(username, current_password):
+    # Retrieve the user's information
+    user = users_collection.find_one({'username': username})
+    print(user)
+
+    if user:
+        # Retrieve the hashed password from the database
+        hashed_password = user.get('password')
+        print(hashed_password)
+        print(current_password)
+
+        if hashed_password is not None:
+            # Check password matches the hashed password
+            if bcrypt.checkpw(current_password.encode("utf-8"), hashed_password.encode("utf-8")):
+                return True
+            else:
+                return False
+        else:
+            print("Error: Hashed password is NONE")
+            return False
+    else:
+        # User not found
+        return False
+
 # Gloria
 # send contact form
 def send_contact_form(result):

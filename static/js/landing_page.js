@@ -13,7 +13,9 @@ function expandProfile() {
 }
 
 function addToFavorites(index) {
+    console.log("adding to favs")
 $.ajax({
+    
     url: '/add_to_favorites',
     type: 'POST',
     data: { place_index: index },

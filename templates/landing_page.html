@@ -90,12 +90,13 @@
             <div class="more-choices" id="moreChoicesContainer" style="display: none;">
                 <form action="{{ url_for('delete_acct') }}" method="post">
                     <p>Location</p>
+
+                    <a href="{{ url_for('change_password') }}" id="changePsw">Change Password</a>
                 
                     <!-- Delete Account button -->
                     <button type="submit" id="deleteButton" onclick="delete_acct()">Delete Account</button>
                 </form>
-                <br>
-                <a href="{{ url_for('change_password') }}" id="changePsw">Change Password</a>
+                
             </div>
 
             <button class="arrow_down" onclick="toggleDetails()">

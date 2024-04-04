@@ -149,6 +149,7 @@ def login():
 # Logout and clear the user session (Lizeth)
 @app.route("/logout")
 def logout():
+    # session.pop('username', None)
     session.clear()
     print("Logout Success")
     return redirect(url_for('index'))
@@ -243,6 +244,10 @@ def add_to_favorites():
 # Gloria
 @app.route("/")
 def index():
+    if 'user' in session:
+        user = session['user']
+        username = user.get('username') 
+        return render_template('index.html', username=username)
     return render_template("index.html")
 
 # Sending Email Verifications (Lizeth)
@@ -310,7 +315,11 @@ def map():
 @app.route("/about_us")
 def about_us():
     print("Redirect to About Us page!")
-    return render_template('about_us.html')
+    username = session.get('user')  # Retrieve username from session
+    if username:
+        return render_template('about_us.html', username=username)
+    else:
+        return render_template('about_us.html')
 
 # Delete Account (Lizeth)
 @app.route("/delete_account", methods=["POST"])
@@ -543,6 +552,14 @@ def get_place():
     place = places_collection.find_one({"_id": ObjectId(place_id)})
     return jsonify(place)
 
+# This page will display the top locations people like and are visiting (Lizeth)
+@app.route("/top_loactions")
+def top_locations():
+    username = session.get('user')  # Retrieve username from session
+    if username:
+        return render_template('top_locations.html', username=username)
+    else:
+        return render_template('top_locations.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -28,12 +28,17 @@
                     </a>
                 </div>
                 <a href="#">About</a>
+                <a href="/top_loactions">Top Locations</a>
                 <a href="/contact">Contact Us</a>
             </div>
     
             <div class = "login-signup">
-                <a href="register">sign-up</a>
-                <a href="login">login</a>
+                {% if username %}
+                <a href="{{ url_for('logout') }}">logout</a>
+                {% else %}
+                    <a href="{{ url_for('register') }}">sign Up</a>
+                    <a href="{{ url_for('login') }}">login</a>
+                {% endif %}
             </div>
         </div>
 

@@ -18,12 +18,17 @@
                 <img src="../static/icons/hangogo.png" alt="hangogo">
             </div>
             <a href="/about_us">About</a>
+            <a href="/top_loactions">Top Locations</a>
             <a href="/contact">Contact Us</a>
         </div>
 
         <div class = "login-signup">
-            <a href="register">sign-up</a>
-            <a href="login">login</a>
+            {% if username %}
+                <a href="{{ url_for('logout') }}">logout</a>
+            {% else %}
+                <a href="{{ url_for('register') }}">sign Up</a>
+                <a href="{{ url_for('login') }}">login</a>
+            {% endif %}
         </div>
     </div>
     <!-- End of Top Nav -->
@@ -32,7 +37,11 @@
         <h1>New hang out spots ready to go</h1>
         <h2>You ask, Hango will deliver!</h2>
         <div class="new-chat">
-            <a href="login">Start a new AI chat ></a>
+            {% if username %}
+                <a href="{{ url_for('landing_page', username=username) }}">chat!</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">login</a>
+            {% endif %}
         </div>
         
     </div>

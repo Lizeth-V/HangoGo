@@ -38,6 +38,18 @@
             <h1>Top Locations</h1>
             <p> Here are the top locations people are liking this week!</p>
         </div>
+        <div class="container">
+            {% for place in top_places %}
+            <div class="place">
+                <img src="{{ place.image_url }}" alt="icon">
+                <div>
+                    <p>{{ place.name }}</p>
+                    <p>Rating: {{ place.rating }}</p>
+                    <p>{{ place.address }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
         
 
     </body>

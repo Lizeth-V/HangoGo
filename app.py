@@ -556,10 +556,18 @@ def get_place():
 @app.route("/top_loactions")
 def top_locations():
     username = session.get('user')  # Retrieve username from session
+
+    # Fetch top 10 places with the best ratings from DB
+    # TO-DO: add location recognition - so users can see top places in their area 
+    top_places = places_collection.find().sort('rating', -1).limit(10)
+
     if username:
-        return render_template('top_locations.html', username=username)
+        return render_template('top_locations.html', username=username, top_places=top_places)
     else:
-        return render_template('top_locations.html')
+        return render_template('top_locations.html', top_places=top_places)
+    
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

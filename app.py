@@ -310,6 +310,19 @@ def map():
     # user_from_db = users_collection.find_one({"_id": user_id})
     print("Redirected to Map Page!")
     return render_template('map.html', user=user)
+    ''' #this will update the map to the place reccomended in chatbox and is to be connected when chatbox is on page...
+
+    # Retrieve place information based on user's session
+    place_name = user.get('place_name')  # Assuming place_name is stored in the user session
+    place_info = get_place_info(place_name)
+    
+    # Check if place information is available
+    if place_info:
+        return render_template('map.html', user=user, place_info=place_info)
+    else:
+        flash('Place information not found.')
+        return redirect(url_for('map.html'))  # Redirect to map page with error?
+    '''
 
 # About Us/ How to use the site (Lizeth)
 @app.route("/about_us")

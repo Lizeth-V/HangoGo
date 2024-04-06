@@ -5,7 +5,7 @@ import generate_model
 from bson import ObjectId
 import math
 from celery import Celery
-from get_history import pull_history
+import get_history
 
 
 app = Flask(__name__)
@@ -16,7 +16,7 @@ def index():
     return render_template('chatbox.html', user_id = user_id)
 
 #take in the parameters and return a recommendation, from the AI
-@app.route('/get_new_active_place', methods=['GET'])
+@app.route('/get_new_active_place', methods=['GET', 'POST'])
 def get_active_place_details():
     user_id = '6568cbef4a9658311b3ee704'
     radius = request.args.get('radius', default=5, type=int)
@@ -57,7 +57,6 @@ def accept_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
     user_id = '6568cbef4a9658311b3ee704'  #temp
     place_id = request.args.get('place_id', default=None, type=str)
-
 
     if place_id:
         temp_feedback.accept_recommendation_update(user_id=user_id, place_id=place_id) #update the feedback page
@@ -111,11 +110,11 @@ def save_messages():
         user_req_message = user_req_message + ' in radius ' + radius
     user_req_message = user_req_message + '.'
 
-    #temp_feedback.insert_user_chat(user_id=user_id, string=user_req_message)
+    temp_feedback.insert_user_chat(user_id=user_id, string=user_req_message, source='hango')
 
-    rec_message = 'Hango recommended ' + place_name + 'and you ' + user_action + 'ed it.'
+    rec_message = 'Hango recommended ' + place_name + ' and you ' + user_action + 'ed it.'
 
-    #temp_feedback.insert_user_chat(user_id=user_id, string=rec_message)
+    temp_feedback.insert_user_chat(user_id=user_id, string=rec_message, source='user')
 
     return 'Success'
 
@@ -125,16 +124,8 @@ def fetch_user_history():
 
     user_id = '6568cbef4a9658311b3ee704'  #\test id
 
-    user_rec_history = []
-    #calculate the place and the feedback response and apply it to a list of strings to display.
-    if user_id:
-        for item in pull_history(user_id):
-            if item['feedback'] == 0:
-                fb = "rejected"
-            else:
-                fb = "accepted"
-            user_rec_history.append('You ' + fb + ' a recommendation to ' + item['name'])
-            
+    user_rec_history = get_history.get_user_history(user_id)
+    
     return jsonify({'history': user_rec_history})
 
 

@@ -19,12 +19,15 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
   
   //this simply hides the submit elements
   function hideQuery(){
+    document.getElementById('submit_button').style.display = 'none';
+
     var submit_elements = document.getElementById('message-form').elements;
 
     for (var i = 0; i < submit_elements.length; i++) {
       submit_elements[i].disabled = true;
       submit_elements[i].style.visibility = 'hidden'; 
     }
+
     //hide every element in the class
     
     var add_elements = document.getElementById('additional-fields');
@@ -208,6 +211,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
     //accept button functionality
     accept_button.onclick = function() {
       //hide other buttons, call the accept function, after some time reveal search bar again
+        save_user_chat(user_id, radius, place_type, activePlace.name, 'accept');
         accept_button.remove();
         decline_button.remove();
         block_button.remove();
@@ -222,6 +226,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 
     decline_button.onclick = function() {
       //hide other buttons, call the decline function, after some time reveal search bar again
+        save_user_chat(user_id, radius, place_type, activePlace.name, 'decline');
         accept_button.remove();
         decline_button.remove();
         block_button.remove();
@@ -235,6 +240,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 
     block_button.onclick = function() {
       //hide other buttons, call the block function, after some time reveal search bar again
+      save_user_chat(user_id, radius, place_type, activePlace.name, 'blocked');
       accept_button.remove();
       decline_button.remove();
       block_button.remove();
@@ -269,6 +275,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
     active_rec_message.appendChild(rec_button_group);
 
     var message_stack = document.getElementById('message-stack');
+    hideQuery();
     message_stack.insertBefore(user_req_message, message_stack.firstChild);
     scroll_div.scrollTop = scroll_div.scrollHeight;
     //sequentially insert the indiviidual messages into the message container and scroll down to the bottom
@@ -280,7 +287,6 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
     setTimeout(() => {
         message_stack.insertBefore(active_rec_message, message_stack.firstChild);
         var scroll_div = document.querySelector('.scroll');
-        hideQuery();
         scroll_div.scrollTop = scroll_div.scrollHeight;
       }, 1000);
 
@@ -293,6 +299,9 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 
   function show_query(){
     //show the query container
+
+    document.getElementById('submit_button').style.display = 'inline';
+
     var submit_elements = document.getElementById('message-form').elements;
 
     for (var i = 0; i < submit_elements.length; i++) {

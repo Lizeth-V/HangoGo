@@ -11,14 +11,13 @@
   <body>
     <div class="container mt-5">
         <div class="chatbox">
-                  <div class="messages" id="messages">
+          <input type="image" id="history-button" class="history-button" title="View History" src="static\history-regular-24.png" onclick="switch_history()"/>
+          <div class="messages" id="messages">
                     <div class="scroll" class="scroll">
                     <div id="message-stack" class="message-stack"></div>
                     </div>
                   </div>
 
-              
-              
               <form id="message-form" class="send-message-form" method="post" action="{{ url_for('index') }}">
                 <div class="input-group">
                   <select class="selector" id="message_type" name="message_type" required onchange="showFields()">
@@ -31,7 +30,8 @@
                 <div class="additional-fields" id="additional-fields"></div>
                 </div>
 
-                <button type="submit" id = "submit_button">Send</button>
+                <input type="image" title="Submit" id="submit_button" class="submit_button" src="static\subdirectory-left-regular-40.png"/>
+                
               </form> 
             </div>
         </div>
@@ -41,10 +41,7 @@
     <script src="static\js\history.js"></script>
 
     <script>
-    
-      
-
-    </script>
+  </script>
     
   </body>
   </html>

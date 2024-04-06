@@ -7,7 +7,7 @@ dbname = "Hango"
 
 
 def get_user_history(user_id):
-    collection_name = "ratings"
+    collection_name = "User Chats"
 
     client = MongoClient(connection_string)
     db = client[dbname]
@@ -17,10 +17,12 @@ def get_user_history(user_id):
         'user_id': user_id,
         }
     
-    projection = {'place_id': 1, 'feedback': 1, '_id': 0}
+    projection = {'message': 1, 'source':1, '_id': 0}
 
     #get user feedback in order of date oldest -> newest
     chat_history = list(collection.find(query, projection).sort("timestamp", ASCENDING))
+
+    print(chat_history)
 
     return chat_history
 

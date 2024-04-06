@@ -171,7 +171,11 @@ saved_places =[]
 @app.route('/add_to_favorites', methods = ["POST"])
 def add_to_favorites():
     place_index = int(request.form['place_index'])
-    place = place_list[place_index]
+
+    # using sub_types: cafe as a temp placeholder
+    cursor = places_collection.find({"sub_types": "cafe"})
+    place = list(cursor)[place_index]
+
     if place in saved_places:
         return jsonify(success=False, message=" ")
     else:

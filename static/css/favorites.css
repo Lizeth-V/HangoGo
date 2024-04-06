@@ -113,12 +113,10 @@ html{
 }
 
 
-
-
 .user-chatbox {
     display: flex;
     flex-direction: column;
-    background-color:rgba(242,197,130,1);
+    background-color:rgb(233, 230, 227);
 }
 
 
@@ -137,6 +135,7 @@ html{
     box-shadow: none;
 
 }
+
 
 @font-face {
     font-family: 'Roboto';

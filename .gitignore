@@ -1,6 +1,9 @@
 __pycache__
 appV1.py
 registerV1.py
+favorites_org.css
+favorites_org.js
+favorites_org.html
 place_feedback_mini_gen.py
 temp_feedback.py
 /.env

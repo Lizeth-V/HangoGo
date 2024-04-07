@@ -422,7 +422,9 @@ def reset_password(token):
             # clearing the user reset token after being used.
             users_collection.update_one({"_id": user["_id"]}, {"$unset": {"reset_token": ""}})
 
-            return redirect(url_for("login"))
+            # Render the loading page before redirecting to the login page
+            return render_template("loading.html", next=url_for('login'))
+
         else:
             flash("Invalid or expired token.")
             return render_template("reset_password.html", token=token)
@@ -579,6 +581,7 @@ def top_locations():
     else:
         return render_template('top_locations.html', top_places=top_places)
     
+
 
 
 

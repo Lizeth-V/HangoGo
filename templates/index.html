@@ -26,7 +26,7 @@
             {% if username %}
                 <a href="{{ url_for('logout') }}">logout</a>
             {% else %}
-                <a href="{{ url_for('register') }}">sign Up</a>
+                <a href="{{ url_for('register') }}">sign up</a>
                 <a href="{{ url_for('login') }}">login</a>
             {% endif %}
         </div>
@@ -40,7 +40,7 @@
             {% if username %}
                 <a href="{{ url_for('landing_page', username=username) }}">chat!</a>
             {% else %}
-                <a href="{{ url_for('login') }}">login</a>
+                <a href="{{ url_for('login') }}">start a new AI chat!</a>
             {% endif %}
         </div>
         

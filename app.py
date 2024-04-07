@@ -6,6 +6,7 @@ import bcrypt
 import os
 import random
 import string
+import googlemaps
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
@@ -17,6 +18,12 @@ from db import users_collection, places_collection
 app = Flask(__name__)
 
 
+# Get Google Maps API key from environment variable
+# google_maps_api_key = str(os.getenv('GOOGLE_MAPS_API'))
+google_maps_api_key = "AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk"
+
+# Initialize Google Maps API client with API key
+gmaps = googlemaps.Client(key=google_maps_api_key)
 
 # secret key (Lizeth)
 app.secret_key = "supersecrethangogo!!!!"
@@ -328,5 +335,43 @@ def get_place():
     place = places_collection.find_one({"_id": ObjectId(place_id)})
     return jsonify(place)
 
+# Gloria
+#itinerary planner GET
+@app.route('/itinerary_planner', methods=["GET"])
+def choose_places_to_go():
+    return render_template("itinerary_planner.html")
+
+# Gloria
+# itinerary planner POST
+@app.route('/plan_trip', methods=['POST'])
+def plan_trip():
+    selected_places = request.form.getlist('places')
+    travel_mode = request.form['travelMode']
+    coordinates = []
+
+    # Fetch coordinates for selected places from MongoDB
+    for place_name in selected_places:
+        place = places_collection.find_one({'name': place_name})
+        if place and 'address' in place:
+            # Use the address from MongoDB to obtain coordinates from Google Maps Geocoding API
+            geocode_result = gmaps.geocode(place['address'])
+            if geocode_result:
+                location = geocode_result[0]['geometry']['location']
+                coordinates.append({'lat': location['lat'], 'lng': location['lng']})
+
+    # Request directions using Google Maps Directions API
+    directions = []
+    for i in range(len(coordinates) - 1):
+        start_coord = coordinates[i]
+        end_coord = coordinates[i + 1]
+        direction = gmaps.directions(
+            (start_coord['lat'], start_coord['lng']),
+            (end_coord['lat'], end_coord['lng']),
+            mode=travel_mode
+        )
+        directions.append(direction)
+
+    # Pass directions and other data to the output page
+    return render_template('trip_summary.html', directions=directions)
 if __name__ == "__main__":
     app.run(debug=True)

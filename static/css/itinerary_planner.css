@@ -1,0 +1,42 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+h1 {
+    text-align: center;
+}
+form {
+    margin-bottom: 20px;
+    text-align: center;
+}
+input[type="text"], select {
+    padding: 8px;
+    margin-right: 10px;
+    width: 200px;
+    box-sizing: border-box;
+}
+#placesList {
+    margin-bottom: 20px;
+    text-align: center;
+}
+#placesList div {
+    margin-bottom: 5px;
+}
+button {
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #0056b3;
+}
+
+a {
+    display : block;
+  }
+  a iframe {
+    pointer-events : none;
+  }

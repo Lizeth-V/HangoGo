@@ -1,0 +1,21 @@
+<!-- TEMP USING MAP.HTML, DUE TO RESTRICTED API KEY WILL CHNAGE TO trip_summary.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trip Details</title>
+</head>
+<body>
+    <h1>Trip Details</h1>
+    <div id="directions">
+        {% for direction in directions %}
+            <h2>Directions for Leg {{ loop.index }}</h2>
+            <ul>
+                {% for step in direction[0]['legs'][0]['steps'] %}
+                    <li>{{ step['html_instructions'] }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </div>
+</body>
+</html>

@@ -191,7 +191,6 @@ def generate_place_probabilities(uid):
             }
         },
         upsert=True  #needed since users wont have the list until the first time they use the model
-
     )
         print("Update successful!")
     except Exception as e:

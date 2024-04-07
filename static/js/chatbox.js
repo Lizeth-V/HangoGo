@@ -71,7 +71,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
       mes_content = "Take me somewhere in ";
       mes_content += radius;
       mes_content += " miles";
-      mes_content += " that invloves ";
+      mes_content += " that involves ";
       mes_content += place_type
     }
 
@@ -84,7 +84,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 
     //add the user image
     var userImage = document.createElement('img');
-    userImage.src = "/static/hango.png";
+    userImage.src = "/static/user-solid-24.png";
     //replace this with the user's uploaded image
     userImage.className = 'user-image';
 
@@ -400,7 +400,7 @@ function showFields() {
   if (selection === "radius" || selection === "type_radius") {
     add_field_div.innerHTML += `
       <label for="radius">Radius (in miles):</label>
-      <select id="radius" name="radius" required>
+      <select id="radius" class="add-selector" name="radius" required>
         <option value="">Please select...</option>
         <option value="5">5 mi</option>
         <option value="10">10 mi</option>
@@ -412,7 +412,7 @@ function showFields() {
   if (selection === "type" || selection === "type_radius") {
     add_field_div.innerHTML += `
       <label for="place_type">Place Type:</label>
-      <select id="place_type" name="place_type" required>
+      <select id="place_type" class="add-selector" name="place_type" required>
         <option value="">Please select...</option>
         <option value="Food">Food</option>
         <option value="Drinks">Drinks</option>

@@ -7,14 +7,15 @@ import math
 from celery import Celery
 import get_history
 
-
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-    user_id = '6568cbef4a9658311b3ee704'  #test id until full implementation with the chat history box
-    return render_template('chatbox.html', user_id = user_id)
+#I worked on my section of the app.py in my own file, it however is now fully implemented into the app.py file
 
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    return render_template("chatbox.html")
+
+#(Aidan)
 #take in the parameters and return a recommendation, from the AI
 @app.route('/get_new_active_place', methods=['GET', 'POST'])
 def get_active_place_details():
@@ -38,7 +39,8 @@ def get_active_place_details():
     #Return data to be displayed and used, as json.
     return jsonify({'active_place': active_place})
 
-#convert to string
+#(Aidan)
+#convert to string for handling bson objects
 def convert_objectid(obj):
     if isinstance(obj, ObjectId):
         return str(obj)
@@ -51,6 +53,7 @@ def convert_objectid(obj):
     else:
         return obj
 
+#(Aidan)
 #Called when user presses accept
 @app.route('/accept_rec/', methods=['GET'])
 def accept_rec_model():
@@ -64,6 +67,7 @@ def accept_rec_model():
 
     return 'Success' 
 
+#(Aidan)
 #Called when user presses decline
 @app.route('/decline_rec/', methods=['GET'])
 def decline_rec_model():
@@ -78,6 +82,7 @@ def decline_rec_model():
     return 'Success'
 
 
+#(Aidan)
 #Called when user presses block
 @app.route('/block_rec/', methods=['GET'])
 def block_rec_model():
@@ -85,40 +90,47 @@ def block_rec_model():
     user_id = '6568cbef4a9658311b3ee704'  #\test id
     place_id = request.args.get('place_id', default=None, type=str)
 
-
     temp_feedback.block_recommendation_update(user_id=user_id, place_id=place_id)
     generate_model.generate_place_probabilities(str(user_id))
 
     return 'Success'
 
-#deprecated, we just save history as feedback instead, save data
+#(Aidan)
 @app.route('/save_chat/', methods=['GET'])
 def save_messages():
-
+    #accept user id in the url and replace
     user_id = '6568cbef4a9658311b3ee704'  #\test id
 
+    #accept arguments from url
     radius = request.args.get('radius', default=None, type=int)
     place_type = request.args.get('place_type', default=None, type=str)
     place_name = request.args.get('place_name', default=None, type=str)
     user_action = request.args.get('user_action', default=None, type=str)
 
 
+    #structure of the chat history storage
     user_req_message = 'You' + ' asked for a recommendation'
     if place_type:
-        user_req_message = user_req_message + ' of type ' + place_type
+        user_req_message = user_req_message + ' involving ' + place_type
     if radius:
-        user_req_message = user_req_message + ' in radius ' + radius
+        user_req_message = user_req_message + ' in a radius of ' + str(radius) +' miles'
     user_req_message = user_req_message + '.'
 
     temp_feedback.insert_user_chat(user_id=user_id, string=user_req_message, source='hango')
 
-    rec_message = 'Hango recommended ' + place_name + ' and you ' + user_action + 'ed it.'
+    #also store the user feedback
+    if user_action == 'decline':
+        rec_message = 'Hango recommended ' + place_name + ' and you ' + user_action + 'd it.'
+    else:
+        rec_message = 'Hango recommended ' + place_name + ' and you ' + user_action + 'ed it.'
 
+    #save to database
     temp_feedback.insert_user_chat(user_id=user_id, string=rec_message, source='user')
 
     return 'Success'
 
-
+#(Aidan)
+#when called, it brings in the user chat history and inflates their history page with it
 @app.route('/inflate_user_history', methods=['GET'])
 def fetch_user_history():
 
@@ -126,7 +138,19 @@ def fetch_user_history():
 
     user_rec_history = get_history.get_user_history(user_id)
     
+    #return the chat history as a json to be able to print
     return jsonify({'history': user_rec_history})
+
+#(Aidan)
+#flask call to delete user histories
+@app.route('/delete_user_chats', methods=['GET'])
+def delete_user_history():
+
+    user_id = '6568cbef4a9658311b3ee704'  #\test id
+
+    temp_feedback.delete_user_chat_history(user_id)
+    
+    return 'Success'
 
 
 if __name__ == '__main__':
@@ -134,4 +158,5 @@ if __name__ == '__main__':
 
 
 
+    
     

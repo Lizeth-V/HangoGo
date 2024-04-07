@@ -5,11 +5,18 @@ body, input, button, select {
   
 }
 
+.container.mt-5{
+  width: 100%;
+  height: 100%;
+  padding: 0%;
+  position: relative;
+}
+
 .chatbox {
     overflow: hidden;
     border-radius: 2px;
     width: 100%;
-    height: 98vh;
+    height: 100%;
     background-color: #5db946;
     align-items: center;
 }
@@ -57,7 +64,9 @@ body, input, button, select {
 .user-image{
   padding-right:5%;
   max-height: 70%;
-  max-width: 70%
+  max-width: 70%;
+  height: 15%;
+  width: 15%;
 }
 
 .active-rec-message {
@@ -81,8 +90,8 @@ body, input, button, select {
 
 .rec-image {
   margin-left:5%;
-  width: 25vw; 
-  height: 25vw;
+  width: 10vw; 
+  height: 10vw;
   overflow: hidden;
   aspect-ratio: 1/1;
 }
@@ -150,7 +159,7 @@ body, input, button, select {
     height: 80%;
     max-height: 80%;
     width: 100%;
-    background-color: #e4a66c;
+    background-color: #f2c582;
     z-index:2;
     display: flex;
     flex-direction: column;
@@ -160,6 +169,7 @@ body, input, button, select {
 
 .send-message-form {
     display: flex;
+    flex-direction: row;
     height: 10%;
     width: 100%;
     z-index:3;
@@ -168,10 +178,11 @@ body, input, button, select {
     margin-top: 10px;
 }
 
+
 .send-message-form .selector {
     flex-grow: 1;
     border: none;
-    padding: 10px;
+    padding: 1%;
     margin-left: 20px;
     border-radius: 10px;
     padding-bottom: 1%;
@@ -196,22 +207,28 @@ body, input, button, select {
 }
 
 .additional-fields{
+  margin-top: 2%;
   display: flex;
   flex-direction: horizontal;
   justify-content:center;
+  align-items: center;
   position: relative;
   z-index: 1;
   width: 95%; 
-  gap: 5%;
+  gap: 2%;
   margin-left: 1%;
+  font-size: small;
 }
 
 .additional-fields label{
   background-color: #ffffff;
   border-radius: 2px;
-  padding-inline: 10px;
+  padding-inline: 5px;
 }
 
+.add-selector{
+  font-size: small;
+}
 
 .input-group {
   position: relative;
@@ -247,9 +264,11 @@ body, input, button, select {
 }
 
 .history-button{
-  position: fixed;
+  position: absolute;
   left: 2%;
   top: 2%;
+  z-index: 2;
+  height: 5%;
   filter: opacity(50%); 
 }
 
@@ -258,9 +277,10 @@ body, input, button, select {
 }
 
 .del-button {
-  position: fixed;
+  position: absolute;
   right: 2%;
   top: 2%;
+  height: 5%;
   filter: opacity(50%); 
 }
 
@@ -269,9 +289,10 @@ body, input, button, select {
 }
 
 .back-button {
-  position: fixed;
+  position: absolute;
   left: 2%;
   top: 2%;
+  height: 5%;
   filter: opacity(50%); 
 }
 

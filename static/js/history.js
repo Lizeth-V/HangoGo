@@ -28,7 +28,7 @@ function fetchUserHistory() {
         var messageElement = `
               <div class="user-message">  
                 ${userMessage.message}  
-                <img src="static/hango.png" class="user-image">
+                <img src="static/user-solid-24.png" class="user-image">
               </div>
           `;
           messageHTML = messageElement + messageHTML;
@@ -81,7 +81,7 @@ function switch_history() {
     if (!original_content) {
         original_content = document.querySelector(".container.mt-5").innerHTML;
     }
-    document.querySelector(".container.mt-5").innerHTML = '<img type="button" id="back-button" class="back-button" title="Return" src="static/chevron-left-square-regular-40.png" onclick="switch_restore()" /> <img type="button" id="del-button" class="del-button" title="Delete History" src="static/trash-alt-regular-36.png"/><div class="chatbox"><div class="messages" id="messages"><div class="scroll" class="scroll"><div id="message-stack" class="message-stack"></div></div></div></div>';
+    document.querySelector(".container.mt-5").innerHTML = '<img type="button" id="back-button" class="back-button" title="Return" src="static/chevron-left-square-regular-40.png" onclick="switch_restore()" /> <img type="button" id="del-button" class="del-button" title="Delete History" onclick="delete_user_chat_history()" src="static/trash-alt-regular-36.png"/><div class="chatbox"><div class="messages" id="messages"><div class="scroll" class="scroll"><div id="message-stack" class="message-stack"></div></div></div></div>';
 
     fetchUserHistory()
 }
@@ -115,5 +115,17 @@ function switch_restore(){
         original_content = undefined
     }
 }
+
+function delete_user_chat_history(){
+    var url = '/delete_user_chats?user_id=${user_id}';
+
+    //popup confirmation
+    if (confirm("Are you sure you want to delete your chat history? It cannot be recovered.")) {
+        document.querySelector(".container.mt-5").innerHTML = '<img type="button" id="back-button" class="back-button" title="Return" src="static/chevron-left-square-regular-40.png" onclick="switch_restore()" /> <img type="button" id="del-button" class="del-button" title="Delete History" onclick="delete_user_chat_history()" src="static/trash-alt-regular-36.png"/><div class="chatbox"><div class="messages" id="messages"><div class="scroll" class="scroll"><div id="message-stack" class="message-stack"></div></div></div></div>';
+        fetch(url);
+    } else {
+        // User canceled the deletion
+        console.log("Deletion canceled by user.");
+    }}
 
 //window.onload = fetchUserHistory();

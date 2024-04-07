@@ -90,25 +90,36 @@
         </div>
 
         <div class="user-chatbox">
-            <hr class="horizontal-line">
-            <div class="chat1">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-            </div>
-            <div id="place-list">
-                {% for place in place_list %}
-                <div id="place-{{ place._id }}">
-                    <p>{{place.name}}</p>
-                    <p>{{place.address}}</p>
-                    <p class="place-link">{{ place.weblink}}</p>
-                    <button onclick="addToFavorites({{loop.index0}})">
-                    Add to Favorites List
-                    </button>
-                    <button onclick="sharePlace('{{ place._id }}')">
-                    Share Location
-                    </button>
-                </div>
-                {% endfor %}
-            </div>
+            <link rel="stylesheet" href="static\css\chatbox.css">
+            <div class="container mt-5">
+
+                <input type="image" id="history-button" class="history-button" title="View History" src="static\history-regular-24.png" onclick="switch_history()"/>
+
+                  <div class="chatbox">
+                    
+                    <div class="messages" id="messages">
+                              <div class="scroll" class="scroll">
+                              <div id="message-stack" class="message-stack"></div>
+                              </div>
+                            </div>
+          
+                        <form id="message-form" class="send-message-form" method="post" action="{{ url_for('index') }}">
+                          <div class="input-group">
+                            <select class="selector" id="message_type" name="message_type" required onchange="showFields()">
+                              <option value="">Please select...</option>
+                              <option value="default">Recommend me anything!</option>
+                              <option value="radius">Recommend me anything in a radius</option>
+                              <option value="type">Recommend me a type...</option>
+                              <option value="type_radius">Recommend me this type in this radius</option>
+                            </select>
+                          <div class="additional-fields" id="additional-fields"></div>
+                          </div>
+          
+                          <input type="image" title="Submit" id="submit_button" class="submit_button" src="static\subdirectory-left-regular-40.png"/>
+                          
+                        </form> 
+                      </div>
+                  </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -117,6 +128,10 @@
     
     <script src="../static/js/landing_page.js"></script>
     <script src="../static/js/share_place_location.js""></script>
+
+    <script src="static/js/chatbox.js"></script>
+
+    <script src="static/js/history.js"></script>
 
     <!-- Editing mode & Delete Account (Lizeth) -->
     <script>

@@ -5,6 +5,11 @@ body, input, button, select {
   
 }
 
+.container{
+  width: 50%;
+  margin-left: 50%;
+}
+
 .chatbox {
     overflow: hidden;
     border-radius: 2px;
@@ -83,7 +88,7 @@ body, input, button, select {
   height: 20%;  
 }
 
-.rec-button-group{
+.rec-button-group, .loc-button-group{
   margin-top:5%;
   display: flex;
   justify-content: center;
@@ -91,24 +96,20 @@ body, input, button, select {
   gap: 20%;
 }
 
-.accept-button, .decline-button {
+.accept-button, .decline-button, .loc-button {
   padding: 50px 100px;
   border: none;
   cursor: pointer;
   margin-left: auto;
   font-size: large;
-}
-
-.accept-button {
   background-color: #FEE8C8;
   color: black;
 }
 
-.decline-button {
-  background-color: #FEE8C8;
-  color: black;
+.loc-button{
+  padding: 10px;
+  font-size: medium;
 }
-
 
 .messages {
     height: 80%;

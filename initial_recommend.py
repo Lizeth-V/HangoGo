@@ -4,7 +4,6 @@ import keras
 import random
 from pymongo import MongoClient
 from bson import ObjectId
-from geopy.geocoders import Nominatim
 from scipy.spatial.distance import cosine
 import math
 import temp_feedback
@@ -26,7 +25,7 @@ def get_user_from_id(user_id):
         return user_object
 
 #return df with places that meet the criteria (and dropping unnecessary data)
-def df_meet_criteria(user_object):
+def df_meet_criteria(user_object, lat, long):
     ### read in dataframe from the cleaned datafile ###
     df = pd.read_json('Hango.Places.json')
 
@@ -48,18 +47,9 @@ def df_meet_criteria(user_object):
     df = df[df['main_type'].isin(main_type)]
     
     # filter by location
-    app = Nominatim(user_agent="test2")
-    # address of user
-    query = { "_id": user_object['_id'] }
-    user_col = collection.find_one(query)['address'] #return {'street': '', 'city': '', 'state': 'CA', 'zip_code': '', 'country': 'USA'}
-    if user_col['street']:
-        user_add = user_col['street'] + ', ' + user_col['city'] + ', ' + user_col['state'] 
-    else:
-        user_add = user_col['city'] + ', ' + user_col['state'] 
-    #user_add = "Long Beach, CA"
-    address = app.geocode(user_add).raw
-    # get long and lat from data
-    user_loc = [float(address['lat']), float(address['lon'])]
+    #query = { "_id": user_object['_id'] }
+    #user_loc = collection.find_one(query)['user_loc'] #return lat and long
+    user_loc = [lat, long]
     # get radius
     radius = 10/111 # radius of 10 miles to get enough places for initial recommendations
     # find radius in context of user lat and lon
@@ -107,18 +97,16 @@ def recommendPlaces(user_ID, places_list):
             places_list.remove(place) 
     #return place for app
     if len(places_list)>0:
-        # choice = random.choice(places_list)
-        # query = {"_id": ObjectId(choice)}
-        # output = places_collection.find_one(query)
-        query = {"_id": ObjectId(user_ID)}
-        print(user_ID)
-        user_object = collection.find_one(query)
-        return user_object
+        choice = random.choice(places_list)
+        places_collection = db["Places"]
+        query = {"_id": ObjectId(choice)}
+        output = places_collection.find_one(query)
+        return output
 
-def get_one_initial_recommend(user_id):
+def get_one_initial_recommend(user_id, lat, long):
     ### extract user info to generate filtered df with only relevant places ###
     user_object = get_user_from_id(user_id)
-    df = df_meet_criteria(user_object)
+    df = df_meet_criteria(user_object, lat, long)
 
     ### STEP 1: hot-encode ###
     # get unique subtypes (Aidan's code)
@@ -174,6 +162,5 @@ def get_one_initial_recommend(user_id):
     for index, row in least_5_similar.iterrows():
         places_list.append(df.loc[index]['place_id'])
     #print(str(user_object['_id']))
-    recommendPlaces(str(user_object['_id']), places_list)
-
-print(get_one_initial_recommend('657245152201f887d4fa868a'))
+    place = recommendPlaces(str(user_object['_id']), places_list)
+    return place

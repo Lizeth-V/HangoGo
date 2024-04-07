@@ -1,11 +1,33 @@
+.logo h1 {
+    text-align: left;
+    font-size: 150%;
+    font-weight: bolder;
+    color: white;
+    padding: 10px;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-image: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(93,185,70,1) 0%, rgba(242,197,130,1) 37%);
     margin: 0;
     padding: 0;
+  }
+
+html{
+    height: 100%;
 }
+
 h1 {
+    color: white !important;
+    text-shadow: 2px 2px 5px grey;
     text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 150%;
 }
+
 form {
     margin-bottom: 20px;
     text-align: center;
@@ -20,23 +42,46 @@ input[type="text"], select {
     margin-bottom: 20px;
     text-align: center;
 }
-#placesList div {
+#placesList {
+    display: flex;
+    flex-direction: column;
     margin-bottom: 5px;
 }
 button {
     padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
+    background-color: #FEE8C8;
+    color: #000;
+    border: 2px solid #FEE8C8;
     cursor: pointer;
 }
 button:hover {
-    background-color: #0056b3;
+    background-color: #FEE8C8;
 }
 
+#planTrip{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#planTripBtn {
+    margin-bottom: 10px;
+}
 a {
     display : block;
   }
   a iframe {
     pointer-events : none;
   }
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    src: url('https://fonts.googleapis.com/css?family=Roboto');
+}
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    src: url('https://fonts.googleapis.com/css?family=Inter');
+}

@@ -1,0 +1,131 @@
+body {
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-image: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(93,185,70,1) 0%, rgba(242,197,130,1) 37%);
+  }
+
+
+html{
+    height: 100%;
+}
+
+header {
+    padding: 50px; 
+}
+
+
+.contact-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.logo h1 {
+    font-size: 22px;
+    font-weight: bolder;
+    color: white;
+    margin: 0;
+
+}
+
+body {
+    margin: 2rem;
+    font: 1rem/1.4 'Inter', sans-serif;
+  }
+
+body h1 {
+    display: flex;
+    font-weight: bold;
+    justify-content: center;
+    align-items: center;
+    color: white;
+
+}
+
+.row {
+    background-color:#FEE8C8;
+    padding: 3em;
+
+}
+
+
+
+input[type="email"]::placeholder, 
+textarea[name="message"]::placeholder {
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: medium;
+    font-weight: light;
+    color: rgb(190, 190, 190);
+    font-size: 14px;
+    padding: 10vw;
+}
+
+input, textarea {
+    font-size: medium;
+}
+#email {
+    border: 2px solid white;
+    box-shadow: none;
+    outline: none;
+}
+
+
+.grow-wrap {
+    display: grid;
+    min-width: 33vw;
+    margin-left:auto;
+    margin-right: auto;
+}
+
+
+.grow-wrap::after {
+    content: attr(data-replicated-value) " ";
+    white-space: pre-wrap;
+    visibility: hidden;
+}
+
+.grow-wrap > textarea {
+    resize: none;
+    overflow: hidden;
+}
+
+.grow-wrap > textarea,
+.grow-wrap::after {
+  border: 1px solid white;
+  grid-area: 1/1;
+  padding: 0.5rem;
+  outline: none;
+  min-height: 25vw;
+}
+
+
+.btn.submit {
+    background-color: #F49506;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin-top: 2rem;
+}
+
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    src: url('https://fonts.googleapis.com/css?family=Roboto');
+}
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    src: url('https://fonts.googleapis.com/css?family=Inter');
+}

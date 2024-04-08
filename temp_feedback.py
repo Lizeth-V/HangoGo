@@ -135,7 +135,7 @@ def block_recommendation_update(user_id, place_id):
 
     client.close()
 
-def insert_user_chat(user_id, string):
+def insert_user_chat(user_id, string, source):
     client = MongoClient(connection_string)
     db = client[dbname]
     
@@ -145,6 +145,7 @@ def insert_user_chat(user_id, string):
     data_to_insert = {
         "user_id": user_id,
         "message": string,
+        "source": source,
         "timestamp": datetime.datetime.utcnow(),
        }
 
@@ -154,5 +155,20 @@ def insert_user_chat(user_id, string):
         print("Insertion successful:")
     else:
         print("Update successful. Matched document:", update_result.matched_count)
+
+    client.close()
+
+def delete_user_chat_history(user_id):
+    client = MongoClient(connection_string)
+    db = client[dbname]
+    collection = db['User Chats']
+
+    # Delete all documents where the user_id matches the provided user_id
+    delete_result = collection.delete_many({"user_id": user_id})
+
+    if delete_result.deleted_count > 0:
+        print(f"Deletion successful. Deleted {delete_result.deleted_count} documents.")
+    else:
+        print("No documents found for the given user_id.")
 
     client.close()

@@ -4,14 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Chatbox</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="static\css\chatbox.css">
 </head>
 
 
   <body>
     <div class="container mt-5">
+      <link rel="stylesheet" href="static\css\chatbox.css">
         <div class="chatbox">
-                  <div class="messages" id="messages">
+          <input type="image" id="history-button" class="history-button" title="View History" src="static\history-regular-24.png" onclick="switch_history()"/>
+          <div class="messages" id="messages">
                     <div class="scroll" class="scroll">
                     <div id="message-stack" class="message-stack"></div>
                     </div>
@@ -29,13 +31,23 @@
                 <div class="additional-fields" id="additional-fields"></div>
                 </div>
 
-                <button type="submit" id = "submit_button">Send</button>
+                <input type="image" title="Submit" id="submit_button" class="submit_button" src="static\subdirectory-left-regular-40.png"/>
+                
               </form> 
             </div>
         </div>
 
+<<<<<<< HEAD
     <script src="{{ url_for('static', filename='js/chatbox.js') }}">
     </script>
+=======
+    <script src="static\js\chatbox.js"></script>
+
+    <script src="static\js\history.js"></script>
+
+    <script>
+  </script>
+>>>>>>> f3c2e336a5c194dee3121806acdbcf68a647812b
     
   </body>
   </html>

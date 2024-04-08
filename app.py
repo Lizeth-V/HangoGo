@@ -11,8 +11,10 @@ from celery import Celery
 app = Flask(__name__)
 app.config['USER_ID'] = '657245152201f887d4fa868a'
 
+#nhu's code
 @app.before_request
 def check_database():
+    print("This RANDDSDSA!")
     user_id = app.config.get('USER_ID')
     connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
     client = MongoClient(connection_string)
@@ -40,6 +42,7 @@ def index():
     user_id = app.config.get('USER_ID')
     return render_template('chatbox.html', user_id = user_id)
 
+#nhu's code
 @app.route('/get_db_data')
 def get_data():
     data = {
@@ -58,12 +61,13 @@ def get_active_place_details():
     lat = request.args.get('lat', default=None, type=float)
     long = request.args.get('long', default=None, type=float)
 
+    #nhu's code start
     places_in_db = g.db_count
 
     if places_in_db < 10:
         user_id = app.config.get('USER_ID')
         active_place = retI.get_one_initial_recommend(user_id, lat=lat, long=long)
-        places_in_db+=1
+    #end
     else:
         active_place = retH.match_highest_list(
         retH.get_highest_list(user_id),

@@ -4,15 +4,28 @@ var data_lat;
 var data_long;
 var data_address;
 var data_count;
+var data;
 
 // Geoloc not activated
 var geo_loc = false;
 
+hideQuery();
+
 //other variables
 var scrollDiv = document.querySelector('.scroll');
+//message_info for user_location_prompt
+var message_info = document.createElement('div');
+message_info.className = 'message';
+//loc button group
+var loc_button_group = document.createElement('div');
+loc_button_group.className = 'loc-button-group';
+//rec button group
+var rec_button_group = document.createElement('div');
+rec_button_group.className = 'rec-button-group';
+
 
 try {
-  var data = fetch_db_data('/get_db_data');
+  data = fetch_db_data('/get_db_data');
   data_lat = data.lat;
   data_long = data.long;
   data_address = data.address;
@@ -21,10 +34,61 @@ try {
     console.error(error);
   }
 
+if (data_count<10){
+  hideQuery();
+}else{
+  showQuery();
+}
+
 // get user location preference
 user_location_prompt();
 
 // run initial recommendations if less than 10 in database
+loc_button_group.onclick = function() {
+  //change prompt after location chosen
+  message_info.childNodes[1].textContent= "Location chosen! Please select what recommendation you want in the form below and hit send!"
+  if (data_count < 10){
+    var messageContent;
+    if (data_count == 0){
+      messageContent = "Let's start rating so we can start recommending you! Please rate these 10 places:";
+    }
+    else{
+      messageContent = "Continue rating so we can start recommending you! You have "+ (10-data_count)+ " places left to rate:";
+    }
+    var newMessage = document.createElement('div');
+    newMessage.className = 'message';
+    var messageImage = document.createElement('img');
+    messageImage.src = "static/hango.png";
+    messageImage.className = 'message-image';
+    messageImage.style.visibility = 'hidden';
+    newMessage.appendChild(messageImage);
+    newMessage.appendChild(document.createTextNode(messageContent));
+    //insert user_req_message into stack
+    var messageStack = document.getElementById('message-stack');
+    var radius = "None";
+    var placeType = "None";
+    hangogoRecommend(messageStack, newMessage, latitude, longitude, radius, placeType);
+    data_count = fetch_db_data('/get_db_data').db_count;
+    setTimeout(() => {
+      messageStack.insertBefore(newMessage, messageStack.firstChild);
+      scrollDiv.scrollTop = scrollDiv.scrollHeight;
+    }, 500); 
+    rec_button_group.onclick = function(){
+      hangogoRecommend(messageStack, newMessage, latitude, longitude, radius, placeType);
+      data_count = fetch_db_data('/get_db_data').db_count;
+      if (data_count>=10){
+        newMessage.childNodes[1].textContent = "You finished rating 10 places! Please select what recommendation you want in the form below and hit send!";
+        setTimeout(() => {
+          messageStack.insertBefore(newMessage, messageStack.firstChild);
+          scrollDiv.scrollTop = scrollDiv.scrollHeight;
+        }, 500); 
+        showQuery();
+      }
+    }
+  }
+};
+
+
 
 // run recommendations based on user preference
 document.getElementById('message-form').addEventListener('submit', function(e) {
@@ -41,14 +105,10 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 });
 
 function user_location_prompt(){
-  hideQuery();
   var new_message = document.createElement('div');
   new_message.className = 'active-rec-message';
 
   let mes_content = "Please choose which location you want to use to start recommending for!";
-
-  var message_info = document.createElement('div');
-  message_info.className = 'message';
 
   var message_image = document.createElement('img');
   message_image.src = "static/hango.png";
@@ -56,10 +116,6 @@ function user_location_prompt(){
 
   message_info.appendChild(message_image);
   message_info.appendChild(document.createTextNode(mes_content));
-
-  //create button group
-  var loc_button_group = document.createElement('div');
-  loc_button_group.className = 'loc-button-group';
 
   // turn on location services button
   var geoloc_button = document.createElement('button');
@@ -84,7 +140,6 @@ function user_location_prompt(){
     new_loc_button.remove();
     geo_loc = true;
     setTimeout(() => {
-      showQuery();
       scrollDiv.scrollTop = scrollDiv.scrollHeight;
       }, 5000); 
   };
@@ -98,7 +153,6 @@ function user_location_prompt(){
     latitude = data_lat;
     longitude = data_long;
     setTimeout(() => {
-      showQuery();
       scrollDiv.scrollTop = scrollDiv.scrollHeight;
     }, 5000); 
   };
@@ -109,7 +163,6 @@ function user_location_prompt(){
     database_button.remove();
     new_loc_button.remove();
     setTimeout(() => {
-      showQuery();
       scrollDiv.scrollTop = scrollDiv.scrollHeight;
     }, 5000); 
   };
@@ -122,12 +175,8 @@ function user_location_prompt(){
   new_message.appendChild(loc_button_group);
 
   var message_stack = document.getElementById('message-stack');
-  message_stack.insertBefore(new_message, message_stack.firstChild);
-
-  loc_button_group.onclick = function() {
-    showQuery();
-    message_info.childNodes[1].textContent= "Location chosen! Please select what recommendation you want in the form below and hit send!"
-  };
+  message_stack.appendChild(new_message);
+  //message_stack.insertBefore(new_message, message_stack.firstChild);
 }
 
 function fetch_db_data(url) {
@@ -233,6 +282,10 @@ function hangogoResponse(user_req_message, latitude, longitude, radius, placeTyp
   var messageStack = document.getElementById('message-stack');
   messageStack.insertBefore(user_req_message, messageStack.firstChild);
   scrollDiv.scrollTop = scrollDiv.scrollHeight;
+  setTimeout(() => {
+    messageStack.insertBefore(newMessage, messageStack.firstChild);
+    scrollDiv.scrollTop = scrollDiv.scrollHeight;
+}, 500); 
 
   hangogoRecommend(messageStack, newMessage, latitude, longitude, radius, placeType);
   ////////////////////////////////////////////////////HANGO MESSAGE////////////////////////////////////////////////////////////////
@@ -270,9 +323,6 @@ function hangogoRecommend(messageStack, newMessage, latitude, longitude, radius,
     rec_info.appendChild(rec_image);
     rec_info.appendChild(rec_text_info);
 
-    var rec_button_group = document.createElement('div');
-    rec_button_group.className = 'rec-button-group';
-
     var accept_button = document.createElement('button');
     accept_button.className = 'accept-button';
     accept_button.textContent = 'Accept';
@@ -287,7 +337,6 @@ function hangogoRecommend(messageStack, newMessage, latitude, longitude, radius,
         decline_button.remove();
         acceptRec(place_id);
         setTimeout(() => {
-          showQuery();
           scrollDiv.scrollTop = scrollDiv.scrollHeight;
         }, 5000); 
 
@@ -299,7 +348,6 @@ function hangogoRecommend(messageStack, newMessage, latitude, longitude, radius,
         decline_button.remove();
         declineRec(place_id);
         setTimeout(() => {
-          showQuery();
           scrollDiv.scrollTop = scrollDiv.scrollHeight;
         }, 5000); 
     };
@@ -312,13 +360,8 @@ function hangogoRecommend(messageStack, newMessage, latitude, longitude, radius,
 
     // insert the active recommendation message into the message stack
     setTimeout(() => {
-        messageStack.insertBefore(newMessage, messageStack.firstChild);
-        scrollDiv.scrollTop = scrollDiv.scrollHeight;
-    }, 500); 
-    setTimeout(() => {
         messageStack.insertBefore(active_rec_message, messageStack.firstChild);
         // Scroll to the bottom of the message stack
-        hideQuery();
         scrollDiv.scrollTop = scrollDiv.scrollHeight;
       }, 1000);
     })

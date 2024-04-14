@@ -48,7 +48,7 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
                             '<div class="favorite-map-button"><img src="static/star-regular-48.png"/><h1>favorite</h1></div>'+
                             '<div class="remove-map-button"><img src="static/x-circle-solid-48.png"/><h1>remove</h1></div>'+
                             '</div>'+
-                            '<img class="report-map-button" src="static/error-circle-regular-24.png"/>';
+                            '<img class="report-map-button" src="staticerror-circle-regular-24.png"/>';
 
                             savedhtml = document.getElementById('userProfileContainer').innerHTML;
                             document.getElementById('userProfileContainer').innerHTML = newhtml;
@@ -66,7 +66,7 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
                                 'frameborder="0" ' +
                                 'style="border:0" ' +
                                 'referrerpolicy="no-referrer-when-downgrade" ' +
-                                //'src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk&q=' + encodeURIComponent(latitude + "," + longitude) + '" ' +
+                                'src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk&q=' + encodeURIComponent(latitude + "," + longitude) + '" ' +
                                     'allowfullscreen>' +
                             '</iframe>' +
                             '<h1>No Active Place</h1>' +

@@ -1,8 +1,10 @@
+var user_id = document.getElementById("userID").innerHTML
+
 ///this gets user id and displays their recommendation history when the open the page.
 function fetchUserHistory() {
-    var url = `/inflate_user_history`;
+    //var url = `/inflate_user_history`;
     //call flask to recieve feedback history from the past
-    //var url = `/inflate_user_history?user_id=${user_id}`;
+    var url = `/inflate_user_history?user_id=${user_id}`;
     //needs user id
     fetch(url)
     .then(response => response.json()) // Parse the JSON response

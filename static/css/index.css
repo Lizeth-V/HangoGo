@@ -4,6 +4,7 @@
     height: auto; 
   }
 
+
 .header-container{
     display: flex;
     justify-content: space-between;
@@ -40,4 +41,5 @@
     text-decoration: none;
     margin: 0 20px;
     font-size: 16px;
+    margin-left: auto;
 }

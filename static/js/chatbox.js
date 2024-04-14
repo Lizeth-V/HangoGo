@@ -1,3 +1,6 @@
+var user_id = document.getElementById("userID").innerHTML
+console.log(user_id)
+
 document.getElementById('message-form').addEventListener('submit', function(e) {
   //This is the function that will run when the sumbit button is clicked
     e.preventDefault();
@@ -114,7 +117,6 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 ////////////////////////////////////////////////////HANGO MESSAGE////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////REC MESSAGE////////////////////////////////////////////////////////////////
-  var user_id = ""
   //replace user_id with the user_data code
   fetch_and_update_active_place(user_id, latitude, longitude, radius, place_type)
   //if the fetch works on the user in the current spot
@@ -217,6 +219,11 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
         block_button.remove();
         report_button.remove();
         accept_rec(place_id);
+
+        var user_coordinates = latitude + "," + longitude;
+        var place_coordinates = activePlace.lat + "," + activePlace.lon;
+        changeToMap(user_id, activePlace.name, activePlace.address, place_coordinates, user_coordinates);
+        
         setTimeout(() => {
           show_query();
           scroll_div.scrollTop = scroll_div.scrollHeight;
@@ -327,7 +334,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 
   function accept_rec(place_id) {
     //passing the parameters call the accept function in flask
-    var url = `/accept_rec?place_id=${place_id}`;
+    var url = `/accept_rec?user_id=${user_id}&place_id=${place_id}`;
     return fetch(url)
     .catch(error => {
               console.error('Error:', error);
@@ -338,7 +345,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 
   function decline_rec(place_id) {
     //passing the parameters call the accept function in flask
-    var url = `/decline_rec?place_id=${place_id}`;
+    var url = `/decline_rec?user_id=${user_id}&place_id=${place_id}`;
     return fetch(url)
     .catch(error => {
               console.error('Error:', error);
@@ -349,7 +356,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 
   function block_rec(place_id) {
     //passing the parameters call the accept function in flask
-    var url = `/block_rec?place_id=${place_id}`;
+    var url = `/block_rec?user_id=${user_id}&place_id=${place_id}`;
     return fetch(url)
     .catch(error => {
               console.error('Error:', error);

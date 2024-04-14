@@ -1,6 +1,7 @@
 from pymongo import MongoClient, ASCENDING
 import time
 import datetime
+from bson import ObjectId
 
 
 connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
@@ -37,7 +38,10 @@ def accept_recommendation_update(user_id, place_id):
     else:
         print("Update successful. Matched document:", update_result.matched_count)
 
+    set_active_place(user_id, place_id)
+
     client.close()
+
 
 
 def add_to_favorites_update(user_id, place_id):
@@ -70,6 +74,67 @@ def add_to_favorites_update(user_id, place_id):
         print("Update successful. Matched document:", update_result.matched_count)
 
     client.close()
+
+
+def set_active_place(user_id, place_id):
+    try:
+        client = MongoClient(connection_string)
+        db = client[dbname]
+        collection = db['User Data']
+
+        criteria = {"_id": ObjectId(user_id)}
+        data_to_insert = {"active_place": place_id}
+
+        print(criteria)
+
+        update_result = collection.update_one(criteria, {"$set": data_to_insert}, upsert=True)
+
+        if update_result.upserted_id:
+            print("Insertion successful:", update_result.upserted_id)
+        else:
+            print("Update successful. Matched document:", update_result.matched_count)
+    except Exception as e:
+        print("An error occurred:", e)
+    finally:
+        client.close()
+
+def get_active_place(user_id):
+    try:
+        client = MongoClient(connection_string)
+        db = client[dbname]
+        collection = db['User Data']
+
+        criteria = {"_id": ObjectId(user_id)}
+        projection = {"active_place": 1, "_id": 0}
+        document = collection.find_one(criteria, projection)
+
+        if document:
+            return get_place_details(document['active_place'])
+        else:
+            print("User not found")
+    except Exception as e:
+        print("An error occurred:", e)
+    finally:
+        client.close()
+
+def get_place_details(place_id):
+    try:
+        client = MongoClient(connection_string)
+        db = client[dbname]
+        collection = db['Places']
+
+        criteria = {"_id": ObjectId(place_id)}
+        projection = {"name": 1, "lat":1, "lon": 1, "address":1, "_id": 0}
+        document = collection.find_one(criteria, projection)
+        
+        if document:
+            return document
+        else:
+            print("User not found")
+    except Exception as e:
+        print("An error occurred:", e)
+    finally:
+        client.close()
 
 
 

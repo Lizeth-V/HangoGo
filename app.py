@@ -119,7 +119,7 @@ def login():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        user = users_collection.find_one({"username": username})
+        user = users_collection.find_one({"username": username}, {"_id": 1, "password": 1, "username": 1})
 
         if user:
             # Get the hashed password from the user object
@@ -159,8 +159,11 @@ def landing_page(username):
     # Retrive user session information
     user_id = user.get('_id')
     username = user['username']
-    # Retrieve user information from the database
-    user_from_db = users_collection.find_one({"_id": user_id})
+
+    user_from_db = users_collection.find_one({"_id": ObjectId(user_id)},{"_id": 1, "username": 1, "first_name": 1, "last_name": 1, "email": 1, 
+     "birth_month": 1, "birth_day": 1, "birth_year": 1})
+
+    print(user_from_db)
     
     # This should update the users changes in the Editing mode in their profile (Lizeth)
     if request.method == 'POST':
@@ -195,13 +198,14 @@ def landing_page(username):
 
     return render_template("landing_page.html",
                            user=user_from_db,
+                           user_id = user_id,
                            username = username,
-                           first_name = user["first_name"],
-                           last_name = user["last_name"],
-                           email = user["email"],
-                           birth_month = user["birth_month"],
-                           birth_day = user["birth_day"],
-                           birth_year = user["birth_year"]
+                           first_name = user_from_db["first_name"],
+                           last_name = user_from_db["last_name"],
+                           email = user_from_db["email"],
+                           birth_month = user_from_db["birth_month"],
+                           birth_day = user_from_db["birth_day"],
+                           birth_year = user_from_db["birth_year"]
                            )  
 
 # Gloria
@@ -232,10 +236,15 @@ def add_to_favorites():
         saved_places.append(place)
         print(saved_places)
         return jsonify(success=True, message = "Added to Favorites List")
+    
 # Gloria
 @app.route("/")
 def index():
-    return render_template("landing_page.html")
+    if 'user' in session:
+        user = session['user']
+        username = user.get('username') 
+        return render_template('index.html', username=username)
+    return render_template("index.html")
 
 # Sending Email Verifications (Lizeth)
 @app.route("/verify/<username>/<token>")
@@ -461,7 +470,7 @@ import get_history
 #take in the parameters and return a recommendation, from the AI
 @app.route('/get_new_active_place', methods=['GET', 'POST'])
 def get_active_place_details():
-    user_id = '6568cbef4a9658311b3ee704'
+    user_id = request.args.get('user_id', default=5, type=str)
     radius = request.args.get('radius', default=5, type=int)
     place_type = request.args.get('place_type', default=None, type=str)
     lat = request.args.get('lat', default=None, type=float)
@@ -500,7 +509,8 @@ def convert_objectid(obj):
 @app.route('/accept_rec/', methods=['GET'])
 def accept_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
-    user_id = '6568cbef4a9658311b3ee704'  #temp
+    #user_id = '6568cbef4a9658311b3ee704'  #temp
+    user_id = request.args.get('user_id', default=5, type=str)
     place_id = request.args.get('place_id', default=None, type=str)
 
     if place_id:
@@ -514,7 +524,8 @@ def accept_rec_model():
 @app.route('/decline_rec/', methods=['GET'])
 def decline_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
-    user_id = '6568cbef4a9658311b3ee704'  #\test id
+    #user_id = '6568cbef4a9658311b3ee704'  #\test id
+    user_id = request.args.get('user_id', default=5, type=str)
     place_id = request.args.get('place_id', default=None, type=str)
 
 
@@ -529,7 +540,8 @@ def decline_rec_model():
 @app.route('/block_rec/', methods=['GET'])
 def block_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user, prevents this place from being shown again.
-    user_id = '6568cbef4a9658311b3ee704'  #\test id
+    #user_id = '6568cbef4a9658311b3ee704'  #\test id
+    user_id = request.args.get('user_id', default=5, type=str)
     place_id = request.args.get('place_id', default=None, type=str)
 
     temp_feedback.block_recommendation_update(user_id=user_id, place_id=place_id)
@@ -541,7 +553,8 @@ def block_rec_model():
 @app.route('/save_chat/', methods=['GET'])
 def save_messages():
     #accept user id in the url and replace
-    user_id = '6568cbef4a9658311b3ee704'  #\test id
+    #user_id = '6568cbef4a9658311b3ee704'  #\test id
+    user_id = request.args.get('user_id', default=5, type=str)  
 
     #accept arguments from url
     radius = request.args.get('radius', default=None, type=int)
@@ -575,8 +588,8 @@ def save_messages():
 #when called, it brings in the user chat history and inflates their history page with it
 @app.route('/inflate_user_history', methods=['GET'])
 def fetch_user_history():
-
-    user_id = '6568cbef4a9658311b3ee704'  #\test id
+    #user_id = '6568cbef4a9658311b3ee704'  #\test id
+    user_id = request.args.get('user_id', default=5, type=str)
 
     user_rec_history = get_history.get_user_history(user_id)
     
@@ -587,12 +600,20 @@ def fetch_user_history():
 #flask call to delete user histories
 @app.route('/delete_user_chats', methods=['GET'])
 def delete_user_history():
-
-    user_id = '6568cbef4a9658311b3ee704'  #\test id
+    #user_id = '6568cbef4a9658311b3ee704'  #\test id
+    user_id = request.args.get('user_id', default=5, type=str)
 
     temp_feedback.delete_user_chat_history(user_id)
     
     return 'Success'
+
+@app.route('/fetch_user_active_place', methods=['GET'])
+def get_user_active():
+    user_id = request.args.get('user_id', default=5, type=str)
+
+    place_details = temp_feedback.get_active_place(user_id)
+
+    return jsonify(place_details)
 
 
 if __name__ == '__main__':

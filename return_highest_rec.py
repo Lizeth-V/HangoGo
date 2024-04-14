@@ -10,7 +10,8 @@ dbname = "Hango"
 def mi_2_meters(miles):
     return miles*1609
 
-def get_highest_list(u_id):    
+def get_highest_list(u_id):
+    print(u_id)
     #get the list of places in probability order and return
     client = MongoClient(connection_string)
     db = client[dbname]

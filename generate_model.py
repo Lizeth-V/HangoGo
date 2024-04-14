@@ -201,4 +201,4 @@ def generate_place_probabilities(uid):
 
 
 #this is just for demoing
-#generate_place_probabilities('6568cbef4a9658311b3ee704')
+#generate_place_probabilities('6615b194f92286e38d5f91b2')

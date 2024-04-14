@@ -6,6 +6,7 @@
     <!-- <script src="../scripts/landing_page_edit.js"></script> -->
     <div class="logo">
         <h1>hangogo</h1>
+        <div hidden><p id='userID'>{{user_id}}</p></div>
         <ul>
             <li><a href="logout">logout</a></li>
         </ul>
@@ -14,6 +15,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
     <link rel="stylesheet" href="../static/css/landing_page.css">
     <link rel="stylesheet" href="../static/css/navBar.css">
+    <link rel="stylesheet" href="../static/css/map.css">
     <!-- Boxicons stylesheet -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <title>Hangogo</title>
@@ -22,12 +24,12 @@
     <!--  Nav Bar (Lizeth)-->
     <div class="navbar">
         <!-- User Profile -->
-        <div class="icon-container"> 
+        <div class="icon-container" id="user_p_button"> 
                 <i class="bx bxs-user-detail icon"></i>
         </div>
         <!-- Map -->
-        <div class="icon-container"> 
-            <a href="{{ url_for('map') }}">
+        <div class="icon-container" id="map_button"> 
+            <a onclick="changeToMap('{{user_id}}')">
                 <i class="bx bxs-map-pin icon"></i>
             </a>
         </div>
@@ -39,8 +41,8 @@
     <!-- End of Nav Bar -->
 
     <div class="container">
-        <div class="user-profile">
-             <div class="user-details" id="userProfileContainer">
+        <div class="user-profile" id="userProfileContainer">
+             <div class="user-details">
                 <form action ="/{{ username }}.html" method="post">
                     <h1>User Profile</h1>
                     <img src="../static/icons/hangogo.png" alt=""><br>
@@ -132,6 +134,8 @@
     <script src="static/js/chatbox.js"></script>
 
     <script src="static/js/history.js"></script>
+
+    <script src="static/js/nav.js"></script>
 
     <!-- Editing mode & Delete Account (Lizeth) -->
     <script>

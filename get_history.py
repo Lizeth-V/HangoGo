@@ -27,6 +27,8 @@ def get_user_history(user_id):
     #get user feedback in order of date oldest -> newest
     chat_history = list(collection.find(query, projection).sort("timestamp", ASCENDING))
 
+    print(user_id)
+
     return chat_history
 
 #deprecated, though may be useful in the future

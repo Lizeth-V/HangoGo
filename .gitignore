@@ -5,5 +5,4 @@ place_feedback_mini_gen.py
 temp_feedback.py
 /.env
 /.DS_Store
-
 venv/

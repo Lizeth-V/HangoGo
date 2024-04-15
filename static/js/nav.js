@@ -1,3 +1,5 @@
+var profile_html;
+
 function fetch_active_place(user_id) {
     var url = `/fetch_user_active_place?user_id=${user_id}`;
 
@@ -29,55 +31,100 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
             .then(data => { 
                 if (data.name != undefined){
                         place_name = data.name;
-
                         user_coordinates = latitude + "," + longitude;
                         place_coordinates = data.lat + "," + data.lon;
                         place_address = data.address;
 
-                            var distance = calculateDistance(user_coordinates, place_coordinates);
+                        var distance = calculateDistance(user_coordinates, place_coordinates);
 
-                            var newhtml = '<div class="map">' +
-                            '<iframe width="90%" height="50%" frameborder="0" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk' +
-                            '&origin=' + encodeURIComponent(user_coordinates) +
-                            '&destination=' + encodeURIComponent(place_address) +
-                            '&avoid=tolls|highways" allowfullscreen></iframe>' +
-                            '<h1>' + place_name + '</h1>' +
-                            '<p>' + place_address + '</p>' +
-                            '<p>Distance: ' + distance + ' km</p>' +
-                            '<div class="map-buttons">'+
-                            '<div class="favorite-map-button"><img src="static/star-regular-48.png"/><h1>favorite</h1></div>'+
-                            '<div class="remove-map-button"><img src="static/x-circle-solid-48.png"/><h1>remove</h1></div>'+
-                            '</div>'+
-                            '<img class="report-map-button" src="staticerror-circle-regular-24.png"/>';
+                        const user_profile_container = document.getElementById('userProfileContainer');
 
-                            savedhtml = document.getElementById('userProfileContainer').innerHTML;
-                            document.getElementById('userProfileContainer').innerHTML = newhtml;
+                        user_profile_container.innerHTML = '';
+
+                        // Clear existing content if necessary
+                        // user_profile_container.innerHTML = ''; // Uncomment only if you need to reset the content
                     
-                            document.getElementById('map_button').innerHTML = '<a><i class="bx bxs-map-pin icon"></i></a>';
-                            document.getElementById('user_p_button').innerHTML = '<a onclick="changeToProfile()"><i class="bx bxs-user-detail icon"></i></a>';
+                        const map_div = document.createElement('div');
+                        map_div.className = 'map';
+                    
+                        const iframe = document.createElement('iframe');
+                        iframe.width = '90%';
+                        iframe.height = '50%';
+                        iframe.frameBorder = '0';
+                        iframe.style.border = '0';
+                        iframe.loading = 'lazy';
+                        iframe.referrerPolicy = 'no-referrer-when-downgrade';
+                        // Uncomment and set src as needed
+                        // iframe.src = `https://www.google.com/maps/embed?...&origin=${encodeURIComponent(user_coordinates)}&destination=${encodeURIComponent(place_address)}&avoid=tolls|highways`;
+                        map_div.appendChild(iframe);
+                    
+                        const h1 = document.createElement('h1');
+                        h1.textContent = place_name;
+                        map_div.appendChild(h1);
+                    
+                        const p_address = document.createElement('p');
+                        p_address.textContent = place_address;
+                        map_div.appendChild(p_address);
+                    
+                        const p_distance = document.createElement('p');
+                        p_distance.textContent = `Distance: ${distance} km`;
+                        map_div.appendChild(p_distance);
+                    
+                        const buttons_div = document.createElement('div');
+                        buttons_div.className = 'map-buttons';
+                    
+                        const favorite_button_div = document.createElement('div');
+                        favorite_button_div.className = 'favorite-map-button';
+                        favorite_button_div.setAttribute('onClick', `add_favorite('${user_id}', '${data._id}')`);
+                        favorite_button_div.innerHTML = '<img src="static/star-regular-48.png"/><h1>favorite</h1>';
+                        buttons_div.appendChild(favorite_button_div);
+                    
+                        const remove_button_div = document.createElement('div');
+                        remove_button_div.className = 'remove-map-button';
+                        remove_button_div.setAttribute('onClick', `remove_active('${user_id}')`);
+                        remove_button_div.innerHTML = '<img src="static/x-circle-solid-48.png"/><h1>remove</h1>';
+                        buttons_div.appendChild(remove_button_div);
+                    
+                        map_div.appendChild(buttons_div);
+                    
+                        user_profile_container.appendChild(map_div);
+
+                        const map_button = document.getElementById('map_button');
+                        map_button.innerHTML = '<a><i class="bx bxs-map-pin icon"></i></a>';
+
+                        const user_profile_button = document.getElementById('user_p_button');
+                        user_profile_button.innerHTML = '<a onclick="change_to_profile()"><i class="bx bxs-user-detail icon"></i></a>';
                     
                         }
                 else{
-                        var newhtml = 
-                        '<div class="map">' +
-                            '<iframe ' +
-                                'width="90%" ' +
-                                'height="50%" ' +
-                                'frameborder="0" ' +
-                                'style="border:0" ' +
-                                'referrerpolicy="no-referrer-when-downgrade" ' +
-                                'src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk&q=' + encodeURIComponent(latitude + "," + longitude) + '" ' +
-                                    'allowfullscreen>' +
-                            '</iframe>' +
-                            '<h1>No Active Place</h1>' +
-                        '</div>';
+                    const container = document.getElementById('userProfileContainer');
 
-                        savedhtml = document.getElementById('userProfileContainer').innerHTML;
-                        document.getElementById('userProfileContainer').innerHTML = newhtml;
-                
-                        document.getElementById('map_button').innerHTML = '<a><i class="bx bxs-map-pin icon"></i></a>';
-                        document.getElementById('user_p_button').innerHTML = '<a onclick="changeToProfile()"><i class="bx bxs-user-detail icon"></i></a>';
-                
+                    container.innerHTML = '';
+
+                    const map_div = document.createElement('div');
+                    map_div.className = 'map';
+
+                    const iframe = document.createElement('iframe');
+                    iframe.width = '90%';
+                    iframe.height = '50%';
+                    iframe.frameBorder = '0';
+                    iframe.style.border = '0';
+                    iframe.referrerPolicy = 'no-referrer-when-downgrade';
+                    // Uncomment to set the src attribute dynamically
+                    // iframe.src = `https://www.google.com/maps/embed/v1/place?key=AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk&q=${encodeURIComponent(latitude + "," + longitude)}`;
+                    map_div.appendChild(iframe);
+
+                    const header = document.createElement('h1');
+                    header.textContent = 'No Active Place';
+                    map_div.appendChild(header);
+
+                    container.appendChild(map_div);
+
+                    const map_button = document.getElementById('map_button');
+                    map_button.innerHTML = '<a><i class="bx bxs-map-pin icon"></i></a>';
+
+                    const user_profile_button = document.getElementById('user_p_button');
+                    user_profile_button.innerHTML = '<a onclick="change_to_profile()"><i class="bx bxs-user-detail icon"></i></a>';
                     }
                 }
                 )
@@ -90,29 +137,66 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
     }
 
     else{
+        const user_profile_container = document.getElementById('userProfileContainer');
         var distance = calculateDistance(user_coordinates, place_coordinates);
 
-        var newhtml = '<div class="map">' +
-        '<iframe width="90%" height="50%" frameborder="0" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk' +
-        '&origin=' + encodeURIComponent(user_coordinates) +
-        '&destination=' + encodeURIComponent(place_address) +
-        '&avoid=tolls|highways" allowfullscreen></iframe>' +
-        '<h1>' + place_name + '</h1>' +
-        '<p>' + place_address + '</p>' +
-        '<p>Distance: ' + distance + ' km</p>' +
-        '<div class="map-buttons">'+
-        '<div class="favorite-map-button"><img src="static/star-regular-48.png"/><h1>favorite</h1></div>'+
-        '<div class="remove-map-button"><img src="static/x-circle-solid-48.png"/><h1>remove</h1></div>'+
-        '</div>'+
-        '<img class="report-map-button"/>';
+        //Clear container
+        user_profile_container.innerHTML = '';
 
-        savedhtml = document.getElementById('userProfileContainer').innerHTML;
-        document.getElementById('userProfileContainer').innerHTML = newhtml;
-    
-        document.getElementById('map_button').innerHTML = '<a><i class="bx bxs-map-pin icon"></i></a>';
-        document.getElementById('user_p_button').innerHTML = '<a onclick="changeToProfile()"><i class="bx bxs-user-detail icon"></i></a>';    
+        const map_div = document.createElement('div');
+        map_div.className = 'map';
+
+        const iframe = document.createElement('iframe');
+        iframe.width = '90%';
+        iframe.height = '50%';
+        iframe.frameBorder = '0';
+        iframe.style.border = '0';
+        iframe.loading = 'lazy';
+        iframe.referrerPolicy = 'no-referrer-when-downgrade';
+        // Uncomment and set src as needed
+        // iframe.src = `https://www.google.com/maps/embed?AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk=&origin=${encodeURIComponent(user_coordinates)}&destination=${encodeURIComponent(place_address)}&avoid=tolls|highways`;
+        map_div.appendChild(iframe);
+
+        const h1 = document.createElement('h1');
+        h1.textContent = place_name;
+        map_div.appendChild(h1);
+
+        const p_address = document.createElement('p');
+        p_address.textContent = place_address;
+        map_div.appendChild(p_address);
+
+        const p_distance = document.createElement('p');
+        p_distance.textContent = `Distance: ${distance} km`;
+        map_div.appendChild(p_distance);
+
+        const buttons_div = document.createElement('div');
+        buttons_div.className = 'map-buttons';
+
+        const favorite_button_div = document.createElement('div');
+        favorite_button_div.className = 'favorite-map-button';
+        fetch_active_place(user_id)
+        .then(data => { 
+            favorite_button_div.setAttribute('onClick', `add_favorite('${user_id}', '${data._id}')`);
+        });
+        favorite_button_div.innerHTML = '<img src="static/star-regular-48.png"/><h1>favorite</h1>';
+        buttons_div.appendChild(favorite_button_div);
+
+        const remove_button_div = document.createElement('div');
+        remove_button_div.className = 'remove-map-button';
+        remove_button_div.setAttribute('onClick', `remove_active('${user_id}')`);
+        remove_button_div.innerHTML = '<img src="static/x-circle-solid-48.png"/><h1>remove</h1>';
+        buttons_div.appendChild(remove_button_div);
+
+        map_div.appendChild(buttons_div);
+
+        user_profile_container.appendChild(map_div);   
+
+        const map_button = document.getElementById('map_button');
+                    map_button.innerHTML = '<a><i class="bx bxs-map-pin icon"></i></a>';
+
+                    const user_profile_button = document.getElementById('user_p_button');
+                    user_profile_button.innerHTML = '<a onclick="change_to_profile()"><i class="bx bxs-user-detail icon"></i></a>';
     }
-
 }
 
 //haversine formula, find distance over sphere (Earth)
@@ -132,13 +216,34 @@ function calculateDistance(coords1, coords2) {
     return distance.toFixed(2);
 }
 
+function save_prof(){
+    profile_html = document.getElementById('userProfileContainer').innerHTML;
+    console.log(profile_html)
+}
 
-function changeToProfile() {
+function change_to_profile() {
     var user_id = document.getElementById("userID").innerHTML
 
     document.getElementById('map_button').innerHTML = `<a onclick="changeToMap('${user_id}')"><i class="bx bxs-map-pin icon"></i></a>`;
     document.getElementById('user_p_button').innerHTML = '<a><i class="bx bxs-user-detail icon"></i></a>';
 
-    document.getElementById('userProfileContainer').innerHTML = savedhtml;
+    document.getElementById('userProfileContainer').innerHTML = profile_html;
 
+}
+
+function remove_active(user_id) {
+    var url = `/remove_user_active_place?user_id=${user_id}`;
+  
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            changeToMap();
+            return 'Success'
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to remove active place: ' + error.message);
+        });
 }

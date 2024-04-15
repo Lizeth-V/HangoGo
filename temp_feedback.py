@@ -117,6 +117,31 @@ def get_active_place(user_id):
     finally:
         client.close()
 
+def remove_active_place(user_id):
+    try:
+        client = MongoClient(connection_string)
+        db = client[dbname]
+        collection = db['User Data']
+
+        criteria = {"_id": ObjectId(user_id)}
+
+        update_result = collection.update_one(criteria, {"$unset": {"active_place": ""}})
+
+        if update_result.modified_count > 0:
+            print("Active place removed successfully.")
+            return True
+        else:
+            print("No active place was found or user does not exist.")
+            return False
+
+    except Exception as e:
+        print("An error occurred:", e)
+        return False
+
+    finally:
+        # Ensure the MongoDB client is closed
+        client.close()
+
 def get_place_details(place_id):
     try:
         client = MongoClient(connection_string)
@@ -124,7 +149,7 @@ def get_place_details(place_id):
         collection = db['Places']
 
         criteria = {"_id": ObjectId(place_id)}
-        projection = {"name": 1, "lat":1, "lon": 1, "address":1, "_id": 0}
+        projection = {"name": 1, "lat":1, "lon": 1, "address":1, "_id": 1}
         document = collection.find_one(criteria, projection)
         
         if document:

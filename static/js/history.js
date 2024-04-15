@@ -38,6 +38,9 @@ function fetchUserHistory() {
     }
 
       message_stack.innerHTML = messageHTML;
+      var scroll_div = document.querySelector('.scroll');
+      scroll_div.scrollTop = scroll_div.scrollHeight;
+
 
     })
     .catch(error => console.error('Error fetching user history:', error));

@@ -609,11 +609,27 @@ def delete_user_history():
 
 @app.route('/fetch_user_active_place', methods=['GET'])
 def get_user_active():
-    user_id = request.args.get('user_id', default=5, type=str)
+    user_id = request.args.get('user_id', default='5', type=str)
 
-    place_details = temp_feedback.get_active_place(user_id)
+    try:
+        place_details = temp_feedback.get_active_place(user_id)
+        if place_details and '_id' in place_details:
+            place_details['_id'] = str(place_details['_id'])
+        else:
+            return jsonify({'name': None})
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'An error occurred while fetching the active place'}), 500
 
     return jsonify(place_details)
+
+@app.route('/remove_user_active_place', methods=['GET'])
+def remove_user_active():
+    user_id = request.args.get('user_id', default=5, type=str)
+
+    temp_feedback.remove_active_place(user_id)
+
+    return 'Success'
 
 
 if __name__ == '__main__':

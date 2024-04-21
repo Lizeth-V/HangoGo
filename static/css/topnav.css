@@ -1,0 +1,102 @@
+
+
+.navbar {
+    color: #fff;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 40px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: left; /* This should be 'flex-start' */
+  }
+
+
+  #topnav-logo {
+    color: #fff;
+    text-decoration: none;
+    width: 100px;
+  }
+  
+  .links a {
+    color:#fff;
+    padding: 0 50px 50px;
+}
+  .navbar-links-left,
+  .navbar-links-right {
+    display: flex;
+  }
+  
+  .navbar-links-left .links,
+  .navbar-links-right .links {
+    list-style-type: none;
+    display: flex;
+  }
+  
+  
+  .navbar-links-right .links {
+    justify-content: flex-end;
+  }
+  
+  .burger {
+    display: none;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .container {
+      flex-direction: column;
+      align-items: flex-start; /* Change 'left' to 'flex-start' */
+    }
+  
+    .navbar-links-left,
+    .navbar-links-right {
+
+      width: 100%;
+      margin-top: 20px;
+      display: none; /*Initially hide both left and right links on small screens*/
+    }
+
+    .links li{
+        display: flex;
+        flex-direction: column;
+    }
+  
+    .navbar-links-left.active ,
+    .navbar-links-right.active {
+      display: flex; /* Show the links when active class is applied */
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .navbar-links-right.active .links li {
+    display: block !important;
+    }
+
+    .navbar-links-left.active .links {
+        display: flex;
+        flex-direction: column;
+    }
+    .navbar-links-left .links li,
+    .navbar-links-right .links li {
+      margin-right: 0;
+      margin-left: 0;
+      margin-bottom: 10px;
+    }
+  
+    .burger {
+      display: block;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  
+    .burger .line {
+      width: 25px;
+      height: 3px;
+      background-color: #fff;
+      margin: 5px;
+    }
+
+  }
+  

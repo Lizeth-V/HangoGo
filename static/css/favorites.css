@@ -89,12 +89,12 @@ body {
     cursor: pointer;
 }
 
-.logo h1 {
+/* .logo h1 {
     font-size: 150%;
     font-weight: bolder;
     color: white;
     padding: 10px;
-}
+} */
 
 #main {
   transition: margin-left .5s;

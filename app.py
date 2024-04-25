@@ -76,7 +76,10 @@ def create_account():
                                         })
             print("Form Data:", request.form) 
             print("Updated create account page", first_name, last_name, birth_month, birth_day, birth_year)
-            return redirect(url_for("index"))
+            #  Store user_id in session
+            session["user_id"] = str(user_id)
+            print("Redirecting to interest_form page")
+            return redirect(url_for("interest_form"))
     else:
         return render_template("create_account.html")
 
@@ -111,6 +114,31 @@ def register():
         
 
     return render_template("register.html")
+
+# Initial interests quiz results (Lizeth)
+@app.route("/interest_form", methods=["GET", "POST"])
+def interest_form():
+    print("Completed create account.. now in interest form!")
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return "User not authenticated. Please create an account first."
+
+    user_data = users_collection.find_one({"_id": ObjectId(user_id)})
+
+    if not user_data:
+        return "User data not found. Please try again."
+
+    if request.method == 'POST':
+        interest_arr = request.form.getlist('selections')
+        # Update user's interests in the database
+        users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {"interests": interest_arr}})
+        
+        print("Submitted initial interest form successfully!")
+        return redirect(url_for("landing_page", username=user_data["username"]))
+    
+    return render_template("interests.html")
+
 
 # Gloria
 @app.route("/login", methods= ["GET","POST"])

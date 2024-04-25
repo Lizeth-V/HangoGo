@@ -4,9 +4,11 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../static/css/style.css">
-        <link rel="stylesheet2" href="../static/css/interests.css">
+        <link rel="stylesheet" href="../static/css/interests.css">
+        <link rel="icon" type="image/x-icon" href="../static/icons/Hango-icon.png">
+
     </head>
     <body>
         <header>
@@ -14,43 +16,52 @@
                 <img src="../static/icons/hangogo.png" alt="Hangogo">
             </div>
         </header>
-        <section id = interests>
+
+        <section id = "interests">
             <div class = "gatherInterests">
-                <form>
+                <form class="gatherInterests-form" method="POST" action="/interest_form">
                     <h2>finish creating account</h2>
                     <p1>almost there!</p1>
                     <br><br>
                     <p1>do a little quiz! we ll be using this to generate your
-                        first recommendation :) select 3-5 categories that interest you.</p1>
+                        first recommendation :) </p1><br>
+                    <p1> 3-5 categories that interest you.</p1>
                     <br><br>
-                    <div class = interestBox>
-                        <label class = "option_item">
-                            <input type="checkbox" id="interest1" name="interest1" value="Food">
-                            <div class = "option_inner food">
-                                <div class = "tickmark"></div>
-                                <div class = "name">Food</div>
-                            </div>
-                    
-                        <!-- <img src="../icons/food.png" alt="food"> -->
-                    
+
+                    <div class="label-container1">
+                        <label>
+                            <input type="checkbox" name="selections" id="food_btn" value="food">
+                            <img src="../static/icons/food.png" alt="food">
+                            <span>Food</span>
                         </label>
+                        <label>
+                            <input type="checkbox" name="selections" id="entertainment_btn" value="entertainment">
+                            <img src="../static/icons/entertainment.png" alt="entertainment">
+                            <span>Entertainment</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="selections"  id="drinks_btn" value="drinks">
+                            <img src="../static/icons/drinks.png" alt="drinks">
+                            <span>Drinks</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="selections"  id="nightlife_btn" value="nightlife">
+                            <img src="../static/icons/nightlife.png" alt="nightlife">
+                            <span>Nightlife</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="selections"  id="art_btn" value="art">
+                            <img src="../static/icons/art.png" alt="art">
+                            <span>Art</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="selections"  id="nature_btn" value="nature">
+                            <img src="../static/icons/nature.png" alt="nature">
+                            <span>Nature</span>
+                        </label>
+                        <input type="submit" class="submit" value="Submit">
                     </div>
-
-                    <input type="checkbox" id="interest2" name="interest2" value="Entertainment">
-                    <label for="interest2"> Entertainment</label><br>
-
-                    <input type="checkbox" id="interest3" name="interest3" value="Nature/Recreation">
-                    <label for="interest3"> Nature/Recreation</label><br>
-
-                    <input type="checkbox" id="interest4" name="interest4" value="Nightlife">
-                    <label for="interest4"> Nightlife</label><br>
-
-                    <input type="checkbox" id="interest5" name="interest5" value="Drinks">
-                    <label for="interest5"> Drinks</label><br>
                     
-                    <input type="checkbox" id="interest6" name="interest6" value="Museum/Art">
-                    <label for="interest6"> Museum/Art</label><br>
-
                 </form>
             </div>
 

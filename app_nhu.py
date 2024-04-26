@@ -1,48 +1,3 @@
-from flask import Flask, render_template, request, jsonify
-from pymongo import MongoClient
-import initial_recommend as retI
-
-app = Flask(__name__)
-app.config['USER_ID'] = '657245152201f887d4fa868a'
-
-
-@app.route('/initial_10_preferences')
-def initial_model():
-    result = []
-    places_in_db = check_database()
-    while places_in_db < 10:
-        user_id = app.config.get('USER_ID')
-        active_place = retI.get_one_initial_recommend(user_id)
-        active_place['_id'] = str(active_place['_id'])
-        result.append(active_place)
-        places_in_db +=1
-    return jsonify(result=result)
-
-def check_database():
-    user_id = app.config.get('USER_ID')
-    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
-    client = MongoClient(connection_string)
-    db = client["Hango"]
-    collection_name = "ratings"
-    collection = db[collection_name]
-    query = {"user_id": user_id}
-    return collection.count_documents(query)
-
-# Define your main route handler
-@app.route('/')
-def main_route():
-    result = []
-    # Make a request to the other route
-    response = app.test_client().get('/initial_10_preferences')
-    data = response.get_json()
-    # Extract the result from the response
-    result.extend(data['result'])
-    return jsonify(result=result)
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
 from flask import Flask, render_template, request, jsonify, g
 from pymongo import MongoClient
 import temp_feedback
@@ -56,8 +11,10 @@ from celery import Celery
 app = Flask(__name__)
 app.config['USER_ID'] = '657245152201f887d4fa868a'
 
+#nhu's code
 @app.before_request
 def check_database():
+    print("This RANDDSDSA!")
     user_id = app.config.get('USER_ID')
     connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
     client = MongoClient(connection_string)
@@ -65,9 +22,14 @@ def check_database():
     collection_name = "ratings"
     collection = db[collection_name]
     query = {"user_id": user_id}
-    g.initial_db = collection.count_documents(query)
+    g.db_count = collection.count_documents(query)
     query2 = {"_id": ObjectId(user_id)}
     loc = db["User Data"].find_one(query2)['user_loc']
+    address_info = db["User Data"].find_one(query2)['address']
+    if address_info:
+        g.address = ", ".join(str(value) for value in address_info.values())
+    else:
+        print("Address doesn't exist.")
     if loc:
         g.lat = loc[0]
         g.long = loc[1]
@@ -79,6 +41,17 @@ def index():
     user_id = app.config.get('USER_ID')
     return render_template('chatbox.html', user_id = user_id)
 
+#nhu's code
+@app.route('/get_db_data')
+def get_data():
+    data = {
+        'address': g.address,
+        'lat': g.lat,
+        'long': g.long,
+        'db_count': g.db_count
+        }
+    return jsonify(data)
+
 @app.route('/get_new_active_place', methods=['GET'])
 def get_active_place_details():
     user_id = app.config.get('USER_ID')
@@ -87,11 +60,12 @@ def get_active_place_details():
     lat = request.args.get('lat', default=None, type=float)
     long = request.args.get('long', default=None, type=float)
 
-    places_in_db = g.initial_db
+    #nhu's code start
+    places_in_db = g.db_count
 
     if places_in_db < 10:
-        user_id = app.config.get('USER_ID')
         active_place = retI.get_one_initial_recommend(user_id, lat=lat, long=long)
+    #end
     else:
         active_place = retH.match_highest_list(
         retH.get_highest_list(user_id),
@@ -126,7 +100,7 @@ def accept_rec_model():
 
     if place_id:    
         temp_feedback.accept_recommendation_update(user_id=user_id, place_id=place_id) #update the feedback page
-        if g.initial_db >= 10:
+        if g.db_count >= 10:
             generate_model.generate_place_probabilities(user_id)
 
     return 'Success' #html for after

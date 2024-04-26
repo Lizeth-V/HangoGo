@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-from flask import Flask, render_template, request, jsonify, g
-from pymongo import MongoClient
-=======
 # app.py
 from bson import ObjectId
 import json
@@ -10,7 +6,8 @@ import bcrypt
 import os
 import random
 import string
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, g
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -19,9 +16,20 @@ from flask_pymongo import PyMongo
 from register import register_user, hash_password
 from db import users_collection, places_collection
 
+import temp_feedback
+import return_highest_rec as retH
+import generate_model
+from bson import ObjectId
+import math
+from celery import Celery
+import get_history
+
+from pymongo import MongoClient
+import initial_recommend as retI
+
 app = Flask(__name__)
 
-# Lizeth - COnfigureing Flask Mail
+# Lizeth - Configureing Flask Mail
 load_dotenv()
 
 #this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
@@ -451,26 +459,11 @@ def get_place():
     return jsonify(place)
 
 
-#(Aidan)
-from flask import Flask, render_template, request, jsonify
->>>>>>> f3c2e336a5c194dee3121806acdbcf68a647812b
-import temp_feedback
-import return_highest_rec as retH
-import initial_recommend as retI
-import generate_model
-from bson import ObjectId
-import math
-from celery import Celery
-import get_history
-
-<<<<<<< HEAD
-app = Flask(__name__)
 app.config['USER_ID'] = '657245152201f887d4fa868a'
-
-#nhu's code
+# Nhu
+# check database and update app with database changes
 @app.before_request
 def check_database():
-    print("This RANDDSDSA!")
     user_id = app.config.get('USER_ID')
     connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
     client = MongoClient(connection_string)
@@ -479,44 +472,35 @@ def check_database():
     collection = db[collection_name]
     query = {"user_id": user_id}
     g.db_count = collection.count_documents(query)
-    query2 = {"_id": ObjectId(user_id)}
-    loc = db["User Data"].find_one(query2)['user_loc']
-    address_info = db["User Data"].find_one(query2)['address']
-    if address_info:
-        g.address = ", ".join(str(value) for value in address_info.values())
-    else:
-        print("Address doesn't exist.")
-    if loc:
-        g.lat = loc[0]
-        g.long = loc[1]
-    else:
-        print(f"User_loc doesn't exist for user {user_id}")
-    app._got_first_request = True
 
-@app.route('/')
-def index():
-    user_id = app.config.get('USER_ID')
-    return render_template('chatbox.html', user_id = user_id)
-
-#nhu's code
+#Nhu
+#get database and return it for use
 @app.route('/get_db_data')
 def get_data():
     data = {
-        'address': g.address,
-        'lat': g.lat,
-        'long': g.long,
         'db_count': g.db_count
         }
     return jsonify(data)
+#Nhu
+#get coordinates for input location
+@app.route('/get_coordinates', methods=['GET', 'POST'])
+def get_coord_data():
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    client = MongoClient(connection_string)
+    db = client["Hango"]
+    city = request.args.get('city', default=None, type=str)
+    query = {"Name": city}
+    coordinates = {
+        "Coordinates": db["Location"].find_one(query)['Coordinates']
+    }
+    return jsonify(coordinates)
 
-@app.route('/get_new_active_place', methods=['GET'])
-=======
 #(Aidan)
 #take in the parameters and return a recommendation, from the AI
 @app.route('/get_new_active_place', methods=['GET', 'POST'])
->>>>>>> f3c2e336a5c194dee3121806acdbcf68a647812b
 def get_active_place_details():
     user_id = app.config.get('USER_ID')
+    #user_id = '6568cbef4a9658311b3ee704'
     radius = request.args.get('radius', default=5, type=int)
     place_type = request.args.get('place_type', default=None, type=str)
     lat = request.args.get('lat', default=None, type=float)
@@ -526,9 +510,10 @@ def get_active_place_details():
     places_in_db = g.db_count
 
     if places_in_db < 10:
-        user_id = app.config.get('USER_ID')
         active_place = retI.get_one_initial_recommend(user_id, lat=lat, long=long)
+        print(places_in_db)
     #end
+
     else:
         active_place = retH.match_highest_list(
         retH.get_highest_list(user_id),
@@ -536,13 +521,8 @@ def get_active_place_details():
         long=long,
         radius=radius,
         place_type=place_type
-<<<<<<< HEAD
         )
-    # Convert all ObjectId instances to strings
-=======
-    )
     #Convert all ObjectId instances to strings for easier coding
->>>>>>> f3c2e336a5c194dee3121806acdbcf68a647812b
     active_place = convert_objectid(active_place)
 
     #Return data to be displayed and used, as json.
@@ -566,74 +546,54 @@ def convert_objectid(obj):
 #Called when user presses accept
 @app.route('/accept_rec/', methods=['GET'])
 def accept_rec_model():
-<<<<<<< HEAD
-
-    user_id = app.config.get('USER_ID')  #temp
-    place_id = request.args.get('place_id', default=None, type=str)
-
-    if place_id:    
-=======
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
-    user_id = '6568cbef4a9658311b3ee704'  #temp
+    user_id = app.config.get('USER_ID')
+    #user_id = '6568cbef4a9658311b3ee704'  #temp
     place_id = request.args.get('place_id', default=None, type=str)
-
-    if place_id:
->>>>>>> f3c2e336a5c194dee3121806acdbcf68a647812b
-        temp_feedback.accept_recommendation_update(user_id=user_id, place_id=place_id) #update the feedback page
-        if g.db_count >= 10:
-            generate_model.generate_place_probabilities(user_id)
+    temp_feedback.accept_recommendation_update(user_id=user_id, place_id=place_id) #update the feedback page
+    if g.db_count>=10:
+        generate_model.generate_place_probabilities(user_id)
 
     return 'Success' 
 
 #(Aidan)
 #Called when user presses decline
 @app.route('/decline_rec/', methods=['GET'])
-<<<<<<< HEAD
-def decline_rec_model(user_id=None, place_id=None):
-
-    user_id = app.config.get('USER_ID')  #\test id
-=======
 def decline_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
-    user_id = '6568cbef4a9658311b3ee704'  #\test id
->>>>>>> f3c2e336a5c194dee3121806acdbcf68a647812b
+    user_id = app.config.get('USER_ID')
+    #user_id = '6568cbef4a9658311b3ee704'  #\test id
     place_id = request.args.get('place_id', default=None, type=str)
 
 
     temp_feedback.decline_recommendation_update(user_id=user_id, place_id=place_id)
-    generate_model.generate_place_probabilities(str(user_id))
+    if g.db_count>=10:
+        generate_model.generate_place_probabilities(str(user_id))
 
     return 'Success'
 
 
-<<<<<<< HEAD
-    user_id = app.config.get('USER_ID') #\test id
-=======
 #(Aidan)
 #Called when user presses block
 @app.route('/block_rec/', methods=['GET'])
 def block_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user, prevents this place from being shown again.
-    user_id = '6568cbef4a9658311b3ee704'  #\test id
+    #user_id = '6568cbef4a9658311b3ee704'  #\test id
+    user_id = app.config.get('USER_ID')
     place_id = request.args.get('place_id', default=None, type=str)
->>>>>>> f3c2e336a5c194dee3121806acdbcf68a647812b
 
     temp_feedback.block_recommendation_update(user_id=user_id, place_id=place_id)
-    generate_model.generate_place_probabilities(str(user_id))
+    if g.db_count>=10:
+        generate_model.generate_place_probabilities(str(user_id))
 
     return 'Success'
 
 #(Aidan)
 @app.route('/save_chat/', methods=['GET'])
 def save_messages():
-<<<<<<< HEAD
-
-    user_id = app.config.get('USER_ID')  #\test id
-=======
     #accept user id in the url and replace
-    user_id = '6568cbef4a9658311b3ee704'  #\test id
->>>>>>> f3c2e336a5c194dee3121806acdbcf68a647812b
-
+    #user_id = '6568cbef4a9658311b3ee704'  #\test id
+    user_id = app.config.get('USER_ID')
     #accept arguments from url
     radius = request.args.get('radius', default=None, type=int)
     place_type = request.args.get('place_type', default=None, type=str)
@@ -662,17 +622,13 @@ def save_messages():
 
     return 'Success'
 
-<<<<<<< HEAD
-if __name__ == '__main__':
-    app.run(debug=True)
-=======
 #(Aidan)
 #when called, it brings in the user chat history and inflates their history page with it
 @app.route('/inflate_user_history', methods=['GET'])
 def fetch_user_history():
 
-    user_id = '6568cbef4a9658311b3ee704'  #\test id
-
+    #user_id = '6568cbef4a9658311b3ee704'  #\test id
+    user_id = app.config.get('USER_ID')
     user_rec_history = get_history.get_user_history(user_id)
     
     #return the chat history as a json to be able to print
@@ -683,8 +639,8 @@ def fetch_user_history():
 @app.route('/delete_user_chats', methods=['GET'])
 def delete_user_history():
 
-    user_id = '6568cbef4a9658311b3ee704'  #\test id
-
+    #user_id = '6568cbef4a9658311b3ee704'  #\test id
+    user_id = app.config.get('USER_ID')
     temp_feedback.delete_user_chat_history(user_id)
     
     return 'Success'
@@ -692,8 +648,3 @@ def delete_user_history():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-    
->>>>>>> f3c2e336a5c194dee3121806acdbcf68a647812b

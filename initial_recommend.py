@@ -6,7 +6,6 @@ from pymongo import MongoClient
 from bson import ObjectId
 from scipy.spatial.distance import cosine
 import math
-import temp_feedback
 
 connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
 collection_name = "Places"
@@ -35,7 +34,7 @@ def df_meet_criteria(user_object, lat, long):
 
     ### filter by age, main_type, and location (reduce calculations) ###
     age = user_object['age']
-    main_type = user_object['initial_pref']
+    main_type = user_object['interests']
     #main_type = main_type[0].upper() + main_type[1:].lower()
     
     # N means age doesn't matter, Y means age does matter

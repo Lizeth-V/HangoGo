@@ -94,15 +94,28 @@
             <div class="container mt-5">
 
                 <input type="image" id="history-button" class="history-button" title="View History" src="static\history-regular-24.png" onclick="switch_history()"/>
-
-                  <div class="chatbox">
+        
+                <div class="chatbox">
                     
                     <div class="messages" id="messages">
                               <div class="scroll" class="scroll">
+                                <div class="active-rec-message">
+                                    <div class="message">
+                                        <img src="static/hango.png" class="message-image">
+                                        <span id="message-text">Please choose which location you want to use to start recommending for!</span>
+                                    </div>
+                                    <div class="location-box">
+                                        <form autocomplete="off" id="input-location-form">
+                                            <div class="autocomplete" >
+                                                <input id="myInput" type="text" name="city" placeholder="Enter a Southern CA city:">
+                                              </div>
+                                              <input type="image" title="submit" src="/static/navigation.png"/>
+                                        </form>
+                                    </div>
                               <div id="message-stack" class="message-stack"></div>
+                                </div>
                               </div>
                             </div>
-          
                         <form id="message-form" class="send-message-form" method="post" action="{{ url_for('index') }}">
                           <div class="input-group">
                             <select class="selector" id="message_type" name="message_type" required onchange="showFields()">
@@ -118,20 +131,22 @@
                           <input type="image" title="Submit" id="submit_button" class="submit_button" src="static\subdirectory-left-regular-40.png"/>
                           
                         </form> 
-                      </div>
-                  </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
     
     <script src="../static/js/landing_page.js"></script>
-    <script src="../static/js/share_place_location.js""></script>
+    <script src="../static/js/share_place_location.js"></script>
 
     <script src="static/js/chatbox.js"></script>
-
+    <script src="static/js/autocomplete.js"></script>
     <script src="static/js/history.js"></script>
+
+    <!-- <script src="static/js/nav.js"></script> -->
 
     <!-- Editing mode & Delete Account (Lizeth) -->
     <script>
@@ -199,6 +214,9 @@
             }
         }
 
+        //nhu's autocompletion
+        var cities = ["Aliso Viejo", "Anaheim", "Brea", "Buena Park", "Costa Mesa", "Cypress", "Dana Point", "Fountain Valley", "Fullerton", "Garden Grove", "Huntington Beach", "Irvine", "La Habra", "La Palma", "Laguna Beach", "Laguna Niguel", "Laguna Woods", "Lake Forest", "Los Alamitos", "Mission Viejo", "Newport Beach", "Orange", "Placentia", "Rancho Santa Margarita", "San Clemente", "San Juan Capistrano", "Santa Ana", "Seal Beach", "Stanton", "Tustin", "Villa Park", "Westminster", "Yorba Linda", "Agoura Hills", "Alhambra", "Arcadia", "Artesia", "Avalon", "Azusa", "Baldwin Park", "Bell", "Bell Gardens", "Bellflower", "Beverly Hills", "Bradbury", "Burbank", "Calabasas", "Carson", "Cerritos", "City of Industry", "Claremont", "Commerce", "Compton", "Covina", "Cudahy", "Culver City", "Diamond Bar", "Downey", "Duarte", "El Monte", "El Segundo", "Gardena", "Glendale", "Glendora", "Hawaiian Gardens", "Hawthorne", "Hermosa Beach", "Hidden Hills", "Huntington Park", "Inglewood", "Irwindale", "La Cañada Flintridge", "La Habra Heights", "La Mirada", "La Puente", "La Verne", "Lakewood", "Lancaster", "Lawndale", "Lomita", "Long Beach", "Los Angeles", "Lynwood", "Malibu", "Manhattan Beach", "Maywood", "Monrovia", "Montebello", "Monterey Park", "Norwalk", "Palmdale", "Palos Verdes Estates", "Paramount", "Pasadena", "Pico Rivera", "Pomona", "Rancho Palos Verdes", "Redondo Beach", "Rolling Hills", "Rolling Hills Estates", "Rosemead", "San Dimas", "San Fernando", "San Gabriel", "San Marino", "Santa Clarita", "Santa Fe Springs", "Santa Monica", "Sierra Madre", "Signal Hill", "South El Monte", "South Gate", "South Pasadena", "Temple City", "Torrance", "Vernon", "Walnut", "West Covina", "West Hollywood", "Westlake Village", "Whittier"]
+        autocomplete(document.getElementById("myInput"), cities);
     </script>
 
 </body>

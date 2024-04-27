@@ -153,6 +153,7 @@ def landing_page(username):
                            birth_month = user["birth_month"],
                            birth_day = user["birth_day"],
                            birth_year = user["birth_year"],
+                           favorite_list = favorite_list,
                            place_list=place_list # recommended places is the temp placeholder for the AI generated suggested places
                            ) 
  
@@ -171,7 +172,7 @@ def landing_page(username):
 
 query = {"sub_types": "cafe"}
 place_list = places_collection.find(query)
-saved_places =[]
+favorite_list =[]
 
 
 # Gloria
@@ -179,15 +180,15 @@ saved_places =[]
 def add_to_favorites():
     place_index = int(request.form['place_index'])
 
-    # using sub_types: cafe as a temp placeholder
-    cursor = places_collection.find({"sub_types": "cafe"})
+    place_id = places_collection["_id"]
+    cursor = {"_id": ObjectId(place_id)}
     place = list(cursor)[place_index]
 
-    if place in saved_places:
+    if place in favorite_list:
         return jsonify(success=False, message=" ")
     else:
-        saved_places.append(place)
-        print(saved_places)
+        favorite_list.append(place)
+        print(favorite_list)
         return jsonify(success=True, message = "Added to Favorites List")
 # Gloria
 @app.route("/")
@@ -313,19 +314,39 @@ def favorites():
     
     page = request.args.get("page", default=1, type=int)
     per_page = 10
-    query = {"sub_types": "cafe"}
-    places = places_collection.find(query)
-    total_places = 24 #hard code the total places count() does not work
-    places = places.skip((page - 1) * per_page).limit(per_page)
-    favorites_list = []
-    for place in places:
-        favorites_list.append({
-            "icon": place["image_url"],
-            "name": place["name"],
-            "address": place["address"]
-        })
-    return render_template("favorites.html", favorites=favorites_list, page=page, per_page=per_page, total_places=total_places)
 
+    user_id = user["_id"]
+
+    query = {"_id" : ObjectId(user_id)}
+
+    user_profile = users_collection.find_one(query)
+    
+    if user_profile:
+        favorite_list = user_profile.get('favorite_list', [])
+        total_places = len(favorite_list)
+
+        # places = places.skip((page - 1) * per_page).limit(per_page)
+        page = request.args.get("page", default=1, type=int)
+        per_page = 1
+        start_index = (page - 1) * per_page
+        end_index = min(start_index + per_page, total_places)
+        paginated_favorites = favorite_list[start_index:end_index]
+
+        # Retrieve information of each place from places_collection
+        favorites_info = []
+        for place_id in paginated_favorites:
+            place_query = {"_id": ObjectId(place_id)}
+            place_info = places_collection.find_one(place_query)
+            if place_info:
+                favorites_info.append({
+                    "icon": place_info.get("image_url", ""),
+                    "name": place_info.get("name", ""),
+                    "address": place_info.get("address", "")
+                })
+        return render_template("favorites.html", favorites=favorites_info, page=page, per_page=per_page, total_places=total_places)
+    else:
+        flash("User not found.")
+        return redirect(url_for("login"))
 # Gloria
 # get place from DB
 @app.route('/get_place', methods=['POST'])

@@ -64,6 +64,7 @@ def create_account():
                                                 "birth_day": birth_day,
                                                 "birth_year": birth_year,
                                                 "age": age
+
                                             }
                                         })
             print("Form Data:", request.form) 
@@ -153,7 +154,6 @@ def landing_page(username):
                            birth_month = user["birth_month"],
                            birth_day = user["birth_day"],
                            birth_year = user["birth_year"],
-                           favorite_list = favorite_list,
                            place_list=place_list # recommended places is the temp placeholder for the AI generated suggested places
                            ) 
  
@@ -178,18 +178,19 @@ favorite_list =[]
 # Gloria
 @app.route('/add_to_favorites', methods = ["POST"])
 def add_to_favorites():
+    user_id = session.get("_id")
     place_index = int(request.form['place_index'])
+    place = places_collection.find_one(skip=place_index, limit=1)
 
-    place_id = places_collection["_id"]
-    cursor = {"_id": ObjectId(place_id)}
-    place = list(cursor)[place_index]
 
-    if place in favorite_list:
-        return jsonify(success=False, message=" ")
-    else:
-        favorite_list.append(place)
-        print(favorite_list)
-        return jsonify(success=True, message = "Added to Favorites List")
+    if place:
+        if place["_id"] in favorite_list:
+            return jsonify(success=False, message=" ")
+        else:
+            users_collection.update_one({'_id': ObjectId(user_id)}, {'$addToSet': {'favorite_list': str(place["_id"])}})
+            return jsonify(success=True, message = "Added to Favorites List")
+
+
 # Gloria
 @app.route("/")
 def index():
@@ -305,15 +306,15 @@ def contact():
 
 # Gloria
 # favorites page
-@app.route("/favorites")
+@app.route("/favorites", methods=["GET"])
 def favorites():
     user = session.get("user")
     if user is None:
         flash("Please log in to access favorites page.")
         return redirect(url_for("login"))
     
-    page = request.args.get("page", default=1, type=int)
-    per_page = 10
+    # page = request.args.get("page", default=1, type=int)
+    # per_page = 10
 
     user_id = user["_id"]
 
@@ -322,12 +323,12 @@ def favorites():
     user_profile = users_collection.find_one(query)
     
     if user_profile:
-        favorite_list = user_profile.get('favorite_list', [])
+        favorite_list = user_profile.get('favorite_list')
         total_places = len(favorite_list)
 
         # places = places.skip((page - 1) * per_page).limit(per_page)
         page = request.args.get("page", default=1, type=int)
-        per_page = 1
+        per_page = 10
         start_index = (page - 1) * per_page
         end_index = min(start_index + per_page, total_places)
         paginated_favorites = favorite_list[start_index:end_index]

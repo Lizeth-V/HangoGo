@@ -147,14 +147,14 @@ def login():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        user = users_collection.find_one({"username": username})
+        user = users_collection.find_one({"username": username}, {"_id": 1, "password": 1, "username": 1})
 
         if user:
             # Get the hashed password from the user object
             hashed_password = user["password"]
 
-            # Assuming `hashed_password` is currently a string
-            # Convert it to bytes using `encode()`
+            # Assuming hashed_password is currently a string
+            # Convert it to bytes using encode()
             hashed_password_bytes = hashed_password.encode("utf-8")
 
             # check if the password the user entered matches the hashed password
@@ -197,11 +197,17 @@ def landing_page(username):
     user_id = user.get('_id')
     username = user['username']
     # Retrieve user information from the database
-    user_from_db = users_collection.find_one({"_id": user_id})
+    user_id = user.get('_id')
+    username = user['username']
+
+    user_from_db = users_collection.find_one({"_id": ObjectId(user_id)},{"_id": 1, "username": 1, "first_name": 1, "last_name": 1, "email": 1, 
+     "birth_month": 1, "birth_day": 1, "birth_year": 1})
+
+    print(user_from_db)
     
     # This should update the users changes in the Editing mode in their profile (Lizeth)
     if request.method == 'POST':
-    # get the new user data from the form  
+    # get the new user data from the form
         print("User updating info")
         first_name = request.form.get('edit_first_name')
         last_name = request.form.get('edit_last_name')
@@ -219,28 +225,26 @@ def landing_page(username):
 
         # updating database with the new changes (ignoring empty fileds)
         if update_data:
-            users_collection.update_one(
-                {'username': username},
-                {'$set': update_data}
-            )
+            users_collection.update_one({'username': username},
+                        {'$set': update_data})
             print("update user successful..?")
         else:
             print("no changes made")
 
         return redirect(url_for('landing_page', username=username))
-    
+
 
     return render_template("landing_page.html",
-                           user=user_from_db,
-                           username = username,
-                           first_name = user["first_name"],
-                           last_name = user["last_name"],
-                           email = user["email"],
-                           birth_month = user["birth_month"],
-                           birth_day = user["birth_day"],
-                           birth_year = user["birth_year"],
-                           place_list=place_list # recommended places is the temp placeholder for the AI generated suggested places
-                           )  
+                                user=user_from_db,
+                                user_id = user_id,
+                                username = username,
+                                first_name = user_from_db["first_name"],
+                                last_name = user_from_db["last_name"],
+                                email = user_from_db["email"],
+                                birth_month = user_from_db["birth_month"],
+                                birth_day = user_from_db["birth_day"],
+                                birth_year = user_from_db["birth_year"]
+                                )  
 
 # Gloria
 # Add to Favorites List
@@ -270,7 +274,8 @@ def add_to_favorites():
         saved_places.append(place)
         print(saved_places)
         return jsonify(success=True, message = "Added to Favorites List")
-# Gloria
+
+# Gloria & Lizeth
 @app.route("/")
 def index():
     if 'user' in session:
@@ -295,7 +300,7 @@ def verify(username, token):
         return redirect(url_for("create_account"))
 
     flash('Invalid or expired verification link.')
-    return redirect(url_for("verify", username=username))
+    return redirect(url_for("verify", username=username, token=token))
 
 # Function to organize sending emails through default or verify 
 def get_sender(choice, app):
@@ -504,8 +509,6 @@ def verify_password(username, current_password):
     if user:
         # Retrieve the hashed password from the database
         hashed_password = user.get('password')
-        print(hashed_password)
-        print(current_password)
 
         if hashed_password is not None:
             # Check password matches the hashed password

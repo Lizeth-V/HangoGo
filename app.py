@@ -93,7 +93,7 @@ def register():
         verification_token = ''.join(random.choices(string.ascii_letters + string.digits, k=30))
 
         registration_error = register_user(username, email, password, confirm_password, users_collection, verification_token)
-
+    
         if registration_error is not None:
             print("Registration successful. Goes to email-verify. then create-account")
             # sending email verifcation 
@@ -101,8 +101,6 @@ def register():
             send_verification(email, username, verification_token)
             # print(username, user)
             return render_template("verify.html")
-
-        
 
         print("Registration error:", registration_error)
         # comment out below the one line of code below before presentation and launch
@@ -162,8 +160,6 @@ def landing_page(username):
 
     user_from_db = users_collection.find_one({"_id": ObjectId(user_id)},{"_id": 1, "username": 1, "first_name": 1, "last_name": 1, "email": 1, 
      "birth_month": 1, "birth_day": 1, "birth_year": 1})
-
-    print(user_from_db)
     
     # This should update the users changes in the Editing mode in their profile (Lizeth)
     if request.method == 'POST':
@@ -220,22 +216,25 @@ def landing_page(username):
 # saved_places = []
 # test share locations with the places weblinks
 
-query = {"sub_types": "cafe"}
-place_list = places_collection.find(query)
-saved_places =[]
+#query = {"sub_types": "cafe"}
+#place_list = places_collection.find(query)
+#saved_places =[]
 
 
-# Gloria
-@app.route('/add_to_favorites', methods = ["POST"])
+# Aidan
+@app.route('/add_to_favorites', methods = ["GET"])
 def add_to_favorites():
-    place_index = int(request.form['place_index'])
-    place = place_list[place_index]
-    if place in saved_places:
-        return jsonify(success=False, message=" ")
-    else:
-        saved_places.append(place)
-        print(saved_places)
-        return jsonify(success=True, message = "Added to Favorites List")
+    import favorite
+
+    user_id = request.args.get('user_id', default='5', type=str)
+    place_id = request.args.get('place_id', default='5', type=str)
+    
+    favorite.add_to_favorites(user_id, place_id)
+    temp_feedback.add_to_favorites_update(user_id=user_id, place_id=place_id)
+    generate_model.generate_place_probabilities(user_id)
+
+
+    return jsonify(success=True, message = "Added to Favorites List")
     
 # Gloria
 @app.route("/")

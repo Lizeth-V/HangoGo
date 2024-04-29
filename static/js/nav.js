@@ -55,7 +55,7 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
                         iframe.loading = 'lazy';
                         iframe.referrerPolicy = 'no-referrer-when-downgrade';
                         // Uncomment and set src as needed
-                        // iframe.src = `https://www.google.com/maps/embed?...&origin=${encodeURIComponent(user_coordinates)}&destination=${encodeURIComponent(place_address)}&avoid=tolls|highways`;
+                        iframe.src = 'https://www.google.com/maps/embed/v1/directions?key=AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk&origin='+ user_coordinates + '&destination=' + place_address + '&avoid=tolls|highways';
                         map_div.appendChild(iframe);
                     
                         const h1 = document.createElement('h1');
@@ -111,7 +111,7 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
                     iframe.style.border = '0';
                     iframe.referrerPolicy = 'no-referrer-when-downgrade';
                     // Uncomment to set the src attribute dynamically
-                    // iframe.src = `https://www.google.com/maps/embed/v1/place?key=AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk&q=${encodeURIComponent(latitude + "," + longitude)}`;
+                    iframe.src = `https://www.google.com/maps/embed/v1/place?key=AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk&q=${encodeURIComponent(latitude + "," + longitude)}`;
                     map_div.appendChild(iframe);
 
                     const header = document.createElement('h1');
@@ -154,7 +154,7 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
         iframe.loading = 'lazy';
         iframe.referrerPolicy = 'no-referrer-when-downgrade';
         // Uncomment and set src as needed
-        // iframe.src = `https://www.google.com/maps/embed?AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk=&origin=${encodeURIComponent(user_coordinates)}&destination=${encodeURIComponent(place_address)}&avoid=tolls|highways`;
+        iframe.src = 'https://www.google.com/maps/embed/v1/directions?key=AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk&origin='+ user_coordinates + '&destination=' + place_address + '&avoid=tolls|highways';
         map_div.appendChild(iframe);
 
         const h1 = document.createElement('h1');
@@ -246,4 +246,33 @@ function remove_active(user_id) {
             console.error('Error:', error);
             alert('Failed to remove active place: ' + error.message);
         });
+}
+
+function add_favorite(user_id,place_id) {
+    if (place_id === undefined) {
+        fetch_active_place(user_id)
+        .then(data => {
+            place_id = data._id
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to remove active place: ' + error.message);
+        });
+    }
+
+    var url = `/add_to_favorites?user_id=${user_id}&place_id=${place_id}`;
+  
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return 'Success'
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to remove active place: ' + error.message);
+        });
+
+
 }

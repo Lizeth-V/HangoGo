@@ -37,7 +37,6 @@ def is_email_valid(email):
         return False
 
 def register_user(username, email, password, confirm_password, users_collection, verification_token):
-
     # Check if email is valid
     if is_email_valid(email) is False:
         return "Invalid email"
@@ -73,7 +72,18 @@ def register_user(username, email, password, confirm_password, users_collection,
         "token_expiration": datetime.utcnow() + timedelta(hours=24),
 
     }
-    result = users_collection.insert_one(user_data)
+
+    print('hello')
+
+
+    from pymongo.errors import PyMongoError
+
+    try:
+        result = users_collection.insert_one(user_data)
+        print("Insertion successful:", result)
+    except PyMongoError as e:
+        print("Insertion failed:", e)
+
 
     # Store the user's _id in the session
     # Convert ObjectId to string for session storage

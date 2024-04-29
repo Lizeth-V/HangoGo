@@ -22,6 +22,7 @@
                 </div>
                 <a href="/about_us">About</a>
                 <a href="/top_loactions">Top Locations</a>
+                <a href="/collections">Collections</a>
                 <a href="/contact">Contact Us</a>
                 
             </div>
@@ -38,21 +39,30 @@
         <!-- End of Top Nav -->
         <div class="container">
             <h1>Top Locations</h1>
-            <p> Here are the top locations people are liking this week!</p>
+            <p> Here are the top 10 locations people are liking!</p><br>
         </div>
         <div class="container">
             {% for place in top_places %}
             <div class="place">
-                <img src="{{ place.image_url }}" alt="icon">
+                {% if place.image_url %}
+                    <img src="{{ place.image_url }}" alt="icon">
+                {% else %}
+                    <img src="../static/icons/default_img.png" alt="Default Image">
+                {% endif %}
                 <div>
-                    <p>{{ place.name }}</p>
-                    <p>Rating: {{ place.rating }}</p>
+                    <p1>{{ place.name }}</p1><br>
+                    <p2>Rating: {{ place.rating }}</p2>
                     <p>{{ place.address }}</p>
+                    <br>
+                    {% if username %}
+                    <a href="#" class="button">take me there!</a>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
         </div>
-        
+
+        <img src="static/icons/hango_happy.png" class="fixed-image" alt="Fixed Image">
 
     </body>
 </html>

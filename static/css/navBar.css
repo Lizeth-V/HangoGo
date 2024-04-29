@@ -59,6 +59,12 @@
     border-radius: 5px;
     background-color: #5DB946;
 }
+.login-signup a:hover {
+    color: white;
+    text-decoration: none;
+    background-color: #52A33E;
+    transition: all .3s;
+}
 
 /* top navigation bar */
 .top-nav {
@@ -79,4 +85,5 @@
     text-decoration: none;
     margin: 0 20px;
     font-size: 16px;
+    transition: all .3s;
 }

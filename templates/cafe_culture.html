@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+        <link rel="stylesheet" href="../static/css/collections_map.css">
+        <link rel="stylesheet" href="../static/css/navBar.css">
+        <!-- Boxicons stylesheet -->
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+        <title>HangoGo</title>
+        <link rel="icon" type="image/x-icon" href="../static/icons/Hango-icon.png">
+        <script type="module" src="../static/js/collections_map.js"></script>
+    </head>
+    <body>
+        <!-- Top Nav (Lizeth) -->
+        <div class="header-container">
+            <div class="top-nav">
+                <div class="logo">
+                    <img src="../static/icons/hangogo.png" alt="hangogo">
+                </div>
+                <a href="/about_us">About</a>
+                <a href="/top_loactions">Top Locations</a>
+                <a href="/contact">Contact Us</a>
+                
+            </div>
+
+            <div class="login-signup">
+                {% if username %}
+                <a href="{{ url_for('logout') }}">logout</a>
+                {% else %}
+                    <a href="{{ url_for('register') }}">sign up</a>
+                    <a href="{{ url_for('login') }}">login</a>
+                {% endif %}
+            </div>
+        </div>
+        <!-- End of Top Nav -->
+        <div class="title">
+            <h1>Cafe Culture</h1>
+            <br>
+        </div>
+        <div class="container">
+            <div class="list" id="list">
+                <br>
+                <p>Too late for breakfast, too early for lunch? We have the perefect list of brunch spots you'll love! </p>
+                {% for place in top_places %}
+                <div class="place">
+                    {% if place.image_url %}
+                        <img src="{{ place.image_url }}" alt="icon">
+                    {% else %}
+                        <img src="../static/icons/default_img.png" alt="Default Image">
+                    {% endif %}
+                    <div class="place_info">
+                        <p1>{{ place.name }}</p1><br>
+                        <p2>Rating: {{ place.rating }}</p2>
+                        <p>{{ place.address }}</p>
+                        <br>
+                        {% if username %}
+                        <a href="#" class="button">take me there!</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="side-map">
+                <div id="map"></div>
+                <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+                    ({key: "AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk", v: "weekly"});</script>    
+                
+            </div>
+
+        </div>
+    </body>
+</html>

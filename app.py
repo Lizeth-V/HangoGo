@@ -174,6 +174,7 @@ def login():
             print("User not found.")
     return render_template("login.html")
 
+
 # Logout and clear the user session (Lizeth)
 @app.route("/logout")
 def logout():
@@ -188,7 +189,7 @@ def logout():
 @app.route('/<username>', methods=['GET', 'POST'])
 def landing_page(username):
     user = session.get('user')
-    
+
     if not user:
         return redirect(url_for('login'))
     
@@ -609,6 +610,31 @@ def top_locations():
     else:
         return render_template('top_locations.html', top_places=top_places)
     
+# Collections Page (Lizeth) - this is a page that includes curated places based on a specific theme
+@app.route("/collections")
+def collections():
+    username = session.get('user')
+    if username:
+        return render_template('top_locations.html', username=username)
+    else:
+        return render_template('top_locations.html')
+
+@app.route("/cafe_culture")
+def cafe_culture():
+    username = session.get('user')
+    # temp for testing:
+    top_places = places_collection.find({"main_type": "Drinks"}).sort('rating', -1).limit(10)
+    # mapped_places = [{'lat': place['lat'], 'lng': place['lon'], 'title': place['name']} for place in top_places]
+    if username:
+        return render_template('cafe_culture.html', username=username, top_places=top_places)
+    else:
+        return render_template('cafe_culture.html', top_places=top_places)
+    
+
+    
+
+
+
 
 
 

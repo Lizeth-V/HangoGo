@@ -176,6 +176,7 @@ favorite_list =[]
 
 
 # Gloria
+# add place to favorites
 @app.route('/add_to_favorites', methods = ["POST"])
 def add_to_favorites():
     user_id = session.get("_id")
@@ -189,7 +190,14 @@ def add_to_favorites():
         else:
             users_collection.update_one({'_id': ObjectId(user_id)}, {'$addToSet': {'favorite_list': str(place["_id"])}})
             return jsonify(success=True, message = "Added to Favorites List")
-
+#Gloria
+# remove place from favorites
+@app.route('/remove_from_favorites', methods =["POST"])
+def remove_from_favorites():
+    user_id = session.get("_id")
+    place_id = request.form["place_id"]
+    users_collection.update_one({'_id': ObjectId(user_id)}, {'$pull': {'favorite_list': str(place_id)}})
+    return jsonify(success=True, message="Removed from Favorites List")
 
 # Gloria
 @app.route("/")
@@ -312,9 +320,6 @@ def favorites():
     if user is None:
         flash("Please log in to access favorites page.")
         return redirect(url_for("login"))
-    
-    # page = request.args.get("page", default=1, type=int)
-    # per_page = 10
 
     user_id = user["_id"]
 
@@ -324,11 +329,11 @@ def favorites():
     
     if user_profile:
         favorite_list = user_profile.get('favorite_list')
-        total_places = len(favorite_list)
+        total_places = len(favorite_list)+1
 
         # places = places.skip((page - 1) * per_page).limit(per_page)
         page = request.args.get("page", default=1, type=int)
-        per_page = 10
+        per_page = 2
         start_index = (page - 1) * per_page
         end_index = min(start_index + per_page, total_places)
         paginated_favorites = favorite_list[start_index:end_index]
@@ -344,7 +349,7 @@ def favorites():
                     "name": place_info.get("name", ""),
                     "address": place_info.get("address", "")
                 })
-        return render_template("favorites.html", favorites=favorites_info, page=page, per_page=per_page, total_places=total_places)
+        return render_template("favorites.html", favorites=favorites_info, place=place_info, page=page, per_page=per_page, total_places=total_places)
     else:
         flash("User not found.")
         return redirect(url_for("login"))

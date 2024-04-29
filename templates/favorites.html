@@ -50,7 +50,7 @@
             <p>{{ favorite.name }}</p>
             <p>{{ favorite.address }}</p>
             <button type="button" class="btn btn-success">visit</button>
-            <button type="button" class="btn btn-danger">delete</button>
+            <button type="button" class="btn btn-danger del-favorite" data-place-id="{{ place.id }}">delete</button>
         </div>
     </div>
     {% endfor %}

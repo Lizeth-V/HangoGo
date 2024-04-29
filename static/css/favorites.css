@@ -79,14 +79,24 @@ body {
 
 .pagination {
   display: flex;
-  flex-direction: row!important;
   justify-content: center;
 }
 
+.pagination ul {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
 
 .pagination li{
     list-style: none;
     cursor: pointer;
+}
+
+.pagination a {
+  padding: 0 5px;
+  display: flex;
+  justify-content: center;
 }
 
 /* .logo h1 {

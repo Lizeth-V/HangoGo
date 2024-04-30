@@ -619,20 +619,39 @@ def top_locations():
 def collections():
     username = session.get('user')
     if username:
-        return render_template('top_locations.html', username=username)
+        return render_template('collections.html', username=username)
     else:
-        return render_template('top_locations.html')
+        return render_template('collections.html')
 
 @app.route("/cafe_culture")
 def cafe_culture():
     username = session.get('user')
     # temp for testing:
-    top_places = places_collection.find({"main_type": "Drinks"}).sort('rating', -1).limit(10)
-    # mapped_places = [{'lat': place['lat'], 'lng': place['lon'], 'title': place['name']} for place in top_places]
+    top_placesC = places_collection.find({"main_type": "Drinks"}).sort('rating', -1).limit(10)
+    top_places = list(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+    # place_coordinates = []
+
+    # for p in top_places:
+    #     coordinates = {'lat': p['lat'], 'lng': p['lon']}
+    #     place_coordinates.append(coordinates)
+    # print("Coordinates:", place_coordinates)
+
+
     if username:
-        return render_template('cafe_culture.html', username=username, top_places=top_places)
+        return render_template('cafe_culture.html', username=username, top_places=top_places, place_data=place_data)
+        # return render_template('cafe_culture.html', username=username, top_places=top_places, place_coordinates=place_coordinates)
+        # return render_template('cafe_culture.html', username=username, packed=zip(top_places, place_coordinates))
     else:
-        return render_template('cafe_culture.html', top_places=top_places)
+        return render_template('cafe_culture.html',top_places=top_places, place_data=place_data)
+        # return render_template('cafe_culture.html',top_places=top_places, place_coordinates=place_coordinates)
+        # return render_template('cafe_culture.html', packed=zip(top_places, place_coordinates))
     
 
     

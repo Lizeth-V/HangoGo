@@ -19,7 +19,7 @@
                     <img src="../static/icons/hangogo.png" alt="hangogo">
                 </div>
                 <a href="/about_us">About</a>
-                <a href="/top_loactions">Top Locations</a>
+                <a href="/top_locations">Top Locations</a>
                 <a href="/collections"> Collections</a>
                 <a href="/contact">Contact Us</a>
                 
@@ -44,7 +44,7 @@
         
         <div class="grid-container">
 
-            <div> 
+            <div id="redirect_cafe"> 
                 <img src="../static/icons/cafe.png" alt="cafe culture">
                 <span>Cafe Culture </span>
             </div>
@@ -78,6 +78,12 @@
             </div>
 
         </div>
+
+        <script>
+            document.getElementById("redirect_cafe").addEventListener("click", function() {
+                window.location.href = "/cafe_culture";
+            });
+        </script>
 
 
     </body>

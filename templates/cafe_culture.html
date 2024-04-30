@@ -11,6 +11,7 @@
         <title>HangoGo</title>
         <link rel="icon" type="image/x-icon" href="../static/icons/Hango-icon.png">
         <script type="module" src="../static/js/collections_map.js"></script>
+        <script src="{{ url_for('static', filename='js/collections_map.js') }}"></script>
     </head>
     <body>
         <!-- Top Nav (Lizeth) -->
@@ -20,7 +21,8 @@
                     <img src="../static/icons/hangogo.png" alt="hangogo">
                 </div>
                 <a href="/about_us">About</a>
-                <a href="/top_loactions">Top Locations</a>
+                <a href="/top_locations">Top Locations</a>
+                <a href="/collections">Collections</a>
                 <a href="/contact">Contact Us</a>
                 
             </div>
@@ -42,25 +44,29 @@
         <div class="container">
             <div class="list" id="list">
                 <br>
-                <p>Too late for breakfast, too early for lunch? We have the perefect list of brunch spots you'll love! </p>
-                {% for place in top_places %}
-                <div class="place">
-                    {% if place.image_url %}
-                        <img src="{{ place.image_url }}" alt="icon">
-                    {% else %}
-                        <img src="../static/icons/default_img.png" alt="Default Image">
-                    {% endif %}
-                    <div class="place_info">
-                        <p1>{{ place.name }}</p1><br>
-                        <p2>Rating: {{ place.rating }}</p2>
-                        <p>{{ place.address }}</p>
-                        <br>
-                        {% if username %}
-                        <a href="#" class="button">take me there!</a>
+                <p4>Too late for breakfast, too early for lunch? We have the perefect list of brunch spots you'll love! </p4><br>
+                {% for index in range(0, top_places|length) %}
+                    {% set place = top_places[index] %}
+                    {% set coordinates = place_data[index] %}
+                    <div class="place">
+                        {% if place.image_url %}
+                            <img src="{{ place.image_url }}" alt="icon">
+                        {% else %}
+                            <img src="../static/icons/default_img.png" alt="Default Image">
                         {% endif %}
+                        <div class="place_info">
+                            <p1>{{ place.name }}</p1><br>
+                            <p2>Rating: {{ place.rating }}</p2>
+                            <p>{{ place.address }}</p>
+                            
+                            <br>
+                            {% if username %}
+                                <a href="#" class="button">take me there!</a>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
                 {% endfor %}
+
             </div>
             <div class="side-map">
                 <div id="map"></div>
@@ -70,5 +76,9 @@
             </div>
 
         </div>
+        <script>
+            const placeData = {{ place_data | tojson }};
+            initMap(placeData);
+        </script>
     </body>
 </html>

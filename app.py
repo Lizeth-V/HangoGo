@@ -456,7 +456,7 @@ def get_place():
 
 
 #(Aidan)
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, g
 import temp_feedback
 import return_highest_rec as retH
 import generate_model
@@ -464,25 +464,69 @@ from bson import ObjectId
 import math
 from celery import Celery
 import get_history
+from pymongo import MongoClient
+
+app.config['USER_ID'] = '66312d9cb11d88ccab0e0bab'
+# Nhu
+# check database and update app with database changes
+@app.before_request
+def check_database():
+    user_id = str(session.get('_id'))
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    client = MongoClient(connection_string)
+    db = client["Hango"]
+    collection_name = "ratings"
+    collection = db[collection_name]
+    query = {"user_id": user_id}
+    g.db_count = collection.count_documents(query)
+
+#Nhu
+#get database and return it for use
+@app.route('/get_db_data')
+def get_data():
+    data = {
+        'db_count': g.db_count
+        }
+    return jsonify(data)
+#Nhu
+#get coordinates for input location
+@app.route('/get_coordinates', methods=['GET', 'POST'])
+def get_coord_data():
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    client = MongoClient(connection_string)
+    db = client["Hango"]
+    city = request.args.get('city', default=None, type=str)
+    query = {"Name": city}
+    coordinates = {
+        "Coordinates": db["Location"].find_one(query)['Coordinates']
+    }
+    return jsonify(coordinates)
 
 #(Aidan)
 #take in the parameters and return a recommendation, from the AI
 @app.route('/get_new_active_place', methods=['GET', 'POST'])
 def get_active_place_details():
-    user_id = request.args.get('user_id', default=5, type=str)
+    user_id = app.config.get('USER_ID')
+    #user_id = '6568cbef4a9658311b3ee704'
     radius = request.args.get('radius', default=5, type=int)
     place_type = request.args.get('place_type', default=None, type=str)
     lat = request.args.get('lat', default=None, type=float)
     long = request.args.get('long', default=None, type=float)
 
+    #nhu's code start
+    places_in_db = g.db_count
 
-    active_place = retH.match_highest_list(
+    if places_in_db < 10:
+        active_place = retI.get_one_initial_recommend(user_id, lat=lat, long=long)
+    #end
+    else:
+        active_place = retH.match_highest_list(
         retH.get_highest_list(user_id),
         lat=lat,
         long=long,
         radius=radius,
         place_type=place_type
-    )
+        )
     #Convert all ObjectId instances to strings for easier coding
     active_place = convert_objectid(active_place)
 
@@ -508,12 +552,11 @@ def convert_objectid(obj):
 @app.route('/accept_rec/', methods=['GET'])
 def accept_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
+    user_id = app.config.get('USER_ID')
     #user_id = '6568cbef4a9658311b3ee704'  #temp
-    user_id = request.args.get('user_id', default=5, type=str)
     place_id = request.args.get('place_id', default=None, type=str)
-
-    if place_id:
-        temp_feedback.accept_recommendation_update(user_id=user_id, place_id=place_id) #update the feedback page
+    temp_feedback.accept_recommendation_update(user_id=user_id, place_id=place_id) #update the feedback page
+    if g.db_count>=9:
         generate_model.generate_place_probabilities(user_id)
 
     return 'Success' 
@@ -523,16 +566,16 @@ def accept_rec_model():
 @app.route('/decline_rec/', methods=['GET'])
 def decline_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
+    user_id = app.config.get('USER_ID')
     #user_id = '6568cbef4a9658311b3ee704'  #\test id
-    user_id = request.args.get('user_id', default=5, type=str)
     place_id = request.args.get('place_id', default=None, type=str)
 
 
     temp_feedback.decline_recommendation_update(user_id=user_id, place_id=place_id)
-    generate_model.generate_place_probabilities(str(user_id))
+    if g.db_count>=9:
+        generate_model.generate_place_probabilities(str(user_id))
 
     return 'Success'
-
 
 #(Aidan)
 #Called when user presses block
@@ -540,11 +583,12 @@ def decline_rec_model():
 def block_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user, prevents this place from being shown again.
     #user_id = '6568cbef4a9658311b3ee704'  #\test id
-    user_id = request.args.get('user_id', default=5, type=str)
+    user_id = app.config.get('USER_ID')
     place_id = request.args.get('place_id', default=None, type=str)
 
     temp_feedback.block_recommendation_update(user_id=user_id, place_id=place_id)
-    generate_model.generate_place_probabilities(str(user_id))
+    if g.db_count>=9:
+        generate_model.generate_place_probabilities(str(user_id))
 
     return 'Success'
 

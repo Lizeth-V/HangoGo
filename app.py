@@ -411,5 +411,41 @@ def plan_trip():
 
     # Pass directions and other data to the output page
     return render_template('trip_summary.html', directions=directions)
+
+# Gloria
+# multi recommendation page to allow user to add other user and use the location based
+
+#Gloria
+#add another user for multi rec
+
+
+# User_data temp placement, remove before deployment
+user_data = {
+    "user1": {"name": "User 1", "location": "Glendale"},
+    "user2": {"name": "User 2", "location": "Los Angeles"},
+    # Add more users here...
+}
+
+@app.route('/add_another_user_for_rec', methods=['GET','POST'])
+def add_another_user_for_rec():
+    if request.method == "POST":
+        user_id = request.form.get('user_id')
+        user_name = request.form.get('user_name')
+        user_location = request.form.get('user_location')
+        user_data[user_id] = {"name": user_name, "location": user_location}
+        return jsonify({"message": "User added successfully"})
+    return render_template("add_another_user_for_rec.html", user_data=user_data)
+
+
+# Gloria
+# generate recommendation for multiple users placeholder, Nhu will have the alogorithm how it generates the places from the 2 locations
+@app.route('/multi_recommendation', methods=['POST'])
+def multi_recommendation():
+    target_user_id = request.json.get('target_user_id')
+    target_location = user_data.get(target_user_id, {}).get('location')
+    # Logic to generate recommendations based on target_location
+    recommendations = ["user1", "user2"]  # Dummy recommendations
+    return jsonify({"recommendations": recommendations})
+
 if __name__ == "__main__":
     app.run(debug=True)

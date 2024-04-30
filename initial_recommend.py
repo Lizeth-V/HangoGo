@@ -35,7 +35,8 @@ def df_meet_criteria(user_object, lat, long):
     ### filter by age, main_type, and location (reduce calculations) ###
     age = user_object['age']
     main_type = user_object['interests']
-    #main_type = main_type[0].upper() + main_type[1:].lower()
+    for i in range(len(main_type)):
+        main_type[i] = main_type[i][0].upper() + main_type[i][1:].lower()
     
     # N means age doesn't matter, Y means age does matter
     # if underage, only keep the ones with N as age

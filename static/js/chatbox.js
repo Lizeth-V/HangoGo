@@ -22,28 +22,12 @@ try {
   console.error(error);
 }
 
-if (data_count<10){
-  hideQuery();
-}else{
-  show_query();
-}
+hideQuery();
 
 
 //location input
 var inputForm = document.getElementById("input-location-form");
 inputForm.addEventListener('submit', function(e){
-  function fetchCoordinates(city) {
-    // Create a new XMLHttpRequest object
-    var xhr = new XMLHttpRequest();
-    var url = `/get_coordinates?city=${city}`;
-    xhr.open('GET', url, false);
-    xhr.send();
-    if (xhr.status === 200) {
-        return JSON.parse(xhr.responseText);
-    } else {
-        throw new Error('Failed to fetch data: ' + xhr.status);
-    }
-  }
   e.preventDefault();
   // get form inputs
   var city = document.getElementById('myInput').value;
@@ -60,8 +44,11 @@ inputForm.addEventListener('submit', function(e){
   // run initial recommendations if less than 10 in database
   if (data_count<10){
     initial_model();
+  }else{
+    show_query();
   }
 });
+
 document.getElementById('message-form').addEventListener('submit', function(e) {
   //This is the function that will run when the sumbit button is clicked
     e.preventDefault();
@@ -82,6 +69,18 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
   }
 );
 
+function fetchCoordinates(city) {
+  // Create a new XMLHttpRequest object
+  var xhr = new XMLHttpRequest();
+  var url = `/get_coordinates?city=${city}`;
+  xhr.open('GET', url, false);
+  xhr.send();
+  if (xhr.status === 200) {
+      return JSON.parse(xhr.responseText);
+  } else {
+      throw new Error('Failed to fetch data: ' + xhr.status);
+  }
+}
 
 function initial_model(){
   if (geo_loc){
@@ -123,19 +122,21 @@ function initial_helper(latitude, longitude){
   }, 500); 
   data_count = fetch_db_data('/get_db_data').db_count;
   rec_button_group.onclick = function(){
-    setTimeout(() => {
-      hangogoRecommend(messageStack, latitude, longitude, radius, placeType);
-      data_count = fetch_db_data('/get_db_data').db_count;
-      if (data_count==9){
-        newMessage.childNodes[1].textContent = "You finished rating 10 places! Please select what recommendation you want in the form below and hit send!";
-        setTimeout(() => {
-          messageStack.insertBefore(newMessage, messageStack.firstChild);
-          scroll_div.scrollTop = scroll_div.scrollHeight;
-          show_query();
-        }, 500); 
-        return;
-      }
-    }, 900); 
+    if (data_count<=9){
+      setTimeout(() => {
+        hangogoRecommend(messageStack, latitude, longitude, radius, placeType);
+        data_count = fetch_db_data('/get_db_data').db_count;
+        if (data_count==10){
+          newMessage.childNodes[1].textContent = "You finished rating 10 places! Please select what recommendation you want in the form below and hit send!";
+          setTimeout(() => {
+            messageStack.insertBefore(newMessage, messageStack.firstChild);
+            scroll_div.scrollTop = scroll_div.scrollHeight;
+            show_query();
+          }, 500); 
+          return;
+        }
+      }, 1500); 
+    }
   }
 }
 

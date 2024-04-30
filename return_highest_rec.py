@@ -76,7 +76,6 @@ def match_highest_list(top_choices, lat, long,radius = 500, place_type=None):
     #return top 5 and choose randomly giving higher weight to better recommendations.
     result = list(collection.find(query).limit(5))
 
-
     best = random.choice(result)
 
     return best

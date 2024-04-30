@@ -459,7 +459,7 @@ def get_place():
     return jsonify(place)
 
 
-app.config['USER_ID'] = '657245152201f887d4fa868a'
+app.config['USER_ID'] = '66312d9cb11d88ccab0e0bab'
 # Nhu
 # check database and update app with database changes
 @app.before_request
@@ -511,9 +511,7 @@ def get_active_place_details():
 
     if places_in_db < 10:
         active_place = retI.get_one_initial_recommend(user_id, lat=lat, long=long)
-        print(places_in_db)
     #end
-
     else:
         active_place = retH.match_highest_list(
         retH.get_highest_list(user_id),
@@ -551,7 +549,7 @@ def accept_rec_model():
     #user_id = '6568cbef4a9658311b3ee704'  #temp
     place_id = request.args.get('place_id', default=None, type=str)
     temp_feedback.accept_recommendation_update(user_id=user_id, place_id=place_id) #update the feedback page
-    if g.db_count>=10:
+    if g.db_count>=9:
         generate_model.generate_place_probabilities(user_id)
 
     return 'Success' 
@@ -567,7 +565,7 @@ def decline_rec_model():
 
 
     temp_feedback.decline_recommendation_update(user_id=user_id, place_id=place_id)
-    if g.db_count>=10:
+    if g.db_count>=9:
         generate_model.generate_place_probabilities(str(user_id))
 
     return 'Success'
@@ -583,7 +581,7 @@ def block_rec_model():
     place_id = request.args.get('place_id', default=None, type=str)
 
     temp_feedback.block_recommendation_update(user_id=user_id, place_id=place_id)
-    if g.db_count>=10:
+    if g.db_count>=9:
         generate_model.generate_place_probabilities(str(user_id))
 
     return 'Success'

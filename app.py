@@ -191,7 +191,9 @@ def add_to_favorites():
 
     place_id = str(place_list[index]["_id"])  # Convert _id to string
 
-    favorite_list = users_collection.find_one({'_id': ObjectId(user_id)}).get('favorite_list', [])
+    result = users_collection.find_one({'_id': ObjectId(user_id)})
+
+    favorite_list = result.get('favorite_list', [])
 
     for place in favorite_list:
         if place == place_id:

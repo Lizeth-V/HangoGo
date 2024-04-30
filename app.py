@@ -135,7 +135,8 @@ def interest_form():
         users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {"interests": interest_arr}})
         
         print("Submitted initial interest form successfully!")
-        return redirect(url_for("landing_page", username=user_data["username"]))
+        return render_template("hello.html", next=url_for('index'))
+        # return redirect(url_for("landing_page", username=user_data["username"]))
     
     return render_template("interests.html")
 
@@ -181,7 +182,7 @@ def logout():
     # session.pop('username', None)
     session.clear()
     print("Logout Success")
-    return redirect(url_for('index'))
+    return render_template("byebye.html", next=url_for('index'))
 
 
 # Landing Page that will display the chatbox and the user profile  - (Gloria & Lizeth)

@@ -171,25 +171,36 @@ def landing_page(username):
 # test share locations with the places weblinks
 
 query = {"sub_types": "cafe"}
-place_list = places_collection.find(query)
+place_list = list(places_collection.find(query))
 favorite_list =[]
 
 
 # Gloria
 # add place to favorites
-@app.route('/add_to_favorites', methods = ["POST"])
+@app.route('/add_to_favorites', methods=["POST"])
 def add_to_favorites():
     user_id = session.get("_id")
-    place_index = int(request.form['place_index'])
-    place = places_collection.find_one(skip=place_index, limit=1)
+    place_index = request.form.get("place_index")
+
+    if not place_index.isdigit():
+        return jsonify(success=False, message="Invalid place index")
+
+    index = int(place_index)
+    if index < 0 or index >= len(place_list):
+        return jsonify(success=False, message="Invalid place index")
+
+    place_id = str(place_list[index]["_id"])  # Convert _id to string
+
+    favorite_list = users_collection.find_one({'_id': ObjectId(user_id)}).get('favorite_list', [])
+
+    for place in favorite_list:
+        if place == place_id:
+            return jsonify(success=False, message="Already in Favorites List")
+
+    users_collection.update_one({'_id': ObjectId(user_id)}, {'$addToSet': {'favorite_list': place_id}})
+    return jsonify(success=True, message="Added to Favorites List")
 
 
-    if place:
-        if place["_id"] in favorite_list:
-            return jsonify(success=False, message=" ")
-        else:
-            users_collection.update_one({'_id': ObjectId(user_id)}, {'$addToSet': {'favorite_list': str(place["_id"])}})
-            return jsonify(success=True, message = "Added to Favorites List")
 #Gloria
 # remove place from favorites
 @app.route('/remove_from_favorites', methods =["POST"])
@@ -329,7 +340,7 @@ def favorites():
     
     if user_profile:
         favorite_list = user_profile.get('favorite_list')
-        total_places = len(favorite_list)+1
+        total_places = len(favorite_list)
 
         # places = places.skip((page - 1) * per_page).limit(per_page)
         page = request.args.get("page", default=1, type=int)

@@ -1,8 +1,45 @@
-.form-container
+form {
+    padding-top: 10%;
+    width: 100%;
+}
+
+#friendForm
 {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
 
+}
+
+#friendsContainer
+{
+    width: 50%;
+}
+
+#addFriendBtn {
+    background-color: #FEE8C8;
+    color: #000;
+    border: 2px solid #FEE8C8;
+    border-radius: 5px;
+    padding: 1em;
+    box-shadow: none;
+
+}
+
+#locationOption {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+#getRecommendationBtn
+{
+    background-color: #FEE8C8;
+    color: #000;
+    border: 2px solid #FEE8C8;
+    border-radius: 5px;
+    padding: 1em;
+    box-shadow: none;
 }

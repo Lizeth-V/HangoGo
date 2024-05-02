@@ -59,7 +59,12 @@
                 <!-- Friend inputs will be dynamically added here -->
             </div>
             <button type="button" id="addFriendBtn">Add Friend</button>
-            <button type="submit">Calculate Center Location</button>
+            <select name="locationOption[]" id="locationOption">
+              <option value="useYourLocation">Use Your Location</option>
+              <option value="useCenterLocation">Use Center Location</option>
+              <option value="enterNewLocation">Enter New Location</option>
+            </select>
+            <button type="submit" id="getRecommendationBtn">Get Recommendations</button>
         </form>
                 
                     <!-- 

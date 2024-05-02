@@ -10,12 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <input type="text" name="friendName[]" placeholder="Enter Friend's Name">
             <label for="location"><b>location</b></label><br>
             <input type="text" name="friendLocation[]" placeholder="Enter Friend's Location">
-            <select name="locationOption[]">
-                <option value="useFriendLocation">Use Friend's Location</option>
-                <option value="useYourLocation">Use Your Location</option>
-                <option value="useCenterLocation">Use Center Location</option>
-                <option value="enterNewLocation">Enter New Location</option>
-            </select>
         `;
         friendsContainer.appendChild(friendInput);
     });

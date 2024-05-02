@@ -43,3 +43,15 @@ form {
     padding: 1em;
     box-shadow: none;
 }
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    src: url('https://fonts.googleapis.com/css?family=Roboto');
+}
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    src: url('https://fonts.googleapis.com/css?family=Inter');
+}

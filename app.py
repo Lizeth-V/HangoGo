@@ -7,6 +7,7 @@ import os
 import random
 import string
 import googlemaps
+from pymongo import MongoClient
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
@@ -414,6 +415,20 @@ def plan_trip():
     # Pass directions and other data to the output page
     return render_template('trip_summary.html', directions=directions)
 
+#Nhu
+#get coordinates for input location
+@app.route('/get_coordinates', methods=['GET', 'POST'])
+def get_coord_data():
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    client = MongoClient(connection_string)
+    db = client["Hango"]
+    city = request.args.get('city', default=None, type=str)
+    query = {"Name": city}
+    coordinates = {
+        "Coordinates": db["Location"].find_one(query)['Coordinates']
+    }
+    return jsonify(coordinates)
+
 # Gloria
 # multi recommendation page to allow user to add other user and use the location based
 
@@ -430,28 +445,10 @@ user_data = {
 
 @app.route('/add_another_user_for_rec', methods=['GET'])
 def add_another_user_for_rec():
-    # user = session.get("user")
-    # user_id = user["_id"]
+    friends_data = list(users_collection.find({}, {'username':1, 'location':1 }))
+    print(friends_data)
+    return render_template("add_another_user_for_rec.html", user_data=user_data, friends_data=friends_data)
 
-    # query = {"_id" : ObjectId(user_id)}
-    # user_profile = users_collection.find_one(query)
-    
-    # if user_profile:
-    #     user_id = request.form.get('user_id')
-    #     user_name = request.form.get('user_name')
-    #     user_location = request.form.get('user_location')
-    #     user_data[user_id] = {"name": user_name, "location": user_location}
-
-        friends_data = list(users_collection.find({}, {'username':1, 'location':1 }))
-        print(friends_data)
-        return render_template("add_another_user_for_rec.html", user_data=user_data, friends_data=friends_data)
-    # if request.method == "POST":
-    #     user_id = request.form.get('user_id')
-    #     user_name = request.form.get('user_name')
-    #     user_location = request.form.get('user_location')
-    #     user_data[user_id] = {"name": user_name, "location": user_location}
-    #     return jsonify({"message": "User added successfully"})
-    # return render_template("add_another_user_for_rec.html", user_data=user_data)
 
 @app.route('/calculate_center', methods=['POST'])
 def calculate_center():

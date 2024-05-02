@@ -1,43 +1,57 @@
-/* Idex Top Nav Bar */
-.logo img {
-    width: 100px;
-    height: auto; 
-  }
-
-.header-container{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
+body {
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-image: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(93,185,70,1) 0%, rgba(242,197,130,1) 37%);
 }
 
-/*  styles for the login and signup buttons */
-.login-signup {
-    display: flex;
-    align-items: center;
-    padding: 10px;
+html{
+    height: 100%;
 }
 
-.login-signup a {
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    src: url('https://fonts.googleapis.com/css?family=Roboto');
+}
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    src: url('https://fonts.googleapis.com/css?family=Inter');
+}
+
+h1{
+    color: black;
+    font-size: 72px;
+}
+h2{
+    font-size: 48px;
+}
+
+.container{
+    padding-top: 120px;
+    padding-right: 50px;
+    padding-left: 50px;
+    padding-bottom: 0;
+    text-align: left;
+    align-items: center;
+}
+
+/* Start a new chat button */
+.new-chat{
+    display: flex;
+    align-items: left;
+    padding-top: 100px;
+}
+
+.new-chat a {
     color: white;
     text-decoration: none;
-    margin-left: 20px;
     padding: 6px 12px;
     border: 1px solid;
     border-radius: 5px;
     background-color: #5DB946;
-}
-
-/* top navigation bar */
-.top-nav {
-    color: white;
-    display: flex;
-    text-align: center;
-}
-
-.top-nav a {
-    color: white;
-    text-decoration: none;
-    margin: 0 20px;
-    font-size: 16px;
+    font-size: 20px;
 }

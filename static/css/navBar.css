@@ -29,3 +29,61 @@
 .icon-container:hover .icon{
     color: #5DB946;
 }
+
+/* Idex Top Nav Bar */
+.logo img {
+    width: 100px;
+    height: auto; 
+  }
+
+.header-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+/*  styles for the login and signup buttons */
+.login-signup {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.login-signup a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    padding: 6px 12px;
+    border: 1px solid;
+    border-radius: 5px;
+    background-color: #5DB946;
+}
+.login-signup a:hover {
+    color: white;
+    text-decoration: none;
+    background-color: #52A33E;
+    transition: all .3s;
+}
+
+/* top navigation bar */
+.top-nav {
+    color: white;
+    display: flex;
+    text-align: center;
+}
+
+.top-nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 20px;
+    font-size: 16px;
+}
+
+.top-nav a:hover {
+    color: #2d5722;
+    text-decoration: none;
+    margin: 0 20px;
+    font-size: 16px;
+    transition: all .3s;
+}

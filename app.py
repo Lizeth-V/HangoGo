@@ -6,6 +6,7 @@ import bcrypt
 import os
 import random
 import string
+import googlemaps
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, g
 from flask_mail import Mail, Message
@@ -15,6 +16,7 @@ from datetime import datetime, timedelta
 from flask_pymongo import PyMongo
 from register import register_user, hash_password
 from db import users_collection, places_collection
+from reset import reset_psw
 
 import temp_feedback
 import return_highest_rec as retH
@@ -29,9 +31,8 @@ import initial_recommend as retI
 
 app = Flask(__name__)
 
-# Lizeth - Configureing Flask Mail
+# Lizeth - COnfigureing Flask Mail
 load_dotenv()
-
 #this is a SMTP Server used for gmail - This connects to the server and sends out the verification email 
 app.config['MAIL_SERVER']= os.getenv('MAIL_SERVER')
 app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
@@ -44,6 +45,13 @@ app.config['DEFAULT_PASSWORD'] = os.getenv('DEFAULT_PASSWORD')
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
+
+# Get Google Maps API key from environment variable
+# google_maps_api_key = str(os.getenv('GOOGLE_MAPS_API'))
+google_maps_api_key = "AIzaSyDC1Ysg0I0IHqCs_TDxFwkMJDK71zruEGk"
+
+# Initialize Google Maps API client with API key
+gmaps = googlemaps.Client(key=google_maps_api_key)
 
 # secret key (Lizeth)
 app.secret_key = "supersecrethangogo!!!!"
@@ -84,6 +92,7 @@ def create_account():
                                                 "birth_day": birth_day,
                                                 "birth_year": birth_year,
                                                 "age": age
+
                                             }
                                         })
             print("Form Data:", request.form) 
@@ -124,6 +133,32 @@ def register():
 
     return render_template("register.html")
 
+# Initial interests quiz results (Lizeth)
+@app.route("/interest_form", methods=["GET", "POST"])
+def interest_form():
+    print("Completed create account.. now in interest form!")
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return "User not authenticated. Please create an account first."
+
+    user_data = users_collection.find_one({"_id": ObjectId(user_id)})
+
+    if not user_data:
+        return "User data not found. Please try again."
+
+    if request.method == 'POST':
+        interest_arr = request.form.getlist('selections')
+        # Update user's interests in the database
+        users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {"interests": interest_arr}})
+        
+        print("Submitted initial interest form successfully!")
+        return render_template("hello.html", next=url_for('index'))
+        # return redirect(url_for("landing_page", username=user_data["username"]))
+    
+    return render_template("interests.html")
+
+
 # Gloria
 @app.route("/login", methods= ["GET","POST"])
 def login():
@@ -157,6 +192,14 @@ def login():
             # User not found
             print("User not found.")
     return render_template("login.html")
+
+# Logout and clear the user session (Lizeth)
+@app.route("/logout")
+def logout():
+    # session.pop('username', None)
+    session.clear()
+    print("Logout Success")
+    return render_template("byebye.html", next=url_for('index'))
 
 
 # Landing Page that will display the chatbox and the user profile  - (Gloria & Lizeth)
@@ -234,20 +277,49 @@ saved_places =[]
 
 
 # Gloria
-@app.route('/add_to_favorites', methods = ["POST"])
+# add place to favorites
+@app.route('/add_to_favorites', methods=["POST"])
 def add_to_favorites():
-    place_index = int(request.form['place_index'])
-    place = place_list[place_index]
-    if place in saved_places:
-        return jsonify(success=False, message=" ")
-    else:
-        saved_places.append(place)
-        print(saved_places)
-        return jsonify(success=True, message = "Added to Favorites List")
+    user_id = session.get("_id")
+    place_index = request.form.get("place_index")
+
+    if not place_index.isdigit():
+        return jsonify(success=False, message="Invalid place index")
+
+    index = int(place_index)
+    if index < 0 or index >= len(place_list):
+        return jsonify(success=False, message="Invalid place index")
+
+    place_id = str(place_list[index]["_id"])  # Convert _id to string
+
+    result = users_collection.find_one({'_id': ObjectId(user_id)})
+
+    favorite_list = result.get('favorite_list', [])
+
+    for place in favorite_list:
+        if place == place_id:
+            return jsonify(success=False, message="Already in Favorites List")
+
+    users_collection.update_one({'_id': ObjectId(user_id)}, {'$addToSet': {'favorite_list': place_id}})
+    return jsonify(success=True, message="Added to Favorites List")
+
+#Gloria
+# remove place from favorites
+@app.route('/remove_from_favorites', methods =["POST"])
+def remove_from_favorites():
+    user_id = session.get("_id")
+    place_id = request.form["place_id"]
+    users_collection.update_one({'_id': ObjectId(user_id)}, {'$pull': {'favorite_list': str(place_id)}})
+    return jsonify(success=True, message="Removed from Favorites List")
+
 # Gloria
 @app.route("/")
 def index():
-    return render_template("landing_page.html")
+    if 'user' in session:
+        user = session['user']
+        username = user.get('username') 
+        return render_template('index.html', username=username)
+    return render_template("index.html")
 
 # Sending Email Verifications (Lizeth)
 @app.route("/verify/<username>/<token>")
@@ -314,7 +386,11 @@ def map():
 @app.route("/about_us")
 def about_us():
     print("Redirect to About Us page!")
-    return render_template('about_us.html')
+    username = session.get('user')  # Retrieve username from session
+    if username:
+        return render_template('about_us.html', username=username)
+    else:
+        return render_template('about_us.html')
 
 # Delete Account (Lizeth)
 @app.route("/delete_account", methods=["POST"])
@@ -380,9 +456,93 @@ def reset_email(email, token):
 
     return "Reset Password email sent"
 
-@app.route("/reset_password/<token>")
+# Unique link that will reset the usesrs password and send them back to login after successfully changing password
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_password(token):
-    return render_template("reset_password.html")
+
+    if request.method == "POST":
+        newPassword = request.form.get("new_psw")
+        newConfirm_password = request.form.get("reenter_psw")
+
+        if newPassword != newConfirm_password:
+            flash("Passwords do not match. Try Again")
+            return render_template("reset_password.html", token=token)
+        
+        # find user with the reset token
+        user = users_collection.find_one({"reset_token": token})
+        if user:
+            reset_psw(user["username"], newPassword, users_collection)
+            flash("Password has be reset successfully! You can now Login")
+
+            # clearing the user reset token after being used.
+            users_collection.update_one({"_id": user["_id"]}, {"$unset": {"reset_token": ""}})
+
+            # Render the loading page before redirecting to the login page
+            return render_template("loading.html", next=url_for('login'))
+
+        else:
+            flash("Invalid or expired token.")
+            return render_template("reset_password.html", token=token)
+
+    return render_template("reset_password.html", token=token)
+
+# Users can change their passwords from their account page (Lizeth)
+@app.route("/change_password", methods=["GET", "POST"])
+def change_password():
+    print("In Change Password Page")
+    # Retrive user session information
+    user = session.get('user')
+    print(user)
+    
+    if user is None:
+        # redirect to login if user is not signed in
+        return redirect(url_for('login'))
+    
+    if request.method == "POST":
+        newPassword = request.form.get("new_psw")
+        newConfirm_password = request.form.get("reenter_psw")
+        current_password = request.form.get("old_psw")
+
+        if newPassword != newConfirm_password:
+            flash("Passwords do not match. Try Again")
+            return render_template("change_password.html")
+        
+        username = user.get('username')
+        # Verify current password in order to reset password
+        if not verify_password(username, current_password):
+            print("Incorrect Current Password.")
+            return render_template("change_password.html")
+        
+        # Reseting the password
+        reset_psw(user["username"], newPassword, users_collection)
+        print("password reset!")
+        flash("Password has be reset successfully! You can now Login")
+        return redirect(url_for("login"))
+        
+
+    return render_template("change_password.html")
+
+def verify_password(username, current_password):
+    # Retrieve the user's information
+    user = users_collection.find_one({'username': username})
+    print(user)
+
+    if user:
+        # Retrieve the hashed password from the database
+        hashed_password = user.get('password')
+
+        if hashed_password is not None:
+            # Check password matches the hashed password
+            if bcrypt.checkpw(current_password.encode("utf-8"), hashed_password.encode("utf-8")):
+                return True
+            else:
+                return False
+        else:
+            print("Error: Hashed password is NONE")
+            return False
+    else:
+        # User not found
+        return False
 
 # Gloria
 # send contact form
@@ -427,27 +587,46 @@ def contact():
 
 # Gloria
 # favorites page
-@app.route("/favorites")
+@app.route("/favorites", methods=["GET"])
 def favorites():
     user = session.get("user")
     if user is None:
         flash("Please log in to access favorites page.")
         return redirect(url_for("login"))
+
+    user_id = user["_id"]
+
+    query = {"_id" : ObjectId(user_id)}
+
+    user_profile = users_collection.find_one(query)
     
-    page = request.args.get("page", default=1, type=int)
-    per_page = 10
-    query = {"sub_types": "cafe"}
-    places = places_collection.find(query)
-    total_places = 24 #hard code the total places count() does not work
-    places = places.skip((page - 1) * per_page).limit(per_page)
-    favorites_list = []
-    for place in places:
-        favorites_list.append({
-            "icon": place["image_url"],
-            "name": place["name"],
-            "address": place["address"]
-        })
-    return render_template("favorites.html", favorites=favorites_list, page=page, per_page=per_page, total_places=total_places)
+    if user_profile:
+        favorite_list = user_profile.get('favorite_list')
+        total_places = len(favorite_list)
+
+        # places = places.skip((page - 1) * per_page).limit(per_page)
+        page = request.args.get("page", default=1, type=int)
+        per_page = 2
+        start_index = (page - 1) * per_page
+        end_index = min(start_index + per_page, total_places)
+        paginated_favorites = favorite_list[start_index:end_index]
+
+        # Retrieve information of each place from places_collection
+        favorites_info = []
+        for place_id in paginated_favorites:
+            place_query = {"_id": ObjectId(place_id)}
+            place_info = places_collection.find_one(place_query)
+            if place_info:
+                favorites_info.append({
+                    "icon": place_info.get("image_url", ""),
+                    "name": place_info.get("name", ""),
+                    "address": place_info.get("address", "")
+                })
+        return render_template("favorites.html", favorites=favorites_info, place=place_info, page=page, per_page=per_page, total_places=total_places)
+    else:
+        flash("User not found.")
+        return redirect(url_for("login"))
+
 
 # Gloria
 # get place from DB
@@ -457,6 +636,135 @@ def get_place():
     place_id = request.form['place_id']
     place = places_collection.find_one({"_id": ObjectId(place_id)})
     return jsonify(place)
+
+# This page will display the top locations people like and are visiting (Lizeth)
+@app.route("/top_loactions")
+def top_locations():
+    username = session.get('user')  # Retrieve username from session
+
+    # Fetch top 10 places with the best ratings from DB
+    # TO-DO: add location recognition - so users can see top places in their area 
+    top_places = places_collection.find().sort('rating', -1).limit(10)
+
+    if username:
+        return render_template('top_locations.html', username=username, top_places=top_places)
+    else:
+        return render_template('top_locations.html', top_places=top_places)
+    
+# Collections Page (Lizeth) - this is a page that includes curated places based on a specific theme
+@app.route("/collections")
+def collections():
+    username = session.get('user')
+    if username:
+        return render_template('collections.html', username=username)
+    else:
+        return render_template('collections.html')
+
+@app.route("/cafe_culture")
+def cafe_culture():
+    username = session.get('user')
+    # temp for testing:
+    top_placesC = places_collection.find({"main_type": "Drinks"}).sort('rating', -1).limit(10)
+    top_places = list(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+    # place_coordinates = []
+
+    # for p in top_places:
+    #     coordinates = {'lat': p['lat'], 'lng': p['lon']}
+    #     place_coordinates.append(coordinates)
+    # print("Coordinates:", place_coordinates)
+
+
+    if username:
+        return render_template('cafe_culture.html', username=username, top_places=top_places, place_data=place_data)
+        # return render_template('cafe_culture.html', username=username, top_places=top_places, place_coordinates=place_coordinates)
+        # return render_template('cafe_culture.html', username=username, packed=zip(top_places, place_coordinates))
+    else:
+        return render_template('cafe_culture.html',top_places=top_places, place_data=place_data)
+        # return render_template('cafe_culture.html',top_places=top_places, place_coordinates=place_coordinates)
+        # return render_template('cafe_culture.html', packed=zip(top_places, place_coordinates))
+
+# Gloria
+#itinerary planner GET
+@app.route('/itinerary_planner', methods=["GET"])
+def choose_places_to_go():
+    return render_template("itinerary_planner.html")
+
+# Gloria
+# itinerary planner POST
+@app.route('/plan_trip', methods=['POST'])
+def plan_trip():
+    selected_places = request.form.getlist('places')
+    travel_mode = request.form['travelMode']
+    coordinates = []
+
+    # Fetch coordinates for selected places from MongoDB
+    for place_name in selected_places:
+        place = places_collection.find_one({'name': place_name})
+        if place and 'address' in place:
+            # Use the address from MongoDB to obtain coordinates from Google Maps Geocoding API
+            geocode_result = gmaps.geocode(place['address'])
+            if geocode_result:
+                location = geocode_result[0]['geometry']['location']
+                coordinates.append({'lat': location['lat'], 'lng': location['lng']})
+
+    # Request directions using Google Maps Directions API
+    directions = []
+    for i in range(len(coordinates) - 1):
+        start_coord = coordinates[i]
+        end_coord = coordinates[i + 1]
+        direction = gmaps.directions(
+            (start_coord['lat'], start_coord['lng']),
+            (end_coord['lat'], end_coord['lng']),
+            mode=travel_mode
+        )
+        directions.append(direction)
+
+    # Pass directions and other data to the output page
+    return render_template('trip_summary.html', directions=directions)
+
+
+# Gloria
+# multi recommendation page to allow user to add other user and use the location based
+
+#Gloria
+#add another user for multi rec
+
+
+# User_data temp placement, remove before deployment
+user_data = {
+    "user1": {"name": "User 1", "location": "Glendale"},
+    "user2": {"name": "User 2", "location": "Los Angeles"},
+    # Add more users here...
+}
+
+@app.route('/add_another_user_for_rec', methods=['GET','POST'])
+def add_another_user_for_rec():
+    if request.method == "POST":
+        user_id = request.form.get('user_id')
+        user_name = request.form.get('user_name')
+        user_location = request.form.get('user_location')
+        user_data[user_id] = {"name": user_name, "location": user_location}
+        return jsonify({"message": "User added successfully"})
+    return render_template("add_another_user_for_rec.html", user_data=user_data)
+
+# Gloria
+# generate recommendation for multiple users placeholder, Nhu will have the alogorithm how it generates the places from the 2 locations
+@app.route('/multi_recommendation', methods=['POST'])
+def multi_recommendation():
+    user = session.get('user')
+    user_id = user.get('_id')
+    target_user_id = request.json.get('target_user_id')
+    target_location = user_data.get(target_user_id, {}).get('location')
+    # Logic to generate recommendations based on target_location
+    recommendations = ["user1", "user2"]  # Dummy recommendations
+    return jsonify({"recommendations": recommendations})
 
 
 app.config['USER_ID'] = '66312d9cb11d88ccab0e0bab'

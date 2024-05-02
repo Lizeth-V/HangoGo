@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+        <link rel="stylesheet" href="../static/css/collections.css">
+        <link rel="stylesheet" href="../static/css/navBar.css">
+        <!-- Boxicons stylesheet -->
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+        <title>HangoGo</title>
+        <link rel="icon" type="image/x-icon" href="../static/icons/Hango-icon.png">
+    </head>
+    <body>
+        <!-- Top Nav (Lizeth) -->
+        <div class ="header-container">
+            <div class="top-nav">
+                <div class="logo">
+                    <img src="../static/icons/hangogo.png" alt="hangogo">
+                </div>
+                <a href="/about_us">About</a>
+                <a href="/top_locations">Top Locations</a>
+                <a href="/collections"> Collections</a>
+                <a href="/contact">Contact Us</a>
+                
+            </div>
+
+            <div class = "login-signup">
+                {% if username %}
+                <a href="{{ url_for('logout') }}">logout</a>
+                {% else %}
+                    <a href="{{ url_for('register') }}">sign up</a>
+                    <a href="{{ url_for('login') }}">login</a>
+                {% endif %}
+            </div>
+        </div>
+        <!-- End of Top Nav -->
+        <div class="top-container">
+            <h1>Collections</h1>
+            <p> Looking for a particular vibe? Here is out curated collections page. </p>
+            <br>
+        </div>
+        
+        
+        <div class="grid-container">
+
+            <div id="redirect_cafe"> 
+                <img src="../static/icons/cafe.png" alt="cafe culture">
+                <span>Cafe Culture </span>
+            </div>
+            <div> 
+                <img src="../static/icons/brunch.png" alt="brunch">
+                <span>Brunch Favorites</span>
+            </div>
+            <div> 
+                <img src="../static/icons/sweet.png" alt="sweet">
+                <span>Sweet Treats</span>
+            </div>
+            <div>  
+                <img src="../static/icons/insta.png" alt="insta">
+                <span>Seen on Reels</span>
+            </div>
+            <div>  
+                <img src="../static/icons/adventureMap.png" alt="adventure">
+                <span>Adventure Worthy</span>
+            </div>
+            <div>  
+                <img src="../static/icons/favorite.png" alt="dev favorites">
+                <span>Developer's Favorites</span>
+            </div>
+            <div> 
+                <img src="../static/icons/sights.png" alt="pop sights">
+                <span>Popular Sights</span>
+            </div>
+            <div>  
+                <img src="../static/icons/portrait.png" alt="art portrait">
+                <span>You are the Art</span>
+            </div>
+
+        </div>
+
+        <script>
+            document.getElementById("redirect_cafe").addEventListener("click", function() {
+                window.location.href = "/cafe_culture";
+            });
+        </script>
+
+
+    </body>
+</html>

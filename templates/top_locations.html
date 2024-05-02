@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+        <link rel="stylesheet" href="../static/css/top_locations.css">
+        <link rel="stylesheet" href="../static/css/navBar.css">
+        <!-- Boxicons stylesheet -->
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+        <title>HangoGo</title>
+        <link rel="icon" type="image/x-icon" href="../static/icons/Hango-icon.png">
+
+
+    </head>
+    <body>
+        <!-- Top Nav (Lizeth) -->
+        <div class ="header-container">
+            <div class="top-nav">
+                <div class="logo">
+                    <img src="../static/icons/hangogo.png" alt="hangogo">
+                </div>
+                <a href="/about_us">About</a>
+                <a href="/top_loactions">Top Locations</a>
+                <a href="/collections">Collections</a>
+                <a href="/contact">Contact Us</a>
+                
+            </div>
+
+            <div class = "login-signup">
+                {% if username %}
+                <a href="{{ url_for('logout') }}">logout</a>
+                {% else %}
+                    <a href="{{ url_for('register') }}">sign Up</a>
+                    <a href="{{ url_for('login') }}">login</a>
+                {% endif %}
+            </div>
+        </div>
+        <!-- End of Top Nav -->
+        <div class="container">
+            <h1>Top Locations</h1>
+            <p> Here are the top 10 locations people are liking!</p><br>
+        </div>
+        <div class="container">
+            {% for place in top_places %}
+            <div class="place">
+                {% if place.image_url %}
+                    <img src="{{ place.image_url }}" alt="icon">
+                {% else %}
+                    <img src="../static/icons/default_img.png" alt="Default Image">
+                {% endif %}
+                <div>
+                    <p1>{{ place.name }}</p1><br>
+                    <p2>Rating: {{ place.rating }}</p2>
+                    <p>{{ place.address }}</p>
+                    <br>
+                    {% if username %}
+                    <a href="#" class="button">take me there!</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <img src="static/icons/hango_happy.png" class="fixed-image" alt="Fixed Image">
+
+    </body>
+</html>

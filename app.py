@@ -428,16 +428,42 @@ user_data = {
     # Add more users here...
 }
 
-@app.route('/add_another_user_for_rec', methods=['GET','POST'])
+@app.route('/add_another_user_for_rec', methods=['GET'])
 def add_another_user_for_rec():
-    if request.method == "POST":
-        user_id = request.form.get('user_id')
-        user_name = request.form.get('user_name')
-        user_location = request.form.get('user_location')
-        user_data[user_id] = {"name": user_name, "location": user_location}
-        return jsonify({"message": "User added successfully"})
-    return render_template("add_another_user_for_rec.html", user_data=user_data)
+    # user = session.get("user")
+    # user_id = user["_id"]
 
+    # query = {"_id" : ObjectId(user_id)}
+    # user_profile = users_collection.find_one(query)
+    
+    # if user_profile:
+    #     user_id = request.form.get('user_id')
+    #     user_name = request.form.get('user_name')
+    #     user_location = request.form.get('user_location')
+    #     user_data[user_id] = {"name": user_name, "location": user_location}
+
+        friends_data = list(users_collection.find({}, {'username':1, 'location':1 }))
+        print(friends_data)
+        return render_template("add_another_user_for_rec.html", user_data=user_data, friends_data=friends_data)
+    # if request.method == "POST":
+    #     user_id = request.form.get('user_id')
+    #     user_name = request.form.get('user_name')
+    #     user_location = request.form.get('user_location')
+    #     user_data[user_id] = {"name": user_name, "location": user_location}
+    #     return jsonify({"message": "User added successfully"})
+    # return render_template("add_another_user_for_rec.html", user_data=user_data)
+
+@app.route('/calculate_center', methods=['POST'])
+def calculate_center():
+    data = request.json
+    locations = data['locations']
+    
+    # Calculate center location
+    # logic here
+    
+    center_location = {}  # Replace this with your calculated center location
+    
+    return jsonify(center_location)
 
 # Gloria
 # generate recommendation for multiple users placeholder, Nhu will have the alogorithm how it generates the places from the 2 locations

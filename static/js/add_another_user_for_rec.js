@@ -1,3 +1,61 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const friendsContainer = document.getElementById('friendsContainer');
+    const addFriendBtn = document.getElementById('addFriendBtn');
+    const friendForm = document.getElementById('friendForm');
+
+    addFriendBtn.addEventListener('click', function() {
+        const friendInput = document.createElement('div');
+        friendInput.innerHTML = `
+            <label for="username"><b>username</b></label><br>
+            <input type="text" name="friendName[]" placeholder="Enter Friend's Name">
+            <label for="location"><b>location</b></label><br>
+            <input type="text" name="friendLocation[]" placeholder="Enter Friend's Location">
+            <select name="locationOption[]">
+                <option value="useFriendLocation">Use Friend's Location</option>
+                <option value="useYourLocation">Use Your Location</option>
+                <option value="useCenterLocation">Use Center Location</option>
+                <option value="enterNewLocation">Enter New Location</option>
+            </select>
+        `;
+        friendsContainer.appendChild(friendInput);
+    });
+
+    friendForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(friendForm);
+        const entries = formData.entries();
+        const locations = [];
+
+        for (const pair of entries) {
+            const [name, value] = pair;
+            locations.push({ [name]: value });
+        }
+
+        // Send locations data to server for center calculation
+        fetch('/calculate_center', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ locations }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle center location response
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+});
+
+
+
+
+
+/*
+// org form
 document.getElementById('addFriendForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -16,7 +74,7 @@ document.getElementById('addFriendForm').addEventListener('submit', function(eve
     .then(data => console.log(data))
     .catch(error => console.error('Error:', error));
 });
-
+*/
 document.getElementById('recommendationForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const formData = new FormData(event.target);

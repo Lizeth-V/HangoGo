@@ -39,10 +39,30 @@
             </div>
           </nav>
         <section id = add_user_for_rec> 
+          <!-- 
+            
+          <form id="addFriendForm" method="POST" action = "{{ url_for('add_another_user_for_rec') }}"></form>
             <div class = "form-container"> 
-                 
-                <form id="addFriendForm" method="POST" action = "{{ url_for('add_another_user_for_rec') }}">
-                    <h2> Add Friend for Recommendation </h2>
+              <h2> Add Friend for Recommendation </h2>
+              <div class="friendInput">
+                Friend inputs goes here
+
+              </div>
+              <button type="button" id="addFriendBtn">Add Friend</button>
+              <button type="submit">Calculate Center Location</button>
+            </div>
+          </form>  
+        -->
+          
+          <form id="friendForm" method="POST" action = "{{ url_for('add_another_user_for_rec') }}">
+            <div id="friendsContainer">
+                <!-- Friend inputs will be dynamically added here -->
+            </div>
+            <button type="button" id="addFriendBtn">Add Friend</button>
+            <button type="submit">Calculate Center Location</button>
+        </form>
+                
+                    <!-- 
                     <label for="username"><b>username</b></label><br>
                     <input type="text" placeholder="enter friend's username" id="userName" name="userName" required>
                     <br><br>
@@ -52,7 +72,9 @@
                     <input type="submit" class="button1" value="Add Friend">
                     <br><br>
                     <input type="submit" class="button1" value="Generate Recommendation">
-                </form>
+                     -->
+
+          
 
 
                 <!-- <form id="recommendationForm">
@@ -63,7 +85,7 @@
                 </form> -->
             
                 <div id="recommendations"></div>
-            </div>
+    
         </section>
 
         <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>

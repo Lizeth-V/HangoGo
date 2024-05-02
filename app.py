@@ -507,7 +507,8 @@ def get_coord_data():
 #take in the parameters and return a recommendation, from the AI
 @app.route('/get_new_active_place', methods=['GET', 'POST'])
 def get_active_place_details():
-    user_id = request.args.get('user_id', default=None, type=str)
+    user_id = str(session.get('_id'))
+    #user_id = request.args.get('user_id', default=None, type=str)
     #user_id = '6568cbef4a9658311b3ee704'
     radius = request.args.get('radius', default=5, type=int)
     place_type = request.args.get('place_type', default=None, type=str)
@@ -553,7 +554,9 @@ def convert_objectid(obj):
 @app.route('/accept_rec/', methods=['GET'])
 def accept_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
-    user_id = request.args.get('user_id', default=None, type=str)
+    #user_id = request.args.get('user_id', default=None, type=str)
+    user_id = str(session.get('_id'))
+
     #user_id = '6568cbef4a9658311b3ee704'  #temp
     place_id = request.args.get('place_id', default=None, type=str)
     temp_feedback.accept_recommendation_update(user_id=user_id, place_id=place_id) #update the feedback page
@@ -567,7 +570,7 @@ def accept_rec_model():
 @app.route('/decline_rec/', methods=['GET'])
 def decline_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
-    user_id = request.args.get('user_id', default=None, type=str)
+    user_id = str(session.get('_id'))
     #user_id = '6568cbef4a9658311b3ee704'  #\test id
     place_id = request.args.get('place_id', default=None, type=str)
 
@@ -584,7 +587,7 @@ def decline_rec_model():
 def block_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user, prevents this place from being shown again.
     #user_id = '6568cbef4a9658311b3ee704'  #\test id
-    user_id = request.args.get('user_id', default=None, type=str)
+    user_id = str(session.get('_id'))
     place_id = request.args.get('place_id', default=None, type=str)
 
     temp_feedback.block_recommendation_update(user_id=user_id, place_id=place_id)
@@ -598,7 +601,7 @@ def block_rec_model():
 def save_messages():
     #accept user id in the url and replace
     #user_id = '6568cbef4a9658311b3ee704'  #\test id
-    user_id = request.args.get('user_id', default=None, type=str)  
+    user_id = str(session.get('_id'))
 
     #accept arguments from url
     radius = request.args.get('radius', default=None, type=int)
@@ -633,7 +636,7 @@ def save_messages():
 @app.route('/inflate_user_history', methods=['GET'])
 def fetch_user_history():
     #user_id = '6568cbef4a9658311b3ee704'  #\test id
-    user_id = request.args.get('user_id', default=5, type=str)
+    user_id = str(session.get('_id'))
 
     user_rec_history = get_history.get_user_history(user_id)
     
@@ -645,7 +648,7 @@ def fetch_user_history():
 @app.route('/delete_user_chats', methods=['GET'])
 def delete_user_history():
     #user_id = '6568cbef4a9658311b3ee704'  #\test id
-    user_id = request.args.get('user_id', default=5, type=str)
+    user_id = str(session.get('_id'))
 
     temp_feedback.delete_user_chat_history(user_id)
     
@@ -653,7 +656,7 @@ def delete_user_history():
 
 @app.route('/fetch_user_active_place', methods=['GET'])
 def get_user_active():
-    user_id = request.args.get('user_id', default='5', type=str)
+    user_id = str(session.get('_id'))
 
     try:
         place_details = temp_feedback.get_active_place(user_id)
@@ -669,7 +672,7 @@ def get_user_active():
 
 @app.route('/remove_user_active_place', methods=['GET'])
 def remove_user_active():
-    user_id = request.args.get('user_id', default=5, type=str)
+    user_id = str(session.get('_id'))
 
     temp_feedback.remove_active_place(user_id)
 

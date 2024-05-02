@@ -1,4 +1,5 @@
 var user_id = document.getElementById("userID").innerHTML
+console.log(user_id)
 var latitude;
 var longitude;
 var data_count;
@@ -463,7 +464,7 @@ function hangogoRecommend(message_stack, latitude, longitude, radius, place_type
 
   function accept_rec(place_id) {
     //passing the parameters call the accept function in flask
-    var url = `/accept_rec?place_id=${place_id}`;
+    var url = `/accept_rec?user_id=${user_id}&place_id=${place_id}`;
     return fetch(url)
     .catch(error => {
               console.error('Error:', error);
@@ -474,7 +475,7 @@ function hangogoRecommend(message_stack, latitude, longitude, radius, place_type
 
   function decline_rec(place_id) {
     //passing the parameters call the accept function in flask
-    var url = `/decline_rec?place_id=${place_id}`;
+    var url = `/decline_rec?user_id=${user_id}&place_id=${place_id}`;
     return fetch(url)
     .catch(error => {
               console.error('Error:', error);
@@ -485,14 +486,13 @@ function hangogoRecommend(message_stack, latitude, longitude, radius, place_type
 
   function block_rec(place_id) {
     //passing the parameters call the accept function in flask
-    var url = `/block_rec?place_id=${place_id}`;
+    var url = `/block_rec?user_id=${user_id}&place_id=${place_id}`;
     return fetch(url)
     .catch(error => {
               console.error('Error:', error);
               throw error;
     });
   }
-
 
   function catch_loc_error(error) {
     //this just runs if something happens with the geolocation, create a message asking them to turn it on.

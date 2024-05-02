@@ -369,6 +369,7 @@ body, input, button, select {
   max-height: 122px;
   overflow-y: auto;
   z-index: 99;
+  
   /*position the autocomplete items to be the same width as the container:*/
   top: 100%;
   left: 0;

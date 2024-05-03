@@ -230,10 +230,6 @@ body, input, button, select {
   font-size: small;
 }
 
-.input-group {
-  position: relative;
-  width: 100%;
-}
 
 *::-webkit-scrollbar {
   height: 1px;

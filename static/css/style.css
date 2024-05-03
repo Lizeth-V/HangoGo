@@ -167,12 +167,7 @@ body p {
 }
 
 /* Intrest Form */
-.gatherInterests{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Inter', sans-serif;
-}
+
 
 @font-face {
     font-family: 'Roboto';
@@ -221,7 +216,7 @@ h2 {
 p {
     color: black;
     font-family: 'Inter', sans-serif;
-  }
+}
 
 p1 {
     color: black;

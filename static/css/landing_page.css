@@ -235,3 +235,23 @@ button{
 #moreChoicesContainer #deleteButton:hover {
     background-color: darkred;
 }
+
+#moreChoicesContainer #changePsw{
+    background-color: #5EBA47;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    padding: 12px 20px;
+    margin: 8px 0;
+    text-decoration: none;
+}
+
+#moreChoicesContainer #changePsw:hover {
+    background-color: #539832;
+    text-decoration: none;
+}

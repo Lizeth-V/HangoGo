@@ -14,40 +14,40 @@
 <body>
     <!-- Top Nav (Lizeth) -->
     <div class ="header-container">
-      <div class="top-nav">
-          <div class="logo">
-              <img src="../static/icons/hangogo.png" alt="hangogo">
-          </div>
-          <a href="/about_us">About</a>
-          <a href="/top_loactions">Top Locations</a>
-          <a href="/collections">Collections</a>
-          <a href="/contact">Contact Us</a>
-      </div>
+        <div class="top-nav">
+            <div class="logo">
+                <img src="../static/icons/hangogo.png" alt="hangogo">
+            </div>
+            <a href="/about_us">About</a>
+            <a href="/top_loactions">Top Locations</a>
+            <a href="/collections">Collections</a>
+            <a href="/contact">Contact Us</a>
+        </div>
 
-      <div class = "login-signup">
-          {% if username %}
-              <a href="{{ url_for('logout') }}">logout</a>
-          {% else %}
-              <a href="{{ url_for('register') }}">sign up</a>
-              <a href="{{ url_for('login') }}">login</a>
-          {% endif %}
-      </div>
-  </div>
-  <!-- End of Top Nav -->
-  <!-- (Lizeth) -->
-  <div class="container">
-      <h1>New hang out spots ready to go</h1>
-      <h2>You ask, Hango will deliver!</h2>
-      <div class="new-chat">
-          {% if username %}
-              <a href="{{ url_for('landing_page', username=username) }}">chat!</a>
-          {% else %}
-              <a href="{{ url_for('login') }}">start a new AI chat!</a>
-          {% endif %}
-      </div>    
-  </div>
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+        <div class = "login-signup">
+            {% if username %}
+                <a href="{{ url_for('logout') }}">logout</a>
+            {% else %}
+                <a href="{{ url_for('register') }}">sign up</a>
+                <a href="{{ url_for('login') }}">login</a>
+            {% endif %}
+        </div>
+    </div>
+    <!-- End of Top Nav -->
+    <!-- (Lizeth) -->
+    <div class="container">
+        <h1>New hang out spots ready to go</h1>
+        <h2>You ask, Hango will deliver!</h2>
+        <div class="new-chat">
+            {% if username %}
+                <a href="{{ url_for('landing_page', username=username) }}">chat!</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">start a new AI chat!</a>
+            {% endif %}
+        </div>    
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
 </body>
 </html>

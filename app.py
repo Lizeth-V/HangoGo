@@ -97,7 +97,10 @@ def create_account():
                                         })
             print("Form Data:", request.form) 
             print("Updated create account page", first_name, last_name, birth_month, birth_day, birth_year)
-            return redirect(url_for("index"))
+            #  Store user_id in session
+            session["user_id"] = str(user_id)
+            print("Redirecting to interest_form page")
+            return redirect(url_for("interest_form"))
     else:
         return render_template("create_account.html")
 
@@ -166,14 +169,14 @@ def login():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        user = users_collection.find_one({"username": username})
+        user = users_collection.find_one({"username": username}, {"_id": 1, "password": 1, "username": 1})
 
         if user:
             # Get the hashed password from the user object
             hashed_password = user["password"]
 
-            # Assuming `hashed_password` is currently a string
-            # Convert it to bytes using `encode()`
+            # Assuming hashed_password is currently a string
+            # Convert it to bytes using encode()
             hashed_password_bytes = hashed_password.encode("utf-8")
 
             # check if the password the user entered matches the hashed password
@@ -193,6 +196,7 @@ def login():
             print("User not found.")
     return render_template("login.html")
 
+
 # Logout and clear the user session (Lizeth)
 @app.route("/logout")
 def logout():
@@ -207,7 +211,7 @@ def logout():
 @app.route('/<username>', methods=['GET', 'POST'])
 def landing_page(username):
     user = session.get('user')
-    
+
     if not user:
         return redirect(url_for('login'))
     
@@ -215,11 +219,17 @@ def landing_page(username):
     user_id = user.get('_id')
     username = user['username']
     # Retrieve user information from the database
-    user_from_db = users_collection.find_one({"_id": user_id})
+    user_id = user.get('_id')
+    username = user['username']
+
+    user_from_db = users_collection.find_one({"_id": ObjectId(user_id)},{"_id": 1, "username": 1, "first_name": 1, "last_name": 1, "email": 1, 
+     "birth_month": 1, "birth_day": 1, "birth_year": 1})
+
+    print(user_from_db)
     
     # This should update the users changes in the Editing mode in their profile (Lizeth)
     if request.method == 'POST':
-    # get the new user data from the form  
+    # get the new user data from the form
         print("User updating info")
         first_name = request.form.get('edit_first_name')
         last_name = request.form.get('edit_last_name')
@@ -237,27 +247,26 @@ def landing_page(username):
 
         # updating database with the new changes (ignoring empty fileds)
         if update_data:
-            users_collection.update_one(
-                {'username': username},
-                {'$set': update_data}
-            )
+            users_collection.update_one({'username': username},
+                        {'$set': update_data})
             print("update user successful..?")
         else:
             print("no changes made")
 
         return redirect(url_for('landing_page', username=username))
-    
+
 
     return render_template("landing_page.html",
-                           user=user_from_db,
-                           username = username,
-                           first_name = user["first_name"],
-                           last_name = user["last_name"],
-                           email = user["email"],
-                           birth_month = user["birth_month"],
-                           birth_day = user["birth_day"],
-                           birth_year = user["birth_year"]
-                           )  
+                                user=user_from_db,
+                                user_id = user_id,
+                                username = username,
+                                first_name = user_from_db["first_name"],
+                                last_name = user_from_db["last_name"],
+                                email = user_from_db["email"],
+                                birth_month = user_from_db["birth_month"],
+                                birth_day = user_from_db["birth_day"],
+                                birth_year = user_from_db["birth_year"]
+                                )  
 
 # Gloria
 # Add to Favorites List
@@ -337,7 +346,7 @@ def verify(username, token):
         return redirect(url_for("create_account"))
 
     flash('Invalid or expired verification link.')
-    return redirect(url_for("verify", username=username))
+    return redirect(url_for("verify", username=username, token=token))
 
 # Function to organize sending emails through default or verify 
 def get_sender(choice, app):
@@ -381,6 +390,19 @@ def map():
     # user_from_db = users_collection.find_one({"_id": user_id})
     print("Redirected to Map Page!")
     return render_template('map.html', user=user)
+    ''' #this will update the map to the place reccomended in chatbox and is to be connected when chatbox is on page...
+
+    # Retrieve place information based on user's session
+    place_name = user.get('place_name')  # Assuming place_name is stored in the user session
+    place_info = get_place_info(place_name)
+    
+    # Check if place information is available
+    if place_info:
+        return render_template('map.html', user=user, place_info=place_info)
+    else:
+        flash('Place information not found.')
+        return redirect(url_for('map.html'))  # Redirect to map page with error?
+    '''
 
 # About Us/ How to use the site (Lizeth)
 @app.route("/about_us")
@@ -391,6 +413,7 @@ def about_us():
         return render_template('about_us.html', username=username)
     else:
         return render_template('about_us.html')
+
 
 # Delete Account (Lizeth)
 @app.route("/delete_account", methods=["POST"])
@@ -415,6 +438,7 @@ def delete_acct():
 
     return redirect(url_for('index'))
 
+# Forget Password (Lizeth)
 @app.route("/forgot_password", methods=['GET', 'POST'])
 def forgot_password():
 
@@ -424,7 +448,9 @@ def forgot_password():
 
         if user_inDB:
             print("Valid User in DB - generating token")
+            # making a reset_token and adding it on to the user information 
             reset_token = ''.join(random.choices(string.ascii_letters + string.digits, k=30))
+            users_collection.update_one({'email': email}, {"$set": {"reset_token": reset_token}})
             reset_email(email, reset_token)
             print("reset psw email sent!")
             return render_template('recovery.html')
@@ -436,7 +462,7 @@ def forgot_password():
     return render_template("forgot_password.html")
             
     
-
+# Sending an email to reset password (Lizeth)
 @app.route("/reset_sent")
 def reset_sent():
     return render_template('recovery.html')
@@ -589,7 +615,9 @@ def contact():
 # favorites page
 @app.route("/favorites", methods=["GET"])
 def favorites():
-    user = session.get("user")
+    # Retrive user session information
+    user = session.get('user')
+
     if user is None:
         flash("Please log in to access favorites page.")
         return redirect(url_for("login"))

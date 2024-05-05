@@ -11,7 +11,7 @@ function autocomplete(inp, arr) {
     /* create a bigger div that holds all locations that have the same prefixes */
     a = document.createElement("div");
     a.setAttribute("class", "autocomplete-items");
-    /*append to this div to autocomplete container:*/
+    /*append this div to autocomplete container:*/
     this.parentNode.appendChild(a);
     /* before the other locations, append current location div first */
     b = document.createElement("div");

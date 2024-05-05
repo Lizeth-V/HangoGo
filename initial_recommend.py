@@ -51,7 +51,7 @@ def df_meet_criteria(user_object, lat, long):
     #user_loc = collection.find_one(query)['user_loc'] #return lat and long
     user_loc = [lat, long]
     # get radius
-    radius = 10/111 # radius of 10 miles to get enough places for initial recommendations
+    radius = 7/111 # radius of 10 miles to get enough places for initial recommendations
     # find radius in context of user lat and lon
     lat_least = user_loc[0]-radius
     lat_most = user_loc[0]+radius

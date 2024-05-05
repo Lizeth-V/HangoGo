@@ -782,6 +782,8 @@ def add_another_user_for_rec():
         return jsonify({"message": "User added successfully"})
     return render_template("add_another_user_for_rec.html", user_data=user_data)
 
+
+import multi_rec as multiR
 # Gloria
 # generate recommendation for multiple users placeholder, Nhu will have the alogorithm how it generates the places from the 2 locations
 @app.route('/multi_recommendation', methods=['POST'])
@@ -791,16 +793,21 @@ def multi_recommendation():
     target_user_id = request.json.get('target_user_id')
     target_location = user_data.get(target_user_id, {}).get('location')
     # Logic to generate recommendations based on target_location
+    
+    #take inspiration from aidan's new_active_place code (now for multiple users)
+    #user_id in an array
+    #target_location (one of locations, center of location, or new location)
+    multiR.get_multi_rec(user_id, target_location)
     recommendations = ["user1", "user2"]  # Dummy recommendations
     return jsonify({"recommendations": recommendations})
 
 
-app.config['USER_ID'] = '66312d9cb11d88ccab0e0bab'
 # Nhu
 # check database and update app with database changes
 @app.before_request
 def check_database():
-    user_id = app.config.get('USER_ID')
+    user = session.get('user')
+    user_id = user["_id"]
     connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
     client = MongoClient(connection_string)
     db = client["Hango"]
@@ -835,8 +842,8 @@ def get_coord_data():
 #take in the parameters and return a recommendation, from the AI
 @app.route('/get_new_active_place', methods=['GET', 'POST'])
 def get_active_place_details():
-    user_id = app.config.get('USER_ID')
-    #user_id = '6568cbef4a9658311b3ee704'
+    user = session.get('user')
+    user_id = user["_id"]
     radius = request.args.get('radius', default=5, type=int)
     place_type = request.args.get('place_type', default=None, type=str)
     lat = request.args.get('lat', default=None, type=float)
@@ -881,8 +888,8 @@ def convert_objectid(obj):
 @app.route('/accept_rec/', methods=['GET'])
 def accept_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
-    user_id = app.config.get('USER_ID')
-    #user_id = '6568cbef4a9658311b3ee704'  #temp
+    user = session.get('user')
+    user_id = user["_id"]
     place_id = request.args.get('place_id', default=None, type=str)
     temp_feedback.accept_recommendation_update(user_id=user_id, place_id=place_id) #update the feedback page
     if g.db_count>=9:
@@ -895,8 +902,8 @@ def accept_rec_model():
 @app.route('/decline_rec/', methods=['GET'])
 def decline_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
-    user_id = app.config.get('USER_ID')
-    #user_id = '6568cbef4a9658311b3ee704'  #\test id
+    user = session.get('user')
+    user_id = user["_id"]
     place_id = request.args.get('place_id', default=None, type=str)
 
 
@@ -912,8 +919,8 @@ def decline_rec_model():
 @app.route('/block_rec/', methods=['GET'])
 def block_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user, prevents this place from being shown again.
-    #user_id = '6568cbef4a9658311b3ee704'  #\test id
-    user_id = app.config.get('USER_ID')
+    user = session.get('user')
+    user_id = user["_id"]
     place_id = request.args.get('place_id', default=None, type=str)
 
     temp_feedback.block_recommendation_update(user_id=user_id, place_id=place_id)
@@ -926,8 +933,8 @@ def block_rec_model():
 @app.route('/save_chat/', methods=['GET'])
 def save_messages():
     #accept user id in the url and replace
-    #user_id = '6568cbef4a9658311b3ee704'  #\test id
-    user_id = app.config.get('USER_ID')
+    user = session.get('user')
+    user_id = user["_id"]
     #accept arguments from url
     radius = request.args.get('radius', default=None, type=int)
     place_type = request.args.get('place_type', default=None, type=str)
@@ -960,9 +967,8 @@ def save_messages():
 #when called, it brings in the user chat history and inflates their history page with it
 @app.route('/inflate_user_history', methods=['GET'])
 def fetch_user_history():
-
-    #user_id = '6568cbef4a9658311b3ee704'  #\test id
-    user_id = app.config.get('USER_ID')
+    user = session.get('user')
+    user_id = user["_id"]
     user_rec_history = get_history.get_user_history(user_id)
     
     #return the chat history as a json to be able to print
@@ -972,9 +978,8 @@ def fetch_user_history():
 #flask call to delete user histories
 @app.route('/delete_user_chats', methods=['GET'])
 def delete_user_history():
-
-    #user_id = '6568cbef4a9658311b3ee704'  #\test id
-    user_id = app.config.get('USER_ID')
+    user = session.get('user')
+    user_id = user["_id"]
     temp_feedback.delete_user_chat_history(user_id)
     
     return 'Success'

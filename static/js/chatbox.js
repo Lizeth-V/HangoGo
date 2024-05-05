@@ -33,10 +33,12 @@ inputForm.addEventListener('submit', function(e){
   var city = document.getElementById('myInput').value;
   if (city=="Current Location"){
     geo_loc = true;
+    console.log(coordinates);
   }else{
     var coordinates = fetchCoordinates(city).Coordinates;
     latitude = coordinates[0];
     longitude = coordinates[1];
+    console.log(coordinates);
   }
   var locationPrompt = document.getElementById('message-text');
   locationPrompt.textContent= "Location chosen! If you want to change your location, please refresh!";
@@ -81,7 +83,6 @@ function fetchCoordinates(city) {
       throw new Error('Failed to fetch data: ' + xhr.status);
   }
 }
-
 function initial_model(){
   if (geo_loc){
     get_user_location(function(position) {
@@ -122,7 +123,7 @@ function initial_helper(latitude, longitude){
   }, 500); 
   data_count = fetch_db_data('/get_db_data').db_count;
   rec_button_group.onclick = function(){
-    if (data_count<=9){
+    if (data_count<10){
       setTimeout(() => {
         hangogoRecommend(messageStack, latitude, longitude, radius, placeType);
         data_count = fetch_db_data('/get_db_data').db_count;
@@ -135,7 +136,7 @@ function initial_helper(latitude, longitude){
           }, 500); 
           return;
         }
-      }, 1500); 
+      }, 1700); 
     }
   }
 }
@@ -432,6 +433,15 @@ function hangogoRecommend(message_stack, latitude, longitude, radius, place_type
   });
 }
 
+async function waitRecommend() {
+  try {
+    let result = await hangogoRecommend;
+    console.log(result);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
   function show_query(){
     //show the query container
 
@@ -448,16 +458,16 @@ function hangogoRecommend(message_stack, latitude, longitude, radius, place_type
 
   function fetch_and_update_active_place(user_id, lat, long,radius, place_type) {
     //passing the parameters call the fetch function in the flask app to get a recommendation
-      var url = `/get_new_active_place?user_id=${user_id}&lat=${lat}&long=${long}&radius=${radius}&place_type=${place_type}`;
+      var url = `/get_new_active_place?&lat=${lat}&long=${long}&radius=${radius}&place_type=${place_type}`;
       return fetch(url)
-          .then(response => response.json())
-          .then(data => {
-              return data.active_place;
-          })
-          .catch(error => {
-              console.error('Error:', error);
-              throw error;
-          });
+        .then(response => response.json())
+        .then(data => {
+            return data.active_place;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            throw error;
+        });
   }
 
   function accept_rec(place_id) {

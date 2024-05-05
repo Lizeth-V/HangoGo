@@ -2,33 +2,11 @@
     font-size: 150%;
     font-weight: bolder;
     color: white;
-    padding: 20px;
-}
-
-.logo{
-    display: flex;
-    width: 100%;
-}
-
-.logo ul {
-    margin-left: auto;
-    margin-right: 2%;
-    margin-top: 1%;
-    align-self: center;
-}
-
-.logo ul a{
-    color: white;
-}
-
-.logo ul a:hover{
-    font-size: 105%;
-    text-decoration: none;
-    transition: font-size .2s;
+    padding: 10px;
 }
 
 body {
-    height: 98vh;
+    height: 100%;
     margin: 0;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -36,10 +14,7 @@ body {
   }
 
 html{
-    height: 100vh;
-}
-*{
-    overflow-y: hidden;
+    height: 100%;
 }
 
 form{
@@ -155,7 +130,7 @@ form label{
 
 .expandChatboxBtn {
     font-size: xx-large;
-    color: #FEE8C8;
+    color: #FEE8C8;;
     background: transparent;
     outline: none;
     border: none;

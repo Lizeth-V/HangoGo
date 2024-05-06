@@ -13,17 +13,17 @@
     </div> -->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../static/css/landing_page.css">
     <link rel="stylesheet" href="../static/css/navBar.css">
+    <link rel="stylesheet" href="../static/css/map.css">
     <!-- Boxicons stylesheet -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <title>Hangogo</title>
     <link rel="icon" type="image/x-icon" href="../static/icons/Hango-icon.png">
 </head>
-<body>
-    <!-- Top Nav (Lizeth) -->
-    <div class ="header-container">
+<body onload="save_prof()">
+     <!-- Top Nav (Lizeth) -->
+     <div class ="header-container">
         <div class="top-nav">
             <div class="logo">
                 <img src="../static/icons/hangogo.png" alt="hangogo">
@@ -43,17 +43,18 @@
             {% endif %}
         </div>
     </div>
-    <!-- End of Top Nav -->
+ <!-- End of Top Nav --> 
+
 
     <!--  Nav Bar (Lizeth)-->
     <div class="navbar">
         <!-- User Profile -->
-        <div class="icon-container"> 
+        <div class="icon-container" id="user_p_button"> 
                 <i class="bx bxs-user-detail icon"></i>
         </div>
         <!-- Map -->
-        <div class="icon-container"> 
-            <a href="{{ url_for('map') }}">
+        <div class="icon-container" id="map_button"> 
+            <a onclick="changeToMap('{{user_id}}')">
                 <i class="bx bxs-map-pin icon"></i>
             </a>
         </div>
@@ -67,8 +68,8 @@
     <!-- End of Nav Bar -->
 
     <div class="container">
-        <div class="user-profile">
-             <div class="user-details" id="userProfileContainer">
+        <div class="user-profile" id="userProfileContainer">
+             <div class="user-details">
                 <form action ="/{{ username }}.html" method="post">
                     <h1>User Profile</h1>
                     <img src="../static/icons/hangogo.png" alt=""><br>
@@ -99,13 +100,10 @@
             <div class="more-choices" id="moreChoicesContainer" style="display: none;">
                 <form action="{{ url_for('delete_acct') }}" method="post">
                     <p>Location</p>
-
-                    <a href="{{ url_for('change_password') }}" id="changePsw">Change Password</a>
                 
                     <!-- Delete Account button -->
                     <button type="submit" id="deleteButton" onclick="delete_acct()">Delete Account</button>
                 </form>
-                
             </div>
 
             <button class="arrow_down" onclick="toggleDetails()">
@@ -121,51 +119,51 @@
         </div>
 
         <div class="user-chatbox">
-            <link rel="stylesheet" href="../static/css/chatbox.css">
+            <link rel="stylesheet" href="static\css\chatbox.css">
             <div class="container mt-5">
 
                 <input type="image" id="history-button" class="history-button" title="View History" src="static\history-regular-24.png" onclick="switch_history()"/>
-        
-                <div class="chatbox">
+
+                  <div class="chatbox">
                     
                     <div class="messages" id="messages">
-                        <div class="scroll" class="scroll">
-                        <div class="active-rec-message">
-                            <div class="message">
-                                <img src="static/hango.png" class="message-image">
-                                <span id="message-text">Please choose which location you want to use to start recommending for!</span>
-                            </div>
-                            <div class="location-box">
-                                <form autocomplete="off" id="input-location-form">
-                                    <div class="autocomplete" >
-                                        <input id="myInput" type="text" name="city" placeholder="Enter a Southern CA city:">
+                              <div class="scroll" class="scroll">
+                                <div class="active-rec-message">
+                                    <div class="message">
+                                        <img src="static/hango.png" class="message-image">
+                                        <span id="message-text">Please choose which location you want to use to start recommending for!</span>
                                     </div>
-                                    <input type="image" title="submit" src="/static/navigation.png"/>
-                                </form>
+                                    <div class="location-box">
+                                        <form autocomplete="off" id="input-location-form">
+                                            <div class="autocomplete" >
+                                                <input id="myInput" type="text" name="city" placeholder="Enter a Southern CA city:">
+                                              </div>
+                                              <input type="image" title="submit" src="/static/navigation.png"/>
+                                        </form>
+                                    </div>
+                              <div id="message-stack" class="message-stack"></div>
+                              </div>
                             </div>
-                        </div>
-                        <div id="message-stack" class="message-stack"></div>
-                        </div>
-                    </div>
-                    <form id="message-form" class="send-message-form" method="post" action="{{ url_for('index') }}">
-                        <div class="input-group">
-                        <select class="selector" id="message_type" name="message_type" required onchange="showFields()">
-                            <option value="">Please select...</option>
-                            <option value="default">Recommend me anything!</option>
-                            <option value="radius">Recommend me anything in a radius</option>
-                            <option value="type">Recommend me a type...</option>
-                            <option value="type_radius">Recommend me this type in this radius</option>
-                        </select>
-                        <div class="additional-fields" id="additional-fields"></div>
-                        </div>
-        
-                        <input type="image" title="Submit" id="submit_button" class="submit_button" src="static\subdirectory-left-regular-40.png"/>
-                        
-                    </form> 
-                    </div>
-                </div>
-            </div>
+          
+                        <form id="message-form" class="send-message-form" method="post" action="{{ url_for('index') }}">
+                          <div class="input-group">
+                            <select class="selector" id="message_type" name="message_type" required onchange="showFields()">
+                              <option value="">Please select...</option>
+                              <option value="default">Recommend me anything!</option>
+                              <option value="radius">Recommend me anything in a radius</option>
+                              <option value="type">Recommend me a type...</option>
+                              <option value="type_radius">Recommend me this type in this radius</option>
+                            </select>
+                          <div class="additional-fields" id="additional-fields"></div>
+                          </div>
+          
+                          <input type="image" title="Submit" id="submit_button" class="submit_button" src="static\subdirectory-left-regular-40.png"/>
+                          
+                        </form> 
+                      </div>
+                  </div>
         </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
@@ -178,7 +176,7 @@
 
     <!-- Editing mode & Delete Account (Lizeth) -->
     <script src="../static/js/landing_page_edit.js"></script>
-
+    <script src="static/js/nav.js"></script>
     <script src="../static/js/chatbox.js"></script>
     <script src="../static/js/autocomplete.js"></script>
 

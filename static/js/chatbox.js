@@ -152,7 +152,7 @@ function fetch_db_data(url) {
       throw new Error('Failed to fetch data: ' + xhr.status);
   }
 }
-  
+
   //this simply hides the submit elements
   function hideQuery(){
     document.getElementById('submit_button').style.display = 'none';
@@ -177,7 +177,6 @@ function fetch_db_data(url) {
         selector.selectedIndex = 0;
     }
   }
-
 
   //creates all three messages. These combined can be viewed as a single message in the scope of the system. Only the place recommendation is the variance and importance.
   function create_messages(latitude,longitude) {

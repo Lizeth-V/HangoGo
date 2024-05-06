@@ -627,6 +627,37 @@ def contact():
             return f"An error occurred: {e}"
     return render_template("contact.html")
 
+@app.route('/add_to_favorites2', methods = ["GET"])
+def add_to_favorites2():
+    import favorite
+
+    user = session.get('user')
+    user_id = user.get('_id')
+
+    place_id = request.args.get('place_id', default='5', type=str)
+    
+    favorite.add_to_favorites(user_id, place_id)
+    temp_feedback.add_to_favorites_update(user_id=user_id, place_id=place_id)
+
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    client = MongoClient(connection_string)
+    db = client["Hango"]
+    collection_name = "ratings"
+    collection = db[collection_name]
+    query = {"user_id": user_id}
+
+    count = collection.count_documents(query)
+
+    # Nhu's additional code starts here
+    # Assuming g.db_count is intended to hold the count of places rated by the user
+    places_in_db = count
+
+    if places_in_db < 10:
+        generate_model.generate_place_probabilities(user_id)
+
+
+    return jsonify(success=True, message = "Added to Favorites List")
+
 # Gloria
 # favorites page
 @app.route("/favorites", methods=["GET"])
@@ -645,17 +676,15 @@ def favorites():
     user_profile = users_collection.find_one(query)
     
     if user_profile:
-        favorite_list = user_profile.get('favorite_list')
+        favorite_list = user_profile.get('favorite_list', [])
         total_places = len(favorite_list)
 
-        # places = places.skip((page - 1) * per_page).limit(per_page)
         page = request.args.get("page", default=1, type=int)
         per_page = 2
         start_index = (page - 1) * per_page
         end_index = min(start_index + per_page, total_places)
         paginated_favorites = favorite_list[start_index:end_index]
 
-        # Retrieve information of each place from places_collection
         favorites_info = []
         for place_id in paginated_favorites:
             place_query = {"_id": ObjectId(place_id)}
@@ -666,16 +695,24 @@ def favorites():
                     "name": place_info.get("name", ""),
                     "address": place_info.get("address", "")
                 })
-        return render_template("favorites.html", favorites=favorites_info, place=place_info, page=page, per_page=per_page, total_places=total_places)
+
+        return jsonify({
+            "favorites": favorites_info,
+            "page": page,
+            "per_page": per_page,
+            "total_places": total_places
+        })
     else:
         flash("User not found.")
         return redirect(url_for("login"))
+
 
 
 # Gloria
 # get place from DB
 @app.route('/get_place', methods=['POST'])
 def get_place():
+
     # Retrieve the selected place from MongoDB
     place_id = request.form['place_id']
     place = places_collection.find_one({"_id": ObjectId(place_id)})
@@ -831,14 +868,28 @@ def check_database():
     query = {"user_id": user_id}
     g.db_count = collection.count_documents(query)'''
 
-'''#Nhu
-#get database and return it for use
+
 @app.route('/get_db_data')
 def get_data():
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    client = MongoClient(connection_string)
+    db = client["Hango"]
+    collection_name = "ratings"
+    collection = db[collection_name]
+    query = {"user_id": user_id}
+
+    count = collection.count_documents(query)
+
+    # Nhu's additional code starts here
+    # Assuming g.db_count is intended to hold the count of places rated by the user
+    places_in_db = count
+
     data = {
-        'db_count': g.db_count
+        'db_count': places_in_db
         }
-    return jsonify(data)'''
+    return jsonify(data)
+
+
 #Nhu
 #get coordinates for input location
 @app.route('/get_coordinates', methods=['GET', 'POST'])

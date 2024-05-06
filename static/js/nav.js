@@ -18,6 +18,56 @@ function fetch_active_place(user_id) {
         });
 }
 
+function loadFavorites(page = 1) {
+    fetch(`/favorites?page=${page}`)
+    .then(response => response.json())
+    .then(data => {
+        const favoritesContainer = document.querySelector('.user-profile');
+        favoritesContainer.innerHTML = ''; // Clear existing content
+
+        console.log(data)
+
+        data.favorites.forEach(favorite => {
+            const favoriteDiv = document.createElement('div');
+            favoriteDiv.className = 'favorite';
+            favoriteDiv.innerHTML = `
+                <img src="${favorite.icon}" alt="Icon">
+                <div>
+                    <p>${favorite.name}</p>
+                    <p>${favorite.address}</p>
+                    <button type="button" class="btn btn-success">visit</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteFavorite('${favorite.id}')">delete</button>
+                </div>
+            `;
+            favoritesContainer.appendChild(favoriteDiv);
+        });
+
+        // Pagination
+        const pagination = document.createElement('ul');
+        pagination.className = 'pagination';
+        for (let p = 1; p <= Math.ceil(data.totalPlaces / data.perPage) + 1; p++) {
+            const pageItem = document.createElement('li');
+            const pageLink = document.createElement('a');
+            pageLink.href = `#`;
+            pageLink.innerText = p;
+            pageLink.addEventListener('click', () => loadFavorites(p));
+            pageItem.appendChild(pageLink);
+            pagination.appendChild(pageItem);
+        }
+        favoritesContainer.appendChild(pagination);
+
+        //button adjust
+        const map_button = document.getElementById('map_button');
+        map_button.innerHTML = '<a onclick="change_to_profile()"><i class="bx bxs-map-pin icon"></i></a>';
+
+        const user_profile_button = document.getElementById('user_p_button');
+        user_profile_button.innerHTML = '<a onclick="change_to_profile()"><i class="bx bxs-user-detail icon"></i></a>';
+
+        const fav_button = document.getElementById('fav_button');
+        fav_button.innerHTML = '<a><i class="bx bxs-buildings icon"></i></a>';
+    });
+}
+
 
 function changeToMap(user_id, place_name, place_address, place_coordinates, user_coordinates) {
     if (place_name == undefined){
@@ -93,7 +143,11 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
 
                         const user_profile_button = document.getElementById('user_p_button');
                         user_profile_button.innerHTML = '<a onclick="change_to_profile()"><i class="bx bxs-user-detail icon"></i></a>';
-                    
+
+                        const fav_button = document.getElementById('fav_button');
+                        fav_button.innerHTML = '<a onclick="loadFavorites()"><i class="bx bxs-buildings icon"></i></a>';
+
+
                         }
                 else{
                     const container = document.getElementById('userProfileContainer');
@@ -124,6 +178,9 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
 
                     const user_profile_button = document.getElementById('user_p_button');
                     user_profile_button.innerHTML = '<a onclick="change_to_profile()"><i class="bx bxs-user-detail icon"></i></a>';
+
+                    const fav_button = document.getElementById('fav_button');
+                    fav_button.innerHTML = '<a onclick="loadFavorites()"><i class="bx bxs-buildings icon"></i></a>';
                     }
                 }
                 )
@@ -191,10 +248,13 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
         user_profile_container.appendChild(map_div);   
 
         const map_button = document.getElementById('map_button');
-                    map_button.innerHTML = '<a><i class="bx bxs-map-pin icon"></i></a>';
+        map_button.innerHTML = '<a><i class="bx bxs-map-pin icon"></i></a>';
 
         const user_profile_button = document.getElementById('user_p_button');
         user_profile_button.innerHTML = '<a onclick="change_to_profile()"><i class="bx bxs-user-detail icon"></i></a>';
+
+        const fav_button = document.getElementById('fav_button');
+        fav_button.innerHTML = '<a onclick="loadFavorites()"><i class="bx bxs-buildings icon"></i></a>';
 
         
     }
@@ -226,6 +286,8 @@ function change_to_profile() {
 
     document.getElementById('map_button').innerHTML = `<a onclick="changeToMap('')"><i class="bx bxs-map-pin icon"></i></a>`;
     document.getElementById('user_p_button').innerHTML = '<a><i class="bx bxs-user-detail icon"></i></a>';
+    document.getElementById('fav_button').innerHTML = `<a onclick="loadFavorites()"><i class="bx bxs-buildings icon"></i></a>`;
+
 
     document.getElementById('userProfileContainer').innerHTML = profile_html;
 
@@ -260,7 +322,7 @@ function add_favorite(place_id) {
         });
     }
 
-    var url = `/add_to_favorites?place_id=${place_id}`;
+    var url = `/add_to_favorites2?place_id=${place_id}`;
   
     return fetch(url)
         .then(response => {

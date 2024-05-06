@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="../static/css/landing_page.css">
     <link rel="stylesheet" href="../static/css/navBar.css">
     <link rel="stylesheet" href="../static/css/map.css">
+    <link rel="stylesheet" href="../static/css/favorites.css">
+
     <!-- Boxicons stylesheet -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <title>Hangogo</title>
@@ -59,8 +61,8 @@
             </a>
         </div>
         <!-- Favorites Page -->
-        <div class="icon-container"> 
-            <a href="{{ url_for('favorites') }}">
+        <div class="icon-container" id="fav_button"> 
+            <a onclick="loadFavorites()">
                 <i class="bx bxs-buildings icon"></i>
             </a>
         </div>
@@ -144,23 +146,22 @@
                               <div id="message-stack" class="message-stack"></div>
                               </div>
                             </div>
-          
-                        <form id="message-form" class="send-message-form" method="post" action="{{ url_for('index') }}">
-                          <div class="input-group">
-                            <select class="selector" id="message_type" name="message_type" required onchange="showFields()">
-                              <option value="">Please select...</option>
-                              <option value="default">Recommend me anything!</option>
-                              <option value="radius">Recommend me anything in a radius</option>
-                              <option value="type">Recommend me a type...</option>
-                              <option value="type_radius">Recommend me this type in this radius</option>
-                            </select>
-                          <div class="additional-fields" id="additional-fields"></div>
-                          </div>
-          
-                          <input type="image" title="Submit" id="submit_button" class="submit_button" src="static\subdirectory-left-regular-40.png"/>
-                          
-                        </form> 
                       </div>
+                      <form id="message-form" class="send-message-form" method="post" action="{{ url_for('index') }}">
+                        <div class="input-group">
+                          <select class="selector" id="message_type" name="message_type" required onchange="showFields()">
+                            <option value="">Please select...</option>
+                            <option value="default">Recommend me anything!</option>
+                            <option value="radius">Recommend me anything in a radius</option>
+                            <option value="type">Recommend me a type...</option>
+                            <option value="type_radius">Recommend me this type in this radius</option>
+                          </select>
+                        <div class="additional-fields" id="additional-fields"></div>
+                        </div>
+        
+                        <input type="image" title="Submit" id="submit_button" class="submit_button" src="static\subdirectory-left-regular-40.png"/>
+                        
+                      </form> 
                   </div>
         </div>
     </div>

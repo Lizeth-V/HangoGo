@@ -287,7 +287,7 @@ saved_places =[]
 
 # Gloria
 # add place to favorites
-@app.route('/add_to_favorites', methods=["POST"])
+@app.route('/add_to_favorites', methods=["GET"])
 def add_to_favorites():
     user_id = session.get("_id")
     place_index = request.form.get("place_index")
@@ -310,6 +310,24 @@ def add_to_favorites():
             return jsonify(success=False, message="Already in Favorites List")
 
     users_collection.update_one({'_id': ObjectId(user_id)}, {'$addToSet': {'favorite_list': place_id}})
+
+    temp_feedback.add_to_favorites_update(user_id=user_id, place_id=place_id)
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    client = MongoClient(connection_string)
+    db = client["Hango"]
+    collection_name = "ratings"
+    collection = db[collection_name]
+    query = {"user_id": user_id}
+
+    count = collection.count_documents(query)
+
+    # Nhu's additional code starts here
+    # Assuming g.db_count is intended to hold the count of places rated by the user
+    places_in_db = count
+
+    if places_in_db >=9:
+        generate_model.generate_place_probabilities(user_id)
+
     return jsonify(success=True, message="Added to Favorites List")
 
 #Gloria
@@ -609,8 +627,6 @@ def contact():
             return f"An error occurred: {e}"
     return render_template("contact.html")
 
-
-
 # Gloria
 # favorites page
 @app.route("/favorites", methods=["GET"])
@@ -802,9 +818,8 @@ def multi_recommendation():
     return jsonify({"recommendations": recommendations})
 
 
-# Nhu
+'''# Nhu
 # check database and update app with database changes
-@app.before_request
 def check_database():
     user = session.get('user')
     user_id = user["_id"]
@@ -814,16 +829,16 @@ def check_database():
     collection_name = "ratings"
     collection = db[collection_name]
     query = {"user_id": user_id}
-    g.db_count = collection.count_documents(query)
+    g.db_count = collection.count_documents(query)'''
 
-#Nhu
+'''#Nhu
 #get database and return it for use
 @app.route('/get_db_data')
 def get_data():
     data = {
         'db_count': g.db_count
         }
-    return jsonify(data)
+    return jsonify(data)'''
 #Nhu
 #get coordinates for input location
 @app.route('/get_coordinates', methods=['GET', 'POST'])
@@ -843,14 +858,24 @@ def get_coord_data():
 @app.route('/get_new_active_place', methods=['GET', 'POST'])
 def get_active_place_details():
     user = session.get('user')
-    user_id = user["_id"]
+    user_id = str(user.get('_id'))
     radius = request.args.get('radius', default=5, type=int)
     place_type = request.args.get('place_type', default=None, type=str)
     lat = request.args.get('lat', default=None, type=float)
     long = request.args.get('long', default=None, type=float)
 
-    #nhu's code start
-    places_in_db = g.db_count
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    client = MongoClient(connection_string)
+    db = client["Hango"]
+    collection_name = "ratings"
+    collection = db[collection_name]
+    query = {"user_id": user_id}
+
+    count = collection.count_documents(query)
+
+    # Nhu's additional code starts here
+    # Assuming g.db_count is intended to hold the count of places rated by the user
+    places_in_db = count
 
     if places_in_db < 10:
         active_place = retI.get_one_initial_recommend(user_id, lat=lat, long=long)
@@ -889,10 +914,24 @@ def convert_objectid(obj):
 def accept_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
     user = session.get('user')
-    user_id = user["_id"]
+    user_id = str(user.get('_id'))
     place_id = request.args.get('place_id', default=None, type=str)
     temp_feedback.accept_recommendation_update(user_id=user_id, place_id=place_id) #update the feedback page
-    if g.db_count>=9:
+
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    client = MongoClient(connection_string)
+    db = client["Hango"]
+    collection_name = "ratings"
+    collection = db[collection_name]
+    query = {"user_id": user_id}
+
+    count = collection.count_documents(query)
+
+    # Nhu's additional code starts here
+    # Assuming g.db_count is intended to hold the count of places rated by the user
+    places_in_db = count
+
+    if places_in_db >=9:
         generate_model.generate_place_probabilities(user_id)
 
     return 'Success' 
@@ -903,12 +942,26 @@ def accept_rec_model():
 def decline_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user
     user = session.get('user')
-    user_id = user["_id"]
+    user_id = str(user.get('_id'))
     place_id = request.args.get('place_id', default=None, type=str)
 
 
     temp_feedback.decline_recommendation_update(user_id=user_id, place_id=place_id)
-    if g.db_count>=9:
+
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    client = MongoClient(connection_string)
+    db = client["Hango"]
+    collection_name = "ratings"
+    collection = db[collection_name]
+    query = {"user_id": user_id}
+
+    count = collection.count_documents(query)
+
+    # Nhu's additional code starts here
+    # Assuming g.db_count is intended to hold the count of places rated by the user
+    places_in_db = count
+
+    if places_in_db >=9:
         generate_model.generate_place_probabilities(str(user_id))
 
     return 'Success'
@@ -920,11 +973,25 @@ def decline_rec_model():
 def block_rec_model():
     #takes user and place parameters and inputs the feedback and regenerates the model for the user, prevents this place from being shown again.
     user = session.get('user')
-    user_id = user["_id"]
+    user_id = str(user.get('_id'))
     place_id = request.args.get('place_id', default=None, type=str)
 
     temp_feedback.block_recommendation_update(user_id=user_id, place_id=place_id)
-    if g.db_count>=9:
+
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    client = MongoClient(connection_string)
+    db = client["Hango"]
+    collection_name = "ratings"
+    collection = db[collection_name]
+    query = {"user_id": user_id}
+
+    count = collection.count_documents(query)
+
+    # Nhu's additional code starts here
+    # Assuming g.db_count is intended to hold the count of places rated by the user
+    places_in_db = count
+
+    if places_in_db >=9:
         generate_model.generate_place_probabilities(str(user_id))
 
     return 'Success'
@@ -934,7 +1001,7 @@ def block_rec_model():
 def save_messages():
     #accept user id in the url and replace
     user = session.get('user')
-    user_id = user["_id"]
+    user_id = str(user.get('_id'))
     #accept arguments from url
     radius = request.args.get('radius', default=None, type=int)
     place_type = request.args.get('place_type', default=None, type=str)
@@ -968,7 +1035,7 @@ def save_messages():
 @app.route('/inflate_user_history', methods=['GET'])
 def fetch_user_history():
     user = session.get('user')
-    user_id = user["_id"]
+    user_id = str(user.get('_id'))
     user_rec_history = get_history.get_user_history(user_id)
     
     #return the chat history as a json to be able to print
@@ -979,10 +1046,38 @@ def fetch_user_history():
 @app.route('/delete_user_chats', methods=['GET'])
 def delete_user_history():
     user = session.get('user')
-    user_id = user["_id"]
+    user_id = str(user.get('_id'))
     temp_feedback.delete_user_chat_history(user_id)
     
     return 'Success'
+
+
+@app.route('/fetch_user_active_place', methods=['GET'])
+def get_user_active():
+    user = session.get('user')
+    user_id = str(user.get('_id'))
+
+    try:
+        place_details = temp_feedback.get_active_place(user_id)
+        if place_details and '_id' in place_details:
+            place_details['_id'] = str(place_details['_id'])
+        else:
+            return jsonify({'name': None})
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'An error occurred while fetching the active place'}), 500
+
+    return jsonify(place_details)
+
+@app.route('/remove_user_active_place', methods=['GET'])
+def remove_user_active():
+    user = session.get('user')
+    user_id = str(user.get('_id'))
+
+    temp_feedback.remove_active_place(user_id)
+
+    return 'Success'
+
 
 
 if __name__ == '__main__':

@@ -38,7 +38,7 @@ function cancelEditMode() {
 
 // switching between the profile details conatiner and other 
 function toggleDetails(){
-    var userProfileContainer = document.getElementById('userProfileContainer');
+    var userProfileContainer = document.getElementById('userProfileItems');
     var moreChoicesContainer = document.getElementById('moreChoicesContainer');
 
     if (userProfileContainer.style.display !== 'none') {
@@ -48,6 +48,7 @@ function toggleDetails(){
     } 
     else {
     // hiding other content and displaying profile again
+    console.log('wtf')
     userProfileContainer.style.display = 'block';
     moreChoicesContainer.style.display = 'none';
     }

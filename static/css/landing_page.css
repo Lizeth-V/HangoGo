@@ -104,6 +104,7 @@ form label{
 
 
 .button-container {
+    margin-inline: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -113,12 +114,12 @@ form label{
     width: 0;
 }
 
-.expanded-chatbox {
-    width: 100%;
+.hide-chatbox {
+    width: 0 !important;
 }
 
-.hide-chatbox {
-    width: 0;
+.expanded-chatbox {
+    width: 100%;
 }
 
 .expanded-profile {

@@ -11,7 +11,8 @@
         <title>HangoGo</title>
         <link rel="icon" type="image/x-icon" href="../static/icons/Hango-icon.png">
 
-
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="../static/js/top_locations.js"></script>
     </head>
     <body>
         <!-- Top Nav (Lizeth) -->
@@ -21,7 +22,7 @@
                     <img src="../static/icons/hangogo.png" alt="hangogo">
                 </div>
                 <a href="/about_us">About</a>
-                <a href="/top_loactions">Top Locations</a>
+                <a href="/top_locations">Top Locations</a>
                 <a href="/collections">Collections</a>
                 <a href="/contact">Contact Us</a>
                 
@@ -31,7 +32,7 @@
                 {% if username %}
                 <a href="{{ url_for('logout') }}">logout</a>
                 {% else %}
-                    <a href="{{ url_for('register') }}">sign Up</a>
+                    <a href="{{ url_for('register') }}">sign up</a>
                     <a href="{{ url_for('login') }}">login</a>
                 {% endif %}
             </div>

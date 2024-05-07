@@ -601,17 +601,30 @@ def get_place():
     return jsonify(place)
 
 # This page will display the top locations people like and are visiting (Lizeth)
-@app.route("/top_loactions")
+from top_location import getTop_locations
+@app.route("/top_locations", methods=["GET", "POST"])
 def top_locations():
     username = session.get('user')  # Retrieve username from session
 
     # Fetch top 10 places with the best ratings from DB
     # TO-DO: add location recognition - so users can see top places in their area 
-    top_places = places_collection.find().sort('rating', -1).limit(10)
+    if request.method == "POST" and username:
+        data = request.json
+        latitude = data["latitude"]
+        longitude = data["longitude"]
+        print("Received location - Latitude:", latitude, "Longitude:", longitude)
+        top_places = getTop_locations(latitude, longitude, 15)
+        print(type(top_places))
+        print("Location render")
+        return render_template('top_locations.html', username=username,  top_places=top_places)
 
-    if username:
-        return render_template('top_locations.html', username=username, top_places=top_places)
+    # if username:
+      
+    #     return render_template('top_locations.html', username=username, top_places=top_places)
     else:
+        print("Default render")
+        top_places = places_collection.find().sort('rating', -1).limit(10)
+        print(type(top_places))
         return render_template('top_locations.html', top_places=top_places)
     
 # Collections Page (Lizeth) - this is a page that includes curated places based on a specific theme
@@ -626,7 +639,6 @@ def collections():
 @app.route("/cafe_culture")
 def cafe_culture():
     username = session.get('user')
-    # temp for testing:
     top_placesC = places_collection.find({"main_type": "Drinks"}).sort('rating', -1).limit(10)
     top_places = list(top_placesC)
 
@@ -636,23 +648,69 @@ def cafe_culture():
         coordinates = {'lat': p['lat'], 'lng': p['lon']}
         place_data.append({'name': p['name'], 'coordinates': coordinates})
 
-    # place_coordinates = []
-
-    # for p in top_places:
-    #     coordinates = {'lat': p['lat'], 'lng': p['lon']}
-    #     place_coordinates.append(coordinates)
-    # print("Coordinates:", place_coordinates)
-
 
     if username:
         return render_template('cafe_culture.html', username=username, top_places=top_places, place_data=place_data)
-        # return render_template('cafe_culture.html', username=username, top_places=top_places, place_coordinates=place_coordinates)
-        # return render_template('cafe_culture.html', username=username, packed=zip(top_places, place_coordinates))
+
     else:
         return render_template('cafe_culture.html',top_places=top_places, place_data=place_data)
-        # return render_template('cafe_culture.html',top_places=top_places, place_coordinates=place_coordinates)
-        # return render_template('cafe_culture.html', packed=zip(top_places, place_coordinates))
-    
+# TO-DO: Brunch Places
+@app.route("/brunch_faves")
+def brunch_faves():
+    username = session.get('user')
+    top_placesC = places_collection.find({"$or": [{"main_type": "Nature/Recreation"}, {"subtype":{"$eq": "nature"}}]}).sort('rating', -1).limit(10)
+    top_places = list(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+
+    if username:
+        return render_template('brunch.html', username=username, top_places=top_places, place_data=place_data)
+
+    else:
+        return render_template('brunch.html',top_places=top_places, place_data=place_data)
+
+@app.route("/nightout")
+def nightout():
+    username = session.get('user')
+    top_placesC = places_collection.find({"$or": [{"main_type": "Food", "subtype": "bar"},{"main_type": "Drinks","subtype": "bar"}]}).sort('rating', -1).limit(10)
+    top_places = list(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+
+    if username:
+        return render_template('nightout.html', username=username, top_places=top_places, place_data=place_data)
+
+    else:
+        return render_template('nightout.html',top_places=top_places, place_data=place_data)
+
+@app.route("/adventure_worthy")
+def adventure_worthy():
+    username = session.get('user')
+    top_placesC = places_collection.find({"$or": [{"main_type": "Nature/Recreation"}, {"subtype":{"$eq": "nature"}}]}).sort('rating', -1).limit(10)
+    top_places = list(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+
+    if username:
+        return render_template('adventure.html', username=username, top_places=top_places, place_data=place_data)
+
+    else:
+        return render_template('adventure.html',top_places=top_places, place_data=place_data)
 
     
 

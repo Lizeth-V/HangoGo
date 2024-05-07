@@ -19,16 +19,24 @@ html{
 
 .container{
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .place {
     display: flex;
     justify-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     text-align: left;
     align-items: center;
     gap: 20px;
     padding: 5%;
+    width: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 }
 .place img {
     width: 100px; 
@@ -37,6 +45,47 @@ html{
     margin: 0;
 }
 
-/* .place::before {
-    display: none;
-} */
+.place img{
+    object-fit: cover;
+    border: 2px solid white;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}
+
+p1{
+    font-size: x-large;
+    color: white;
+    font-weight: bolder;
+    text-shadow: 1px 1px 2px #354D19;
+}
+
+p2{
+    white-space: pre;
+    font-size: medium;
+    font-weight: bold;
+    color: #31493C;
+}
+
+.button{
+    background-color: #5EBA47;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+    justify-items: center;
+}
+
+.button:hover {
+    text-decoration: none;
+    background-color: #52A33E;
+    color: white;
+    transition: all .3s;
+}
+.fixed-image {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 450px; 
+    height: auto; 
+}

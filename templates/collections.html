@@ -48,31 +48,31 @@
                 <img src="../static/icons/cafe.png" alt="cafe culture">
                 <span>Cafe Culture </span>
             </div>
-            <div> 
+            <div id="redirect_brunch"> 
                 <img src="../static/icons/brunch.png" alt="brunch">
                 <span>Brunch Favorites</span>
             </div>
-            <div> 
-                <img src="../static/icons/sweet.png" alt="sweet">
-                <span>Sweet Treats</span>
+            <div id="redirect_nightout"> 
+                <img src="../static/icons/nightlife.png" alt="nightout">
+                <span>Night Out</span>
             </div>
-            <div>  
+            <div id="redirect_reels">  
                 <img src="../static/icons/insta.png" alt="insta">
                 <span>Seen on Reels</span>
             </div>
-            <div>  
+            <div id="redirect_adv">  
                 <img src="../static/icons/adventureMap.png" alt="adventure">
                 <span>Adventure Worthy</span>
             </div>
-            <div>  
+            <div id="redirect_devs">  
                 <img src="../static/icons/favorite.png" alt="dev favorites">
                 <span>Developer's Favorites</span>
             </div>
-            <div> 
+            <div id="redirect_sights"> 
                 <img src="../static/icons/sights.png" alt="pop sights">
                 <span>Popular Sights</span>
             </div>
-            <div>  
+            <div id="redirect_art">  
                 <img src="../static/icons/portrait.png" alt="art portrait">
                 <span>You are the Art</span>
             </div>
@@ -82,6 +82,15 @@
         <script>
             document.getElementById("redirect_cafe").addEventListener("click", function() {
                 window.location.href = "/cafe_culture";
+            });
+            document.getElementById("redirect_brunch").addEventListener("click", function() {
+                window.location.href = "/brunch_faves";
+            });
+            document.getElementById("redirect_nightout").addEventListener("click", function() {
+                window.location.href = "/nightout";
+            });
+            document.getElementById("redirect_adv").addEventListener("click", function() {
+                window.location.href = "/adventure_worthy";
             });
         </script>
 

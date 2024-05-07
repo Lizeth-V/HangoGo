@@ -719,7 +719,7 @@ def get_place():
     return jsonify(place)
 
 # This page will display the top locations people like and are visiting (Lizeth)
-@app.route("/top_loactions")
+@app.route("/top_locations")
 def top_locations():
     username = session.get('user')  # Retrieve username from session
 

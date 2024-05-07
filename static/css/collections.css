@@ -16,7 +16,7 @@
     src: url('https://fonts.googleapis.com/css?family=Inter');
 }
 body {
-    height: 100%;
+    height: 98vh;
     margin: 0;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -79,4 +79,40 @@ span{
     box-shadow: 0 0 2rem #F487B6;
     transition: all .5s;
 }
+
+button{
+    display: flex;
+    background-color: #5EBA47;
+    color: white;
+    text-align: center;
+    border: none;
+}
+
+*::-webkit-scrollbar {
+    height: 1px;
+    position: absolute;
+    }
+    *::-webkit-scrollbar-track {
+    background-color: #ffffff00;
+    }
+    
+    *::-webkit-scrollbar-track:hover {
+    background-color: #ffffff00;
+    }
+    
+    *::-webkit-scrollbar-track:active {
+    background-color: #ffffff00;
+    }
+    
+    *::-webkit-scrollbar-thumb {
+    background-color: #b79666;
+    }
+    
+    *::-webkit-scrollbar-thumb:hover {
+    background-color: #f2c582;
+    }
+    
+    *::-webkit-scrollbar-thumb:active {
+    background-color: #b79666;
+    }
 

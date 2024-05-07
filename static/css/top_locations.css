@@ -40,3 +40,38 @@ html{
 /* .place::before {
     display: none;
 } */
+
+*::-webkit-scrollbar {
+    height: 1px;
+    position: absolute;
+    }
+    *::-webkit-scrollbar-track {
+    background-color: #ffffff00;
+    }
+    
+    *::-webkit-scrollbar-track:hover {
+    background-color: #ffffff00;
+    }
+    
+    *::-webkit-scrollbar-track:active {
+    background-color: #ffffff00;
+    }
+    
+    *::-webkit-scrollbar-thumb {
+    background-color: #b79666;
+    }
+    
+    *::-webkit-scrollbar-thumb:hover {
+    background-color: #f2c582;
+    }
+    
+    *::-webkit-scrollbar-thumb:active {
+    background-color: #b79666;
+    }
+
+    .header-container{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 30px;
+    }

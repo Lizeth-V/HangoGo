@@ -15,7 +15,7 @@ app.config['USER_ID'] = '657245152201f887d4fa868a'
 @app.before_request
 def check_database():
     print("This RANDDSDSA!")
-    user_id = app.config.get('USER_ID')
+    '''user_id = app.config.get('USER_ID')
     connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
     client = MongoClient(connection_string)
     db = client["Hango"]
@@ -35,6 +35,7 @@ def check_database():
         g.long = loc[1]
     else:
         print(f"User_loc doesn't exist for user {user_id}")
+        '''
 
 @app.route('/')
 def index():

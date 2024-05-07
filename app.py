@@ -23,7 +23,6 @@ import return_highest_rec as retH
 import generate_model
 from bson import ObjectId
 import math
-from celery import Celery
 import get_history
 
 from pymongo import MongoClient
@@ -320,6 +319,7 @@ def add_to_favorites():
     query = {"user_id": user_id}
 
     count = collection.count_documents(query)
+    client.close()
 
     # Nhu's additional code starts here
     # Assuming g.db_count is intended to hold the count of places rated by the user
@@ -647,6 +647,7 @@ def add_to_favorites2():
     query = {"user_id": user_id}
 
     count = collection.count_documents(query)
+    client.close()
 
     # Nhu's additional code starts here
     # Assuming g.db_count is intended to hold the count of places rated by the user
@@ -879,6 +880,7 @@ def get_data():
     query = {"user_id": user_id}
 
     count = collection.count_documents(query)
+    client.close()
 
     # Nhu's additional code starts here
     # Assuming g.db_count is intended to hold the count of places rated by the user
@@ -902,6 +904,8 @@ def get_coord_data():
     coordinates = {
         "Coordinates": db["Location"].find_one(query)['Coordinates']
     }
+    client.close()
+
     return jsonify(coordinates)
 
 #(Aidan)
@@ -923,6 +927,7 @@ def get_active_place_details():
     query = {"user_id": user_id}
 
     count = collection.count_documents(query)
+    client.close()
 
     # Nhu's additional code starts here
     # Assuming g.db_count is intended to hold the count of places rated by the user
@@ -977,6 +982,8 @@ def accept_rec_model():
     query = {"user_id": user_id}
 
     count = collection.count_documents(query)
+    client.close()
+
 
     # Nhu's additional code starts here
     # Assuming g.db_count is intended to hold the count of places rated by the user
@@ -1008,6 +1015,9 @@ def decline_rec_model():
 
     count = collection.count_documents(query)
 
+    client.close()
+
+
     # Nhu's additional code starts here
     # Assuming g.db_count is intended to hold the count of places rated by the user
     places_in_db = count
@@ -1037,6 +1047,8 @@ def block_rec_model():
     query = {"user_id": user_id}
 
     count = collection.count_documents(query)
+
+    client.close()
 
     # Nhu's additional code starts here
     # Assuming g.db_count is intended to hold the count of places rated by the user

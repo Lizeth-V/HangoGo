@@ -136,7 +136,7 @@ def generate_place_probabilities(uid):
             metrics=['accuracy'])
 
     #fit the model with the training data
-    model.fit(X_train_scaled, y_train, epochs=10, batch_size=16, validation_split=0.2)
+    model.fit(X_train_scaled, y_train, epochs=10, batch_size=16, validation_split=0.2, verbose=0)
 
     #just for evaluation
     y_pred_proba = model.predict(X_test_scaled)
@@ -195,6 +195,9 @@ def generate_place_probabilities(uid):
         print("Update successful!")
     except Exception as e:
         print(f"Update failed: {e}")
+
+    finally:
+        client.close()
 
     #entire runtime, for performance analysis
     print('Running time: ', int((time.time() - start) * 1000), 'ms')

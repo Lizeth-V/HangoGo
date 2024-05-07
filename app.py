@@ -872,6 +872,9 @@ def check_database():
 
 @app.route('/get_db_data')
 def get_data():
+    user = session.get('user')
+    user_id = user["_id"]
+
     connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
     client = MongoClient(connection_string)
     db = client["Hango"]

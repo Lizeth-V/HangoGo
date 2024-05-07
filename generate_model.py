@@ -196,6 +196,9 @@ def generate_place_probabilities(uid):
     except Exception as e:
         print(f"Update failed: {e}")
 
+    finally:
+        client.close()
+
     #entire runtime, for performance analysis
     print('Running time: ', int((time.time() - start) * 1000), 'ms')
 

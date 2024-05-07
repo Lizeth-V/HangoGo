@@ -58,7 +58,7 @@ function loadFavorites(page = 1) {
 
         //button adjust
         const map_button = document.getElementById('map_button');
-        map_button.innerHTML = '<a onclick="change_to_profile()"><i class="bx bxs-map-pin icon"></i></a>';
+        map_button.innerHTML = '<a onclick="change_to_map()"><i class="bx bxs-map-pin icon"></i></a>';
 
         const user_profile_button = document.getElementById('user_p_button');
         user_profile_button.innerHTML = '<a onclick="change_to_profile()"><i class="bx bxs-user-detail icon"></i></a>';

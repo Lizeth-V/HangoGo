@@ -10,7 +10,6 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
-
 from flask_pymongo import PyMongo
 from register import register_user, hash_password
 from db import users_collection, places_collection
@@ -673,11 +672,50 @@ def brunch_faves():
 
     else:
         return render_template('brunch.html',top_places=top_places, place_data=place_data)
+    
+@app.route("/popular_sights")
+def popular_sights():
+    username = session.get('user')
+    top_placesC = places_collection.find({"sub_types": "tourist_attraction"}).sort('rating', -1).limit(10)
+    top_places = list(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+
+    if username:
+        return render_template('popular_sights.html', username=username, top_places=top_places, place_data=place_data)
+
+    else:
+        return render_template('popular_sights.html',top_places=top_places, place_data=place_data)
+
+@app.route("/you_are_art") 
+def you_are_art():
+    username = session.get('user')
+    top_placesC = places_collection.find({"main_type":"Museum/Art"}).sort('rating', -1).limit(10)
+    top_places = list(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+
+    if username:
+        return render_template('you_are_art.html', username=username, top_places=top_places, place_data=place_data)
+
+    else:
+        return render_template('you_are_art.html',top_places=top_places, place_data=place_data)
 
 @app.route("/nightout")
 def nightout():
     username = session.get('user')
-    top_placesC = places_collection.find({"$or": [{"main_type": "Food", "subtype": "bar"},{"main_type": "Drinks","subtype": "bar"}]}).sort('rating', -1).limit(10)
+    # Query should only inlcude places with subtype "bar"
+    top_placesC = places_collection.find({"main_type":"Nightlife"}).sort('rating', -1).limit(10)
     top_places = list(top_placesC)
 
     place_data = []

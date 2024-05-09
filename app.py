@@ -741,11 +741,19 @@ def collections():
         return render_template('collections.html', username=username)
     else:
         return render_template('collections.html')
+    
+@app.route('/set_active_place_route', methods=['POST'])
+def set_active_place_route():
+    print("set_active_place_route called")
+    user_id = request.json.get('user_id')
+    place_id = request.json.get('place_id')
+    result = temp_feedback.set_active_place(user_id, place_id)
+    return jsonify(result)
 
 @app.route("/cafe_culture")
 def cafe_culture():
     username = session.get('user')
-    # temp for testing:
+    user_id = str(username.get('_id'))
     top_placesC = places_collection.find({"main_type": "Drinks"}).sort('rating', -1).limit(10)
     top_places = list(top_placesC)
 
@@ -764,7 +772,7 @@ def cafe_culture():
 
 
     if username:
-        return render_template('cafe_culture.html', username=username, top_places=top_places, place_data=place_data)
+        return render_template('cafe_culture.html', username=username, user_id=user_id, top_places=top_places, place_data=place_data)
         # return render_template('cafe_culture.html', username=username, top_places=top_places, place_coordinates=place_coordinates)
         # return render_template('cafe_culture.html', username=username, packed=zip(top_places, place_coordinates))
     else:

@@ -1,0 +1,11 @@
+Favorites page not working.
+    -prob try to javascript it to avoid issues with map button
+
+UI bugs:
+    different css formats on different pages.
+    chatbox submit broken.
+    toggledetails broken. javascript it.
+    scalechat ui not visible
+
+
+

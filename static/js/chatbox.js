@@ -152,7 +152,7 @@ function fetch_db_data(url) {
       throw new Error('Failed to fetch data: ' + xhr.status);
   }
 }
-  
+
   //this simply hides the submit elements
   function hideQuery(){
     document.getElementById('submit_button').style.display = 'none';
@@ -177,7 +177,6 @@ function fetch_db_data(url) {
         selector.selectedIndex = 0;
     }
   }
-
 
   //creates all three messages. These combined can be viewed as a single message in the scope of the system. Only the place recommendation is the variance and importance.
   function create_messages(latitude,longitude) {
@@ -357,6 +356,10 @@ function hangogoRecommend(message_stack, latitude, longitude, radius, place_type
         block_button.remove();
         report_button.remove();
         accept_rec(place_id);
+        
+        var user_coordinates = latitude + "," + longitude;
+        var place_coordinates = activePlace.lat + "," + activePlace.lon;
+        changeToMap(user_id, activePlace.name, activePlace.address, place_coordinates, user_coordinates, place_id);
         setTimeout(() => {
           scroll_div.scrollTop = scroll_div.scrollHeight;
           if (data_count>=10){

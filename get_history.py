@@ -26,6 +26,7 @@ def get_user_history(user_id):
 
     #get user feedback in order of date oldest -> newest
     chat_history = list(collection.find(query, projection).sort("timestamp", ASCENDING))
+    client.close()
 
     return chat_history
 
@@ -56,6 +57,8 @@ def change_id_to_name(history_list):
 
         #remove the id, its not needed
         del history['place_id']
+        client.close()
+
 
     return history_list
 

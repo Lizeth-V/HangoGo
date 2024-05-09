@@ -356,6 +356,10 @@ function hangogoRecommend(message_stack, latitude, longitude, radius, place_type
         block_button.remove();
         report_button.remove();
         accept_rec(place_id);
+        
+        var user_coordinates = latitude + "," + longitude;
+        var place_coordinates = activePlace.lat + "," + activePlace.lon;
+        changeToMap(user_id, activePlace.name, activePlace.address, place_coordinates, user_coordinates);
         setTimeout(() => {
           scroll_div.scrollTop = scroll_div.scrollHeight;
           if (data_count>=10){

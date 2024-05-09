@@ -919,6 +919,8 @@ def get_coord_data():
 
     return jsonify(coordinates)
 
+
+
 #(Aidan)
 #take in the parameters and return a recommendation, from the AI
 @app.route('/get_new_active_place', methods=['GET', 'POST'])
@@ -995,12 +997,14 @@ def accept_rec_model():
     count = collection.count_documents(query)
     client.close()
 
+    print(count)
 
     # Nhu's additional code starts here
     # Assuming g.db_count is intended to hold the count of places rated by the user
     places_in_db = count
 
     if places_in_db >=9:
+        print('debug')
         generate_model.generate_place_probabilities(user_id)
 
     return 'Success' 
@@ -1066,6 +1070,7 @@ def block_rec_model():
     places_in_db = count
 
     if places_in_db >=9:
+        print(places_in_db)
         generate_model.generate_place_probabilities(str(user_id))
 
     return 'Success'

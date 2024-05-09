@@ -63,7 +63,7 @@ def add_to_favorites_update(user_id, place_id):
         "user_id": user_id,
         "place_id": place_id,
         "timestamp": datetime.datetime.utcnow(),
-        "feedback": 2
+        "feedback": 1
     }
 
     update_result = collection.update_one(criteria, {"$set": data_to_insert}, upsert=True)
@@ -182,7 +182,7 @@ def decline_recommendation_update(user_id, place_id):
         "user_id": user_id,
         "place_id": place_id,
         "timestamp": datetime.datetime.utcnow(),
-        "feedback": -0.5
+        "feedback": 0
     }
 
     update_result = collection.update_one(criteria, {"$set": data_to_insert}, upsert=True)
@@ -213,7 +213,7 @@ def block_recommendation_update(user_id, place_id):
         "user_id": user_id,
         "place_id": place_id,
         "timestamp": datetime.datetime.utcnow(),
-        "feedback": -1
+        "feedback": 0
     }
 
     update_result = collection.update_one(criteria, {"$set": data_to_insert}, upsert=True)

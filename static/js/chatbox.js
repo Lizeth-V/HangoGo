@@ -359,7 +359,7 @@ function hangogoRecommend(message_stack, latitude, longitude, radius, place_type
         
         var user_coordinates = latitude + "," + longitude;
         var place_coordinates = activePlace.lat + "," + activePlace.lon;
-        changeToMap(user_id, activePlace.name, activePlace.address, place_coordinates, user_coordinates);
+        changeToMap(user_id, activePlace.name, activePlace.address, place_coordinates, user_coordinates, place_id);
         setTimeout(() => {
           scroll_div.scrollTop = scroll_div.scrollHeight;
           if (data_count>=10){

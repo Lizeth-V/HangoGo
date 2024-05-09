@@ -69,7 +69,7 @@ function loadFavorites(page = 1) {
 }
 
 
-function changeToMap(user_id, place_name, place_address, place_coordinates, user_coordinates) {
+function changeToMap(user_id, place_name, place_address, place_coordinates, user_coordinates, place_id) {
     if (place_name == undefined){
 
         get_user_location(function(position) {
@@ -230,10 +230,8 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
 
         const favorite_button_div = document.createElement('div');
         favorite_button_div.className = 'favorite-map-button';
-        fetch_active_place(user_id)
-        .then(data => { 
-            favorite_button_div.setAttribute('onClick', `add_favorite('${user_id}', '${data._id}')`);
-        });
+        favorite_button_div.setAttribute('onClick', `add_favorite('${place_id}')`);
+
         favorite_button_div.innerHTML = '<img src="static/star-regular-48.png"/><h1>favorite</h1>';
         buttons_div.appendChild(favorite_button_div);
 

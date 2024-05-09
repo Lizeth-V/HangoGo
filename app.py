@@ -757,49 +757,59 @@ def plan_trip():
     # Pass directions and other data to the output page
     return render_template('trip_summary.html', directions=directions)
 
-
-# Gloria
-# multi recommendation page to allow user to add other user and use the location based
-
-#Gloria
-#add another user for multi rec
-
-
-# User_data temp placement, remove before deployment
-user_data = {
-    "user1": {"name": "User 1", "location": "Glendale"},
-    "user2": {"name": "User 2", "location": "Los Angeles"},
-    # Add more users here...
-}
-
-@app.route('/add_another_user_for_rec', methods=['GET','POST'])
+@app.route('/add_another_user_for_rec')
 def add_another_user_for_rec():
-    if request.method == "POST":
-        user_id = request.form.get('user_id')
-        user_name = request.form.get('user_name')
-        user_location = request.form.get('user_location')
-        user_data[user_id] = {"name": user_name, "location": user_location}
-        return jsonify({"message": "User added successfully"})
-    return render_template("add_another_user_for_rec.html", user_data=user_data)
+    return render_template("add_another_user_for_rec.html")
 
-
-import multi_rec as multiR
-# Gloria
+import multi_rec
+# Gloria & Nhu
 # generate recommendation for multiple users placeholder, Nhu will have the alogorithm how it generates the places from the 2 locations
-@app.route('/multi_recommendation', methods=['POST'])
+@app.route('/get_multi_recommendation', methods=['GET', 'POST'])
 def multi_recommendation():
     user = session.get('user')
     user_id = user.get('_id')
-    target_user_id = request.json.get('target_user_id')
-    target_location = user_data.get(target_user_id, {}).get('location')
-    # Logic to generate recommendations based on target_location
-    
-    #take inspiration from aidan's new_active_place code (now for multiple users)
-    #user_id in an array
-    #target_location (one of locations, center of location, or new location)
-    multiR.get_multi_rec(user_id, target_location)
-    recommendations = ["user1", "user2"]  # Dummy recommendations
-    return jsonify({"recommendations": recommendations})
+    data = request.get_json()
+
+    # fetch from javascript
+    usernames = data['usernames']
+    locations = data['locations']
+
+    #convert usernames to ids
+    user_ids = multi_rec.username_to_userid(usernames)
+    user_ids.append(user_id)
+
+    location = multi_rec.location_helper(locations)
+
+    print(user_ids)
+    print(location)
+
+    #use Aidan's generate_model and get active place functions
+    top_choices = generate_model.generate_multi_place(user_ids)
+    active_place = retH.match_highest_list(
+        top_choices,
+        lat=location[0],
+        long=location[1],
+        radius=3
+    )
+    #Convert all ObjectId instances to strings for easier coding
+    active_place = convert_objectid(active_place)
+    print(location)
+    #Return data to be displayed and used, as json.
+    return jsonify({'active_place': active_place})#take inspiration from aidan's new_active_place code (now for multiple users)
+
+#(Aidan)
+#convert to string for handling bson objects
+def convert_objectid(obj):
+    if isinstance(obj, ObjectId):
+        return str(obj)
+    elif isinstance(obj, dict):
+        return {k: convert_objectid(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_objectid(v) for v in obj]
+    elif isinstance(obj, float) and math.isnan(obj):
+        return None  
+    else:
+        return obj
 
 
 # Nhu

@@ -1,35 +1,41 @@
-#user_ids in an array
-#location_pref (one of locations, center of location, or new location)
+# Nhu
+# recommend place after combing all user_ids and location
 
 from pymongo import MongoClient
+import generate_model as m
+import return_highest_rec as rec_list
+import pandas as pd
+import return_highest_rec as retH
 
-connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
-client = MongoClient(connection_string)
-db = client["Hango"]
-
+# sample user_ids and location for testing
 user_ids = ['6568cbef4a9658311b3ee704', '6615b194f92286e38d5f91b2']
+location = [[33.8347516,-117.911732]]
+usernames = ['aidan', 'gloria']
 
-def combine_ratings(user_ids):
-    user_ratings = db['ratings']
-    json_list = []
-    for user_id in user_ids:
-        json_list.append({"user_id": user_id})
+# username to userid
+def username_to_userid(usernames):
+    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
+    client = MongoClient(connection_string)
+    db = client["Hango"]
+    collection = db['User Data']
+    id_list = []
+    for username in usernames:
+        try:
+            user_object = collection.find({"username": username})[0]
+            id_list.append(str(user_object['_id']))
+        except Exception as e:
+            print(f"{username} does not exist.")
+            return e
+    return id_list   
 
-    combined_query = {
-    "$or": json_list
-    }
 
-    result = user_ratings.find(combined_query)
-    # Print the matching documents
-    for doc in result:
-        print(doc)
+#find center location if multiple locations, if not just return location
+def location_helper(location):
+    if len(location) == 1:
+        return location[0]
+    else:
+        lat = [p[0] for p in location]
+        long = [p[1] for p in location]
+        centroid = [sum(lat) / len(location), sum(long) / len(location)]
+        return centroid
 
-def get_multi_rec(user_ids, location_pref):
-
-    combine_ratings(user_ids)
-
-    #combine all users' ratings to find recommendation
-
-    #do that based on location choice
-    #if location_pref is only one location, then just take that location
-    #if location_pref is multiple locations, find the center

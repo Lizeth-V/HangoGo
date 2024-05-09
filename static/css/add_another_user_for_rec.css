@@ -1,9 +1,29 @@
 .form-container
 {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#recommendations{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#placeImage{
+  object-fit: cover;
+}
+
+#place{
+  text-align: left;
+  padding-left: 20px;
+}
+
+body h1 {
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .autocomplete {
@@ -14,16 +34,14 @@
   }
   .autocomplete input {
     width: 100%;
-    padding: 5px;
     font-size: 14px;
   }
   .autocomplete input[type=text] {
     font-weight: normal;
-    padding-left: 10px;
+    padding-left: 20px;
     color: black;
   }
   .autocomplete-items {
-    position: absolute;
     font-weight: normal;
     border: 1px solid #d4d4d4;
     border-bottom: none;
@@ -38,7 +56,7 @@
   }
   .autocomplete-items::-webkit-scrollbar {
     width: 8px; /* Adjust scrollbar width */
-    color: #5db946;
+    color: #e4a66c !important;
   }
   .autocomplete-items div {
     padding: 10px;
@@ -55,3 +73,42 @@
     background-color: #5db946 !important;
     color: #ffffff;
   }
+
+  #addFriendBtn {
+    background-color: #FEE8C8;
+    color: #000;
+    border: 2px solid #FEE8C8;
+    border-radius: 5px;
+    padding: 1em;
+    box-shadow: none;
+
+}
+
+#locationOption {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+#getRecommendationBtn
+{
+    background-color: #FEE8C8;
+    color: #000;
+    border: 2px solid #FEE8C8;
+    border-radius: 5px;
+    padding: 1em;
+    box-shadow: none;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: url('https://fonts.googleapis.com/css?family=Roboto');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  src: url('https://fonts.googleapis.com/css?family=Inter');
+}

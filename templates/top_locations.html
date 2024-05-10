@@ -59,7 +59,7 @@
                     <p>{{ place.address }}</p>
                     <br>
                     {% if username %}
-                        <a href="/landing page" class="button" onclick="setActivePlaceAndChangeToMap('{{ user_id }}', '{{ place._id }}')">take me there!</a>
+                        <a href="/landing?takeMeThere=true" class="button" onclick="setActivePlace('{{ user_id }}', '{{ place._id }}')">take me there!</a>
                     {% endif %}
                 </div>
             </div>

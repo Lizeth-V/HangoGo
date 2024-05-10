@@ -730,7 +730,8 @@ def top_locations():
     top_places = places_collection.find().sort('rating', -1).limit(10)
 
     if user:
-        return render_template('top_locations.html', username=username, user_id=user_id, top_places=top_places)
+        take_me_there = request.args.get('takeMeThere')
+        return render_template('top_locations.html', username=username, user_id=user_id, top_places=top_places,take_me_there=take_me_there)
     else:
         return render_template('top_locations.html', top_places=top_places)
     

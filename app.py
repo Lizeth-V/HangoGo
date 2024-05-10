@@ -735,8 +735,8 @@ def top_locations():
     user = session.get('user')  # Retrieve username from session
 
     if user:
-        user_id = str(username.get('_id'))
-        username = username.get('username')
+        user_id = str(user.get('_id'))
+        username = user.get('username')
 
     # Fetch top 10 places with the best ratings from DB
     # TO-DO: add location recognition - so users can see top places in their area 
@@ -754,9 +754,7 @@ def collections():
     user = session.get('user')  # Retrieve username from session
     
     if user:
-        username = username.get('username')
-        
-    if username:
+        username = user.get('username')
         return render_template('collections.html', username=username)
     else:
         return render_template('collections.html')
@@ -775,8 +773,8 @@ def cafe_culture():
     user = session.get('user')  # Retrieve username from session
     username = None
     if user:
-        user_id = str(username.get('_id'))
-        username = username.get('username')
+        user_id = str(user.get('_id'))
+        username = user.get('username')
 
     top_placesC = places_collection.find({"main_type": "Drinks"}).sort('rating', -1).limit(10)
     top_places = list(top_placesC)

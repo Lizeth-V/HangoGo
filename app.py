@@ -614,6 +614,8 @@ def send_contact_form(result):
 # contact us/report an issue form
 @app.route("/contact", methods=["GET","POST"])
 def contact():
+    user = session.get('user')
+
     if request.method == "POST":
         try:
             result = {}
@@ -625,10 +627,16 @@ def contact():
             return redirect(url_for("index"))
         except Exception as e:
             return f"An error occurred: {e}"
-    return render_template("contact.html")
+        
+    if user:
+        username = user.get('username')
+        return render_template("contact.html", username=username)
+    else:
+        return render_template("contact.html")
 
 @app.route('/add_to_favorites2', methods = ["GET"])
 def add_to_favorites2():
+
     import favorite
 
     user = session.get('user')
@@ -724,22 +732,30 @@ def get_place():
 # This page will display the top locations people like and are visiting (Lizeth)
 @app.route("/top_locations")
 def top_locations():
-    username = session.get('user')  # Retrieve username from session
-    user_id = str(username.get('_id'))
+    user = session.get('user')  # Retrieve username from session
+
+    if user:
+        user_id = str(username.get('_id'))
+        username = username.get('username')
 
     # Fetch top 10 places with the best ratings from DB
     # TO-DO: add location recognition - so users can see top places in their area 
     top_places = places_collection.find().sort('rating', -1).limit(10)
 
-    if username:
-        return render_template('top_locations.html', username=username,user_id=user_id, top_places=top_places)
+    if user:
+        return render_template('top_locations.html', username=username, user_id=user_id, top_places=top_places)
     else:
         return render_template('top_locations.html', top_places=top_places)
     
 # Collections Page (Lizeth) - this is a page that includes curated places based on a specific theme
 @app.route("/collections")
 def collections():
-    username = session.get('user')
+    username = None
+    user = session.get('user')  # Retrieve username from session
+    
+    if user:
+        username = username.get('username')
+        
     if username:
         return render_template('collections.html', username=username)
     else:
@@ -756,8 +772,11 @@ def set_active_place_route():
 
 @app.route("/cafe_culture")
 def cafe_culture():
-    username = session.get('user')
-    user_id = str(username.get('_id'))
+    user = session.get('user')  # Retrieve username from session
+    username = None
+    if user:
+        user_id = str(username.get('_id'))
+        username = username.get('username')
 
     top_placesC = places_collection.find({"main_type": "Drinks"}).sort('rating', -1).limit(10)
     top_places = list(top_placesC)
@@ -771,7 +790,6 @@ def cafe_culture():
 
     if username:
         return render_template('cafe_culture.html', username=username, user_id=user_id, top_places=top_places, place_data=place_data)
-
     else:
         return render_template('cafe_culture.html',top_places=top_places, place_data=place_data)
 
@@ -816,7 +834,20 @@ def plan_trip():
 
 @app.route('/add_another_user_for_rec')
 def add_another_user_for_rec():
-    return render_template("add_another_user_for_rec.html")
+    user = session.get('user')
+
+    if user:
+            username = user.get('username')
+    else:
+        return render_template("login.html")
+    
+    username = user.get('username')
+    
+    if username:
+        return render_template("add_another_user_for_rec.html", username = username)
+    else:
+        return render_template("add_another_user_for_rec.html", username = username)
+
 
 import multi_rec
 # Gloria & Nhu

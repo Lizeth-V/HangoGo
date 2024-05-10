@@ -18,14 +18,18 @@ function fetch_active_place(user_id) {
         });
 }
 
-function loadFavorites(page = 1) {
-    fetch(`/favorites?page=${page}`)
+function loadFavorites() {
+    fetch(`/favorites?`)
     .then(response => response.json())
     .then(data => {
-        const favoritesContainer = document.querySelector('.user-profile');
-        favoritesContainer.innerHTML = ''; // Clear existing content
+        const favoriteScroll = document.createElement('container');
+        favoriteScroll.classList.add('scroll');
 
-        console.log(data)
+        const favoriteh1 = document.createElement('div');
+        favoriteh1.innerHTML = `
+            <h1>Favorites</h1>
+        `;
+        favoriteScroll.appendChild(favoriteh1);
 
         data.favorites.forEach(favorite => {
             const favoriteDiv = document.createElement('div');
@@ -35,27 +39,13 @@ function loadFavorites(page = 1) {
                 <div>
                     <p>${favorite.name}</p>
                     <p>${favorite.address}</p>
-                    <button type="button" class="btn btn-success">visit</button>
-                    <button type="button" class="btn btn-danger" onclick="deleteFavorite('${favorite.id}')">delete</button>
-                </div>
+                    <button type="button" class="btn btn-success" onclick="setActive('${favorite.place_id}')">visit</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteFavorite('${favorite.place_id}')">delete</button>
+                    </div>
             `;
-            favoritesContainer.appendChild(favoriteDiv);
+            favoriteScroll.appendChild(favoriteDiv);
         });
-
-        // Pagination
-        const pagination = document.createElement('ul');
-        pagination.className = 'pagination';
-        for (let p = 1; p <= Math.ceil(data.totalPlaces / data.perPage) + 1; p++) {
-            const pageItem = document.createElement('li');
-            const pageLink = document.createElement('a');
-            pageLink.href = `#`;
-            pageLink.innerText = p;
-            pageLink.addEventListener('click', () => loadFavorites(p));
-            pageItem.appendChild(pageLink);
-            pagination.appendChild(pageItem);
-        }
-        favoritesContainer.appendChild(pagination);
-
+        favoritesContainer.appendChild(favoriteScroll);
         //button adjust
         const map_button = document.getElementById('map_button');
         map_button.innerHTML = '<a onclick="changeToMap()"><i class="bx bxs-map-pin icon"></i></a>';
@@ -68,6 +58,38 @@ function loadFavorites(page = 1) {
     });
 }
 
+function deleteFavorite(place_id){
+    var url = `/remove_from_favorites?place_id=${place_id}`;
+  
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return 'Success'
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to remove active place: ' + error.message);
+        });
+}
+
+function setActive(place_id) {
+    var url = `/set_user_active_place?place_id=${place_id}`;
+  
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            changeToMap();
+            return 'Success'
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to set acgtive place: ' + error.message);
+        });
+}
 
 function changeToMap(user_id, place_name, place_address, place_coordinates, user_coordinates, place_id) {
     if (place_name == undefined){
@@ -327,6 +349,7 @@ function add_favorite(place_id) {
             if (!response.ok) {
                 throw new Error('Network response was not ok: ' + response.statusText);
             }
+            window.alert("Place added to favorites!");
             return 'Success'
         })
         .catch(error => {

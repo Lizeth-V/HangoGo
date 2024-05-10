@@ -63,7 +63,7 @@
                             
                             <br>
                             {% if username %}
-                                <button class="button" onclick="setActivePlace('{{ user_id }}', '{{ place._id }}')">take me there!</button>
+                                <a href="/landing page" class="button" onclick="setActivePlaceAndChangeToMap('{{ user_id }}', '{{ place._id }}')">take me there!</a>
                             {% endif %}
                         </div>
                     </div>
@@ -82,6 +82,7 @@
             const placeData = {{ place_data | tojson }};
             initMap(placeData);
         </script>
-        <script src="../static/js/take_me_btn.js"></script>
+        <script src="../static/js/nav.js"></script>
+        <script src="../static/js/take_me_btn.js"></script> 
     </body>
 </html>

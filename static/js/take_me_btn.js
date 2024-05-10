@@ -6,9 +6,14 @@ function setActivePlace(user_id, place_id) {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var response = JSON.parse(xhr.responseText);
             console.log(response);
-            // Handle response here, e.g., show a success message
         }
     };
     var data = JSON.stringify({user_id: user_id, place_id: place_id});
     xhr.send(data);
+}
+
+function setActivePlaceAndChangeToMap(user_id, place_id) {
+    setActivePlace(user_id, place_id);
+    // call change to map here
+    // changeToMap(user_id);
 }

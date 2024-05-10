@@ -53,12 +53,14 @@
                     <p>{{ place.address }}</p>
                     <br>
                     {% if username %}
-                    <a href="#" class="button">take me there!</a>
+                        <a href="/landing page" class="button" onclick="setActivePlaceAndChangeToMap('{{ user_id }}', '{{ place._id }}')">take me there!</a>
                     {% endif %}
                 </div>
             </div>
             {% endfor %}
         </div>
+        <script src="../static/js/nav.js"></script>
+        <script src="../static/js/take_me_btn.js"></script> 
 
         <img src="static/icons/hango_happy.png" class="fixed-image" alt="Fixed Image">
 

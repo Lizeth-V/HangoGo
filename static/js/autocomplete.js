@@ -1,4 +1,4 @@
-function autocomplete(inp, arr) {
+function autocomplete(inp, arr, currentLoc) {
   var currentFocus;
   /* starts autocompleting after every word */
   inp.addEventListener("input", function(e) {
@@ -14,15 +14,17 @@ function autocomplete(inp, arr) {
     /*append this div to autocomplete container:*/
     this.parentNode.appendChild(a);
     /* before the other locations, append current location div first */
-    b = document.createElement("div");
-    b.innerHTML = "Current Location <input type='hidden' value='Current Location'>";
-    a.appendChild(b);
-    /* if click on location, automatically fills in the rest of the input with the value */
-    b.addEventListener("click", function(e) {
-      inp.value = this.getElementsByTagName("input")[0].value;
-      inp.style.fontWeight = 'bold';
-      closeAllLists();
-    });
+    if (currentLoc){
+      b = document.createElement("div");
+      b.innerHTML = "Current Location <input type='hidden' value='Current Location'>";
+      a.appendChild(b);
+      /* if click on location, automatically fills in the rest of the input with the value */
+      b.addEventListener("click", function(e) {
+        inp.value = this.getElementsByTagName("input")[0].value;
+        inp.style.fontWeight = 'bold';
+        closeAllLists();
+      });
+    }
     /* check every location in the cities array to see which one matches*/
     for (i = 0; i < arr.length; i++) {
       if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
@@ -107,5 +109,3 @@ function autocomplete(inp, arr) {
     closeAllLists();
   });
 }
-
-  

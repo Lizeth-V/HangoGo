@@ -21,16 +21,12 @@
             <a href="/about_us">About</a>
             <a href="/top_loactions">Top Locations</a>
             <a href="/collections">Collections</a>
+            <a href="/add_another_user_for_rec">Friends Recommendation</a>
             <a href="/contact">Contact Us</a>
         </div>
 
         <div class = "login-signup">
-            {% if username %}
-                <a href="{{ url_for('logout') }}">logout</a>
-            {% else %}
-                <a href="{{ url_for('register') }}">sign up</a>
-                <a href="{{ url_for('login') }}">login</a>
-            {% endif %}
+            <a href="{{ url_for('logout') }}">logout</a>
         </div>
     </div>
     <!-- End of Top Nav -->

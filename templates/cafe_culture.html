@@ -21,8 +21,10 @@
                     <img src="../static/icons/hangogo.png" alt="hangogo">
                 </div>
                 <a href="/about_us">About</a>
+                <a href="/landing page">Chat</a>
                 <a href="/top_locations">Top Locations</a>
                 <a href="/collections">Collections</a>
+                <a href="/add_another_user_for_rec">Friends Recommendation</a>
                 <a href="/contact">Contact Us</a>
                 
             </div>
@@ -61,7 +63,7 @@
                             
                             <br>
                             {% if username %}
-                                <a href="#" class="button">take me there!</a>
+                                <button class="button" onclick="setActivePlace('{{ user_id }}', '{{ place._id }}')">take me there!</button>
                             {% endif %}
                         </div>
                     </div>
@@ -80,5 +82,6 @@
             const placeData = {{ place_data | tojson }};
             initMap(placeData);
         </script>
+        <script src="../static/js/take_me_btn.js"></script>
     </body>
 </html>

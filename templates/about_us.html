@@ -22,28 +22,26 @@
 
     </head>
     <body>
-        <div class ="header-container">
-            <div class="top-nav">
-                <div class="logo">
-                    <a href="{{ url_for('index') }}">
-                        <img src="../static/icons/hangogo.png" alt="hangogo">
-                    </a>
-                </div>
-                <a href="/about_us"><p>About</p></a>
-                <a href="/top_locations"><p>Top Locations</p></a>
-                <a href="/collections"><p>Collections</p></a>
-                <a href="/contact"><p>Contact Us</p></a>
+        <!-- Top Nav (Lizeth) -->
+    <div class ="header-container">
+        <div class="top-nav">
+            <div class="logo">
+                <img src="../static/icons/hangogo.png" alt="hangogo">
             </div>
-    
-            <div class = "login-signup">
-                {% if username %}
-                <a href="{{ url_for('logout') }}">logout</a>
-                {% else %}
-                    <a href="{{ url_for('register') }}">sign Up</a>
-                    <a href="{{ url_for('login') }}">login</a>
-                {% endif %}
-            </div>
+            <a href="/about_us">About</a>
+            <a href="/landing page">Chat</a>
+            <a href="/top_locations">Top Locations</a>
+            <a href="/collections">Collections</a>
+            <a href="/add_another_user_for_rec">Friends Recommendation</a>
+            <a href="/contact">Contact Us</a>
         </div>
+  
+        <div class = "login-signup">
+            <a href="{{ url_for('logout') }}">logout</a>
+        </div>
+    </div>
+    <!-- End of Top Nav -->
+    <!-- (Lizeth) -->
 
         <h2> About Us</h2>
         <div class="center-box">

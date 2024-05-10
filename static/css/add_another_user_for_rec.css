@@ -74,7 +74,7 @@ body h1 {
     color: #ffffff;
   }
 
-  #addFriendBtn {
+  #addFriendBtn, #getRecommendationBtn, #locationOption {
     background-color: #FEE8C8;
     color: #000;
     border: 2px solid #FEE8C8;
@@ -85,20 +85,7 @@ body h1 {
 }
 
 #locationOption {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-}
-
-#getRecommendationBtn
-{
-    background-color: #FEE8C8;
-    color: #000;
-    border: 2px solid #FEE8C8;
-    border-radius: 5px;
-    padding: 1em;
-    box-shadow: none;
+    background-color: white;
 }
 
 @font-face {

@@ -4,38 +4,32 @@
 <html lang="en">
     <head>
         <link rel="stylesheet" href="../static/css/style.css">
-        <link rel="stylesheet" href="../static/css/topnav.css">
+        <link rel="stylesheet" href="../static/css/navBar.css">
         <link rel="stylesheet" href="../static/css/add_another_user_for_rec.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
         <title>Add Friend for Recommendation</title>
     </head>
     <body>
-        <nav class="navbar">
-            <div class="container">
-              <div class="navbar-logo">
-                <a href="#">
-                  <img src="../static/icons/hangogo.png" id="topnav-logo">
-                </a>
-              </div>
-              <div class="navbar-links-left">
-                <ul class="links">
-                  <li><a href="/about_us">About</a></li>
-                  <li><a href="/top_loactions">Top Locations</a></li>
-                  <li><a href="/contact">Contact Us</a></li>
-                </ul>
-                <div class="navbar-links-right">
-                  <ul class="links">
-                    <li><a href="/logout">logout</a></li>
-                  </ul>
-                </div>
-              </div>
-              <div class="burger">
-                <div class="line"></div>
-                <div class="line"></div>
-                <div class="line"></div>
-              </div>
-            </div>
-          </nav>
+         <!-- Top Nav (Lizeth) -->
+    <div class ="header-container">
+      <div class="top-nav">
+          <div class="logo">
+              <img src="../static/icons/hangogo.png" alt="hangogo">
+          </div>
+          <a href="/about_us">About</a>
+          <a href="/landing page">Chat</a>
+          <a href="/top_locations">Top Locations</a>
+          <a href="/collections">Collections</a>
+          <a href="/add_another_user_for_rec">Friends Recommendation</a>
+          <a href="/contact">Contact Us</a>
+      </div>
+
+      <div class = "login-signup">
+          <a href="{{ url_for('logout') }}">logout</a>
+      </div>
+  </div>
+  <!-- End of Top Nav -->
+  <!-- (Lizeth) -->
         <section id = add_user_for_rec> 
             <div class = "form-container"> 
               <h2> Add Friend for Recommendation </h2>
@@ -49,14 +43,15 @@
                 </div>
                 <br>
                 <button type="button" id="addFriendBtn">Add Friend</button>
+                <br><br><label id="userAdded"><b>Friends Added: </label>
+                <br><br>
                 <select name="locationOption" id="locationOption">
                   <option value="useYourLocation">Use Your Location</option>
                   <option value="useCenterLocation">Use Center Location</option>
                 </select>
                 <button type="submit" id="getRecommendationBtn">Get Recommendations</button>
-                <br><br><label id="userAdded"><b>Friends Added: </label>
               </form>
-              <br>
+              <br><br>
               <div id="recommendations">
                 <div>
                   <img id="placeImage" src="" alt="">

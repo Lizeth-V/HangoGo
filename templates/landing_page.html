@@ -25,7 +25,8 @@
     <title>Hangogo</title>
     <link rel="icon" type="image/x-icon" href="../static/icons/Hango-icon.png">
 </head>
-<body onload="save_prof()">
+<body {% if request.args.get('takeMeThere') %} onload="save_prof(); changeToMap('{{ user_id }}')" {% else %} onload="save_prof()" {% endif %}>
+
      <!-- Top Nav (Lizeth) -->
      <div class ="header-container">
         <div class="top-nav">

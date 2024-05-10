@@ -12,8 +12,8 @@ function setActivePlace(user_id, place_id) {
     xhr.send(data);
 }
 
-function setActivePlaceAndChangeToMap(user_id, place_id) {
-    setActivePlace(user_id, place_id);
-    // call change to map here
-    // changeToMap(user_id);
-}
+// function setActivePlaceAndChangeToMap(user_id, place_id) {
+//     setActivePlace(user_id, place_id);
+//     // call change to map here
+//     // changeToMap(user_id);
+// }

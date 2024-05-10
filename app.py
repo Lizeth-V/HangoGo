@@ -252,7 +252,9 @@ def landing_page(username):
         else:
             print("no changes made")
 
-        return redirect(url_for('landing_page', username=username))
+        return redirect(url_for('landing_page', username=username, takeMeThere=request.args.get('takeMeThere')))
+    
+    take_me_there = request.args.get('takeMeThere') if user else None
 
 
     return render_template("landing_page.html",
@@ -264,7 +266,8 @@ def landing_page(username):
                                 email = user_from_db["email"],
                                 birth_month = user_from_db["birth_month"],
                                 birth_day = user_from_db["birth_day"],
-                                birth_year = user_from_db["birth_year"]
+                                birth_year = user_from_db["birth_year"],
+                                takeMeThere=take_me_there
                                 )  
 
 # Gloria
@@ -764,7 +767,6 @@ def set_active_place_route():
     print("set_active_place_route called")
     user_id = request.json.get('user_id')
     place_id = request.json.get('place_id')
-    print(user_id, place_id)
     result = temp_feedback.set_active_place(user_id, place_id)
     return jsonify(result)
 
@@ -787,7 +789,8 @@ def cafe_culture():
 
 
     if username:
-        return render_template('cafe_culture.html', username=username, user_id=user_id, top_places=top_places, place_data=place_data)
+        take_me_there = request.args.get('takeMeThere')
+        return render_template('cafe_culture.html', username=username, user_id=user_id, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
     else:
         return render_template('cafe_culture.html',top_places=top_places, place_data=place_data)
 

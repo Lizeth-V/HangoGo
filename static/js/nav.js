@@ -22,6 +22,9 @@ function loadFavorites() {
     fetch(`/favorites?`)
     .then(response => response.json())
     .then(data => {
+        const favoritesContainer = document.getElementById('userProfileContainer');
+        favoritesContainer.innerHTML = '';
+
         const favoriteScroll = document.createElement('container');
         favoriteScroll.classList.add('scroll');
 
@@ -45,6 +48,7 @@ function loadFavorites() {
             `;
             favoriteScroll.appendChild(favoriteDiv);
         });
+
         favoritesContainer.appendChild(favoriteScroll);
         //button adjust
         const map_button = document.getElementById('map_button');

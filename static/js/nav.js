@@ -70,6 +70,8 @@ function deleteFavorite(place_id){
             if (!response.ok) {
                 throw new Error('Network response was not ok: ' + response.statusText);
             }
+            window.alert("Place removed from favorites.");
+            loadFavorites()
             return 'Success'
         })
         .catch(error => {
@@ -109,6 +111,7 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
                         user_coordinates = latitude + "," + longitude;
                         place_coordinates = data.lat + "," + data.lon;
                         place_address = data.address;
+                        place_id = data._id;
 
                         var distance = calculateDistance(user_coordinates, place_coordinates);
 
@@ -150,7 +153,7 @@ function changeToMap(user_id, place_name, place_address, place_coordinates, user
                     
                         const favorite_button_div = document.createElement('div');
                         favorite_button_div.className = 'favorite-map-button';
-                        favorite_button_div.setAttribute('onClick', `add_favorite('${user_id}', '${data._id}')`);
+                        favorite_button_div.setAttribute('onClick', `add_favorite('${place_id}')`);
                         favorite_button_div.innerHTML = '<img src="static/star-regular-48.png"/><h1>favorite</h1>';
                         buttons_div.appendChild(favorite_button_div);
                     
@@ -303,7 +306,6 @@ function calculateDistance(coords1, coords2) {
 
 function save_prof(){
     profile_html = document.getElementById('userProfileContainer').innerHTML;
-    console.log(profile_html)
 }
 
 function change_to_profile() {

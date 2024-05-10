@@ -335,10 +335,13 @@ def add_to_favorites():
 
 #Gloria
 # remove place from favorites
-@app.route('/remove_from_favorites', methods =["POST"])
+@app.route('/remove_from_favorites', methods =["GET"])
 def remove_from_favorites():
-    user_id = session.get("_id")
-    place_id = request.form["place_id"]
+
+    user= session.get("user")
+    user_id= str(user.get("_id"))
+    
+    place_id = request.args.get('place_id', default=None, type=str)
     users_collection.update_one({'_id': ObjectId(user_id)}, {'$pull': {'favorite_list': str(place_id)}})
     return jsonify(success=True, message="Removed from Favorites List")
 
@@ -648,25 +651,6 @@ def add_to_favorites2():
     place_id = request.args.get('place_id', default='5', type=str)
     
     favorite.add_to_favorites(user_id, place_id)
-    temp_feedback.add_to_favorites_update(user_id=user_id, place_id=place_id)
-
-    connection_string = "mongodb+srv://hangodb:hangodb@cluster0.phdgtft.mongodb.net/"
-    client = MongoClient(connection_string)
-    db = client["Hango"]
-    collection_name = "ratings"
-    collection = db[collection_name]
-    query = {"user_id": user_id}
-
-    count = collection.count_documents(query)
-    client.close()
-
-    # Nhu's additional code starts here
-    # Assuming g.db_count is intended to hold the count of places rated by the user
-    places_in_db = count
-
-    if places_in_db < 10:
-        generate_model.generate_place_probabilities(user_id)
-
 
     return jsonify(success=True, message = "Added to Favorites List")
 

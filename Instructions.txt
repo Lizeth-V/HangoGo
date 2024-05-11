@@ -1,0 +1,17 @@
+Webapp should be functional and running at https://letshangogo.com
+If not email aidanmara@gmail.com
+
+If you would like to run it on your own server:
+
+    1.Download all the files into your environment.
+
+    2.Install all packages located in the requirements.txt file.
+        -Run "pip install -r requirements.txt" in your environment
+        -In the worst case that the flask app does not run, recreate the environment and install the packages python says are missing.
+
+    3.Add an environment file (.env) to the main directory
+        -*IMPORTANT* The contents of the .env file should be replaced with the text found in the env.txt file.
+
+    4.In your environment run "python.exe app.py"
+
+    5.Explore the webapp.

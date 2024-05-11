@@ -1,9 +1,10 @@
 # HangoGo
-Hi hangomies!
+Hi, hangomies!
 
-This repo belongs to an ai-based hangout recommendation web application called hangogo.
+This repo belongs to an AI-based hangout recommendation web application called HangoGo.
 
-The webserver should be live at: https://letshangogo.com
+The web server should be live at: https://letshangogo.com
 
-Feel free to run it on your own machine by cloining the Deployment branch and follwowing the included instructions.
+Feel free to run it on your own machine by cloning the Deployment branch and following the included instructions.
 
+Programmers: Aidan Mara, Nhu Nguyen, Gloria Lee, and Lizeth Valdovinos

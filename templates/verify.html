@@ -22,7 +22,7 @@
                 <h2> check the email you registered with to finish verifying and we can begin </h2>
             </div>
             <div class="container">
-                <span class="resend"> <a href="#"> click here if you didnt recieve an email</a></span>
+                <span class="resend"> <a href="{{ url_for('resend_verification', username=username) }}"> click here if you didnt recieve an email</a></span>
             </div>
         </section>
     </body>

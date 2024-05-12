@@ -123,7 +123,7 @@ def register():
             print("Send_Verification inputs: ", email," ", username," ",verification_token)
             send_verification(email, username, verification_token)
             # print(username, user)
-            return render_template("verify.html")
+            return render_template("verify.html", username=username)
 
         
 
@@ -397,6 +397,28 @@ def send_verification(email, username, token):
         flash(f"Failed to send email. Error: {str(e)}")
 
     return "Verification email sent"
+
+ # Resend Email Verification
+@app.route("/resend_verification/<username>")
+def resend_verification(username):
+    # Retrieve user from the database
+    user = users_collection.find_one({'username': username})
+
+    if user:
+        if user.get('verified'):
+            return render_template("login")
+        
+        # Generate a new verification token
+        new_verification_token = ''.join(random.choices(string.ascii_letters + string.digits, k=30))
+
+        # Update the verification token in the database
+        users_collection.update_one({'_id': user['_id']}, {'$set': {'verification_token': new_verification_token, 'token_expiration': datetime.utcnow() + timedelta(hours=1)}})
+
+        # Resend verification email using the new token
+        send_verification(user['email'], user['username'], new_verification_token)
+        return render_template("verify.html", username=username)
+
+    return redirect(url_for('register'))
 
 
 # Map Page (Lizeth)
@@ -990,7 +1012,7 @@ def you_are_art():
     if user:
         user_id = str(user.get('_id'))
         username = user.get('username')
-        
+
     top_placesC = places_collection.find({"main_type":"Museum/Art"}).sort('rating', -1).limit(10)
     top_places = list(top_placesC)
 

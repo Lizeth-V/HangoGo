@@ -782,7 +782,12 @@ def cafe_culture():
     # TO-DO: Brunch Places
 @app.route("/brunch_faves")
 def brunch_faves():
-    username = session.get('user')
+    user = session.get('user')  # Retrieve username from session
+    username = None
+    if user:
+        user_id = str(user.get('_id'))
+        username = user.get('username')
+
     specific_places=[
         ObjectId('65cbc273c72cccdf7a645519'),
         ObjectId('65cbe82ccbcec18078a36b14'),
@@ -811,15 +816,19 @@ def brunch_faves():
 
     if username:
         take_me_there = request.args.get('takeMeThere')
-        return render_template('brunch.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+        return render_template('brunch.html', username=username, user_id=user_id,top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
 
     else:
         return render_template('brunch.html',top_places=top_places, place_data=place_data)
     
 @app.route("/nightout")
 def nightout():
-    username = session.get('user')
-    # Query should only inlcude places with subtype "bar"
+    user = session.get('user')  # Retrieve username from session
+    username = None
+    if user:
+        user_id = str(user.get('_id'))
+        username = user.get('username')
+
     top_placesC = places_collection.find({"main_type":"Nightlife"}).sort('rating', -1).limit(10)
     top_places = list(top_placesC)
 
@@ -832,7 +841,7 @@ def nightout():
 
     if username:
         take_me_there = request.args.get('takeMeThere')
-        return render_template('nightout.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+        return render_template('nightout.html', username=username, user_id=user_id, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
 
     else:
         return render_template('nightout.html',top_places=top_places, place_data=place_data)
@@ -840,7 +849,12 @@ def nightout():
 # REELS
 @app.route("/on_reels")
 def on_reels():
-    username = session.get('user')
+    user = session.get('user')  # Retrieve username from session
+    username = None
+    if user:
+        user_id = str(user.get('_id'))
+        username = user.get('username')
+
     # List with specific places that are popular on Instagram Reels
     specific_places=[
         ObjectId('65cbc27bc72cccdf7a6455e0'),
@@ -866,7 +880,7 @@ def on_reels():
 
     if username:
         take_me_there = request.args.get('takeMeThere')
-        return render_template('reels.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+        return render_template('reels.html', username=username, user_id=user_id,top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
 
     else:
         return render_template('reels.html',top_places=top_places, place_data=place_data)
@@ -875,7 +889,12 @@ def on_reels():
 
 @app.route("/adventure_worthy")
 def adventure_worthy():
-    username = session.get('user')
+    user = session.get('user')  # Retrieve username from session
+    username = None
+    if user:
+        user_id = str(user.get('_id'))
+        username = user.get('username')
+
     top_placesC = places_collection.find({"$or": [{"main_type": "Nature/Recreation"}, {"subtype":{"$eq": "nature"}}]}).sort('rating', -1).limit(10)
     top_places = list(top_placesC)
 
@@ -888,7 +907,7 @@ def adventure_worthy():
 
     if username:
         take_me_there = request.args.get('takeMeThere')
-        return render_template('adventure.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+        return render_template('adventure.html', username=username, user_id=user_id, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
 
     else:
         return render_template('adventure.html',top_places=top_places, place_data=place_data)
@@ -896,7 +915,12 @@ def adventure_worthy():
 # Developers Favorites
 @app.route("/devs_favs")
 def devs_favs():
-    username = session.get('user')
+    user = session.get('user')  # Retrieve username from session
+    username = None
+    if user:
+        user_id = str(user.get('_id'))
+        username = user.get('username')
+
     # List with specific places choosen by the developers 
     specific_places=[
         ObjectId('65c7cd627f987a416ea45c90'),
@@ -928,7 +952,7 @@ def devs_favs():
 
     if username:
         take_me_there = request.args.get('takeMeThere')
-        return render_template('devs_favs.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+        return render_template('devs_favs.html', username=username, user_id=user_id, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
 
     else:
         return render_template('devs_favs.html',top_places=top_places, place_data=place_data)
@@ -936,7 +960,12 @@ def devs_favs():
     
 @app.route("/popular_sights")
 def popular_sights():
-    username = session.get('user')
+    user = session.get('user')  # Retrieve username from session
+    username = None
+    if user:
+        user_id = str(user.get('_id'))
+        username = user.get('username')
+
     top_placesC = places_collection.find({"sub_types": "tourist_attraction"}).sort('rating', -1).limit(10)
     top_places = list(top_placesC)
 
@@ -949,14 +978,19 @@ def popular_sights():
 
     if username:
         take_me_there = request.args.get('takeMeThere')
-        return render_template('popular_sights.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+        return render_template('popular_sights.html', username=username, user_id=user_id, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
 
     else:
         return render_template('popular_sights.html',top_places=top_places, place_data=place_data)
     
 @app.route("/you_are_art") 
 def you_are_art():
-    username = session.get('user')
+    user = session.get('user')  # Retrieve username from session
+    username = None
+    if user:
+        user_id = str(user.get('_id'))
+        username = user.get('username')
+        
     top_placesC = places_collection.find({"main_type":"Museum/Art"}).sort('rating', -1).limit(10)
     top_places = list(top_placesC)
 
@@ -969,7 +1003,7 @@ def you_are_art():
 
     if username:
         take_me_there = request.args.get('takeMeThere')
-        return render_template('you_are_art.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+        return render_template('you_are_art.html', username=username, user_id=user_id, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
 
     else:
         return render_template('you_are_art.html',top_places=top_places, place_data=place_data)

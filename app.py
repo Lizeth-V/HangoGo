@@ -778,6 +778,202 @@ def cafe_culture():
         return render_template('cafe_culture.html', username=username, user_id=user_id, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
     else:
         return render_template('cafe_culture.html',top_places=top_places, place_data=place_data)
+    
+    # TO-DO: Brunch Places
+@app.route("/brunch_faves")
+def brunch_faves():
+    username = session.get('user')
+    specific_places=[
+        ObjectId('65cbc273c72cccdf7a645519'),
+        ObjectId('65cbe82ccbcec18078a36b14'),
+        ObjectId('65cbc288c72cccdf7a64573b'),
+        ObjectId('65cbe9364d60dd8c13db48fb'),
+        ObjectId('65cbe83fcbcec18078a36d06'),
+        ObjectId('65cbe84dcbcec18078a36e7b'),
+        ObjectId('65cbe84dcbcec18078a36e88'),
+        ObjectId('65cbe842cbcec18078a36d63'),
+        ObjectId('65cbe849cbcec18078a36e27'),
+        ObjectId('65cbe840cbcec18078a36d2e')
+    ]
+
+    top_places = []
+    for place_id in specific_places:
+        top_placesC = places_collection.find_one({"_id": place_id})
+        if top_placesC:
+            top_places.append(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+
+    if username:
+        take_me_there = request.args.get('takeMeThere')
+        return render_template('brunch.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+
+    else:
+        return render_template('brunch.html',top_places=top_places, place_data=place_data)
+    
+@app.route("/nightout")
+def nightout():
+    username = session.get('user')
+    # Query should only inlcude places with subtype "bar"
+    top_placesC = places_collection.find({"main_type":"Nightlife"}).sort('rating', -1).limit(10)
+    top_places = list(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+
+    if username:
+        take_me_there = request.args.get('takeMeThere')
+        return render_template('nightout.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+
+    else:
+        return render_template('nightout.html',top_places=top_places, place_data=place_data)
+    
+# REELS
+@app.route("/on_reels")
+def on_reels():
+    username = session.get('user')
+    # List with specific places that are popular on Instagram Reels
+    specific_places=[
+        ObjectId('65cbc27bc72cccdf7a6455e0'),
+        ObjectId('65cbe9104d60dd8c13db453b'),
+        ObjectId('65cbbd72e88f8c2f795c92c6'),
+        ObjectId('65cbc287c72cccdf7a645724'),
+        ObjectId('65cbc280c72cccdf7a645676'),
+        ObjectId('65d3b5d23ddbfd2771619ba4')
+    ]
+
+    top_places = []
+    for place_id in specific_places:
+        top_placesC = places_collection.find_one({"_id": place_id})
+        if top_placesC:
+            top_places.append(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+
+    if username:
+        take_me_there = request.args.get('takeMeThere')
+        return render_template('reels.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+
+    else:
+        return render_template('reels.html',top_places=top_places, place_data=place_data)
+
+
+
+@app.route("/adventure_worthy")
+def adventure_worthy():
+    username = session.get('user')
+    top_placesC = places_collection.find({"$or": [{"main_type": "Nature/Recreation"}, {"subtype":{"$eq": "nature"}}]}).sort('rating', -1).limit(10)
+    top_places = list(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+
+    if username:
+        take_me_there = request.args.get('takeMeThere')
+        return render_template('adventure.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+
+    else:
+        return render_template('adventure.html',top_places=top_places, place_data=place_data)
+    
+# Developers Favorites
+@app.route("/devs_favs")
+def devs_favs():
+    username = session.get('user')
+    # List with specific places choosen by the developers 
+    specific_places=[
+        ObjectId('65c7cd627f987a416ea45c90'),
+        ObjectId('65cbe9344d60dd8c13db48c0'),
+        ObjectId('65cbc27ec72cccdf7a645630'),
+        ObjectId('65c7cd707f987a416ea45df6'),
+        ObjectId('65c7cd707f987a416ea45deb'),
+        ObjectId('65cbc27dc72cccdf7a645619'),
+        ObjectId('65cbe91d4d60dd8c13db4675'),
+        ObjectId('65cbe93b4d60dd8c13db4971'),
+        ObjectId('65d3b6633ddbfd277161a7ad'),
+        ObjectId('65c7cd607f987a416ea45c77'),
+        ObjectId('65cbc27bc72cccdf7a6455e6'),
+        ObjectId('65c7cd547f987a416ea45b4c')
+    ]
+
+    top_places = []
+    for place_id in specific_places:
+        top_placesC = places_collection.find_one({"_id": place_id})
+        if top_placesC:
+            top_places.append(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+
+    if username:
+        take_me_there = request.args.get('takeMeThere')
+        return render_template('devs_favs.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+
+    else:
+        return render_template('devs_favs.html',top_places=top_places, place_data=place_data)
+
+    
+@app.route("/popular_sights")
+def popular_sights():
+    username = session.get('user')
+    top_placesC = places_collection.find({"sub_types": "tourist_attraction"}).sort('rating', -1).limit(10)
+    top_places = list(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+
+    if username:
+        take_me_there = request.args.get('takeMeThere')
+        return render_template('popular_sights.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+
+    else:
+        return render_template('popular_sights.html',top_places=top_places, place_data=place_data)
+    
+@app.route("/you_are_art") 
+def you_are_art():
+    username = session.get('user')
+    top_placesC = places_collection.find({"main_type":"Museum/Art"}).sort('rating', -1).limit(10)
+    top_places = list(top_placesC)
+
+    place_data = []
+
+    for p in top_places:
+        coordinates = {'lat': p['lat'], 'lng': p['lon']}
+        place_data.append({'name': p['name'], 'coordinates': coordinates})
+
+
+    if username:
+        take_me_there = request.args.get('takeMeThere')
+        return render_template('you_are_art.html', username=username, top_places=top_places, place_data=place_data, takeMeThere=take_me_there)
+
+    else:
+        return render_template('you_are_art.html',top_places=top_places, place_data=place_data)
+
 
 # Gloria
 #itinerary planner GET

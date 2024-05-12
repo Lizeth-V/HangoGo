@@ -40,13 +40,13 @@
         </div>
         <!-- End of Top Nav -->
         <div class="title">
-            <h1>Cafe Culture</h1>
+            <h1>Night Out!</h1>
             <br>
         </div>
         <div class="container">
             <div class="list" id="list">
                 <br>
-                <p4>Welcome to our top cafe destinations! Explore cozy corners and buzzing hubs for coffee lovers. Find your perfect cup of inspiration here. </p4><br>
+                <p4>The night is young! These are the top vivid places perfect for a night out! Pls be safe and drink responsibly. </p4><br>
                 {% for index in range(0, top_places|length) %}
                     {% set place = top_places[index] %}
                     {% set coordinates = place_data[index] %}
@@ -63,7 +63,7 @@
                             
                             <br>
                             {% if username %}
-                                <a href="/landing?takeMeThere=true" class="button" onclick="setActivePlace('{{ user_id }}', '{{ place._id }}')">take me there!</a>
+                            <a href="/landing?takeMeThere=true" class="button" onclick="setActivePlace('{{ user_id }}', '{{ place._id }}')">take me there!</a>
                             {% endif %}
                         </div>
                     </div>

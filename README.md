@@ -3,7 +3,7 @@ Hi, hangomies!
 
 This repo belongs to an AI-based hangout recommendation web application called HangoGo.
 
-The web server should be live at: https://letshangogo.com
+Please check out our web server live at: https://letshangogo.com
 
 Feel free to run it on your own machine by cloning the Deployment branch and following the included instructions.
 
